@@ -2989,7 +2989,7 @@ function initPricing() {
         if (hint) {
           hint.textContent =
             activeBilling === "yearly"
-              ? "Yearly billing selected. Pro and Teams are discounted."
+              ? "Yearly billing selected. Paid plans are discounted."
               : "Monthly billing selected. Switch to yearly to lower recurring cost.";
         }
       });
@@ -3013,7 +3013,7 @@ function initPricing() {
     const credits = Number(creditsSelect.value);
     const billing = billingSelect.value;
     const isYearly = billing === "yearly";
-    const creditCostByPack = { 0: 0, 250: 10, 1000: 40, 5000: 180 };
+    const creditCostByPack = { 0: 0, 500: 20, 2000: 70, 10000: 300 };
     const creditCost = creditCostByPack[credits] || 0;
 
     seatLabel.textContent = String(seats);
@@ -3026,14 +3026,18 @@ function initPricing() {
     let monthlyTotal = 0;
     if (plan === "free") {
       monthlyTotal = creditCost;
+    } else if (plan === "starter") {
+      monthlyTotal = (isYearly ? 16 : 20) + creditCost;
+    } else if (plan === "builder") {
+      monthlyTotal = (isYearly ? 32 : 40) + creditCost;
     } else if (plan === "pro") {
-      const proBase = isYearly ? 12 : 15;
+      const proBase = isYearly ? 64 : 80;
       const extraSeats = Math.max(0, seats - 1);
       monthlyTotal = proBase + extraSeats * proBase + creditCost;
-    } else if (plan === "teams") {
-      const effectiveSeats = Math.max(3, seats);
-      const teamSeatRate = isYearly ? 24 : 30;
-      monthlyTotal = effectiveSeats * teamSeatRate + creditCost;
+    } else if (plan === "elite") {
+      const eliteBase = isYearly ? 128 : 160;
+      const extraSeats = Math.max(0, seats - 1);
+      monthlyTotal = eliteBase + extraSeats * eliteBase + creditCost;
     }
 
     result.textContent = isYearly
