@@ -229,6 +229,24 @@
                 <span>Menu, orders, kitchen queue.</span>
               </label>
             </div>
+            <article class="status-box template-detail hidden" id="builderTemplateDetail">
+              <div class="template-detail-media">
+                <div class="template-detail-preview template-thumb-saas" id="builderTemplatePreview"></div>
+              </div>
+              <div class="template-detail-copy">
+                <h4 id="builderTemplateTitle">Template Detail</h4>
+                <p class="muted" id="builderTemplateDescription">Select a template card to see details, demo preview, and next actions.</p>
+                <ul class="checklist" id="builderTemplateHighlights">
+                  <li>Live demo preview available.</li>
+                  <li>Use template to continue setup.</li>
+                  <li>Customize with AI after selecting.</li>
+                </ul>
+                <div class="actions">
+                  <button class="btn btn-ghost" type="button" id="builderTemplateViewBtn">View App</button>
+                  <button class="btn btn-primary" type="button" id="builderTemplateUseBtn">Use Template</button>
+                </div>
+              </div>
+            </article>
           </section>
 
           <section class="builder-step" data-step-panel="2">
@@ -343,6 +361,16 @@
       <p><span class="brand-inline">islaAPP</span> App Builder gives you a real creation workflow before development starts.</p>
       <small>&copy; <span data-year></span> islaAPP. All rights reserved.</small>
     </footer>
+
+    <div class="template-demo-modal hidden" id="templateDemoModal" role="dialog" aria-modal="true" aria-label="Template demo">
+      <article class="template-demo-card">
+        <div class="template-demo-top">
+          <h3 id="templateDemoTitle">Template Demo</h3>
+          <button class="btn btn-ghost btn-small" type="button" id="templateDemoClose">Close</button>
+        </div>
+        <iframe id="templateDemoFrame" class="template-demo-frame" title="Template demo preview"></iframe>
+      </article>
+    </div>
 
     <script src="app.js"></script>
   </body>

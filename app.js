@@ -684,6 +684,17 @@ function initAppBuilder() {
   const growthPanel = document.querySelector("#builderGrowthPanel");
   const growthList = document.querySelector("#builderGrowthList");
   const templateFilterButtons = Array.from(document.querySelectorAll("[data-template-filter]"));
+  const templateDetail = document.querySelector("#builderTemplateDetail");
+  const templatePreview = document.querySelector("#builderTemplatePreview");
+  const templateTitle = document.querySelector("#builderTemplateTitle");
+  const templateDescription = document.querySelector("#builderTemplateDescription");
+  const templateHighlights = document.querySelector("#builderTemplateHighlights");
+  const templateViewBtn = document.querySelector("#builderTemplateViewBtn");
+  const templateUseBtn = document.querySelector("#builderTemplateUseBtn");
+  const templateDemoModal = document.querySelector("#templateDemoModal");
+  const templateDemoFrame = document.querySelector("#templateDemoFrame");
+  const templateDemoTitle = document.querySelector("#templateDemoTitle");
+  const templateDemoClose = document.querySelector("#templateDemoClose");
 
   if (!form || !output) return;
 
@@ -694,6 +705,73 @@ function initAppBuilder() {
   const storageKey = "islaapp_builder_draft";
   const fastStorageKey = "islaapp_builder_fast_prompt";
   let providerHealthById = {};
+  let activeTemplateName = "";
+
+  const templateThumbClassByName = {
+    "SaaS Dashboard": "template-thumb-saas",
+    "Client Portal": "template-thumb-portal",
+    Marketplace: "template-thumb-market",
+    "E-commerce Storefront": "template-thumb-store",
+    "Booking Platform": "template-thumb-booking",
+    "Support Helpdesk": "template-thumb-helpdesk",
+    "Community Platform": "template-thumb-community",
+    "Creator Membership Hub": "template-thumb-membership",
+    "CRM Workspace": "template-thumb-crm",
+    "HR Recruiting Portal": "template-thumb-hr",
+    "Real Estate Listings": "template-thumb-realestate",
+    "Restaurant Ordering": "template-thumb-restaurant",
+  };
+
+  const templateMetaByName = {
+    "SaaS Dashboard": {
+      description: "Best for analytics products, admin dashboards, and subscription-ready SaaS launches.",
+      highlights: ["Admin area + metrics board", "Roles and user accounts", "Upgrade-ready billing layout"],
+    },
+    "Client Portal": {
+      description: "Best for agencies and service teams managing client projects and shared files.",
+      highlights: ["Client timeline + status", "Secure document area", "Project communication hub"],
+    },
+    Marketplace: {
+      description: "Best for multi-vendor catalogs where customers browse listings and checkout online.",
+      highlights: ["Seller + buyer experience", "Product listings + search", "Checkout flow support"],
+    },
+    "E-commerce Storefront": {
+      description: "Best for direct-to-consumer stores with inventory, cart, and order workflows.",
+      highlights: ["Catalog + product pages", "Cart + checkout structure", "Order management baseline"],
+    },
+    "Booking Platform": {
+      description: "Best for appointment-based businesses that need scheduling and reminders.",
+      highlights: ["Availability calendar", "Reservation flows", "Booking confirmations"],
+    },
+    "Support Helpdesk": {
+      description: "Best for support teams handling tickets, priorities, and service SLAs.",
+      highlights: ["Ticket queue board", "Status + assignment logic", "Support analytics sections"],
+    },
+    "Community Platform": {
+      description: "Best for groups, memberships, and moderated social discussion spaces.",
+      highlights: ["Feed and post structure", "Moderation controls", "Member profile layout"],
+    },
+    "Creator Membership Hub": {
+      description: "Best for creators selling premium content and gated member access.",
+      highlights: ["Member-only content area", "Subscription-style access", "Creator dashboard tools"],
+    },
+    "CRM Workspace": {
+      description: "Best for pipeline management, lead tracking, and sales follow-up operations.",
+      highlights: ["Lead records", "Deal stage workflow", "Team collaboration boards"],
+    },
+    "HR Recruiting Portal": {
+      description: "Best for hiring teams managing candidates, stages, and interview processes.",
+      highlights: ["Candidate pipeline", "Interview stage tracking", "Recruiter collaboration workspace"],
+    },
+    "Real Estate Listings": {
+      description: "Best for brokers and agencies showcasing properties and capturing buyer leads.",
+      highlights: ["Property listing cards", "Agent lead capture forms", "Search and filter layout"],
+    },
+    "Restaurant Ordering": {
+      description: "Best for restaurants and food operators taking digital orders and tracking kitchen status.",
+      highlights: ["Menu + item structure", "Cart and order submission", "Kitchen queue workflow"],
+    },
+  };
 
   const readFastPromptState = () => parseChecklistState(localStorage.getItem(fastStorageKey));
 
@@ -853,6 +931,20 @@ function initAppBuilder() {
     </main>
   </body>
 </html>`;
+  };
+
+  const buildTemplateDemoHtml = (templateName) => {
+    const meta = templateMetaByName[templateName] || {
+      description: "Template demo preview ready for customization.",
+      highlights: ["Responsive layout", "App shell + pages", "Launch-ready starting point"],
+    };
+    return quickPreviewHtml({
+      projectName: `${templateName} Demo`,
+      template: templateName,
+      target: "Template demo",
+      features: meta.highlights,
+      owner: "islaAPP",
+    });
   };
 
   const applyInferredDraftToWizard = (inferred) => {
@@ -1044,6 +1136,48 @@ function initAppBuilder() {
       const radio = card.querySelector("input[name='appTemplate']");
       card.classList.toggle("is-selected", Boolean(radio && radio.checked));
     });
+    const selected = form.querySelector("input[name='appTemplate']:checked");
+    renderTemplateDetail(selected ? selected.value : "");
+  };
+
+  const renderTemplateDetail = (templateName) => {
+    activeTemplateName = String(templateName || "");
+    if (!templateDetail || !templatePreview || !templateTitle || !templateDescription || !templateHighlights) return;
+    if (!activeTemplateName) {
+      templateDetail.classList.add("hidden");
+      return;
+    }
+    const meta = templateMetaByName[activeTemplateName] || {
+      description: "Template selected. Review details and customize this build with AI.",
+      highlights: ["App structure ready", "Customize features with AI", "Continue to stack setup"],
+    };
+    const thumbClass = templateThumbClassByName[activeTemplateName] || "template-thumb-saas";
+    templatePreview.className = `template-detail-preview ${thumbClass}`;
+    templateTitle.textContent = activeTemplateName;
+    templateDescription.textContent = meta.description;
+    templateHighlights.innerHTML = meta.highlights.map((line) => `<li>${escapeHtml(line)}</li>`).join("");
+    templateDetail.classList.remove("hidden");
+  };
+
+  const closeTemplateDemo = () => {
+    if (!(templateDemoModal instanceof HTMLElement) || !(templateDemoFrame instanceof HTMLIFrameElement)) return;
+    templateDemoModal.classList.add("hidden");
+    templateDemoFrame.src = "about:blank";
+    templateDemoFrame.srcdoc = "";
+    document.body.classList.remove("modal-open");
+  };
+
+  const openTemplateDemo = (templateName) => {
+    const selectedTemplate = String(templateName || "").trim();
+    if (!selectedTemplate) return;
+    if (!(templateDemoModal instanceof HTMLElement) || !(templateDemoFrame instanceof HTMLIFrameElement)) return;
+    if (templateDemoTitle instanceof HTMLElement) {
+      templateDemoTitle.textContent = `${selectedTemplate} Demo`;
+    }
+    templateDemoFrame.src = "about:blank";
+    templateDemoFrame.srcdoc = buildTemplateDemoHtml(selectedTemplate);
+    templateDemoModal.classList.remove("hidden");
+    document.body.classList.add("modal-open");
   };
 
   const applyTemplateFilter = (category) => {
@@ -1076,6 +1210,38 @@ function initAppBuilder() {
       });
     });
   }
+
+  if (templateViewBtn instanceof HTMLButtonElement) {
+    templateViewBtn.addEventListener("click", () => {
+      openTemplateDemo(activeTemplateName);
+    });
+  }
+
+  if (templateUseBtn instanceof HTMLButtonElement) {
+    templateUseBtn.addEventListener("click", () => {
+      const selected = form.querySelector("input[name='appTemplate']:checked");
+      if (!selected) return;
+      setActiveStep(2);
+      const featureSection = form.querySelector("[data-step-panel='2']");
+      if (featureSection instanceof HTMLElement) {
+        featureSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  }
+
+  if (templateDemoClose instanceof HTMLButtonElement) {
+    templateDemoClose.addEventListener("click", closeTemplateDemo);
+  }
+
+  if (templateDemoModal instanceof HTMLElement) {
+    templateDemoModal.addEventListener("click", (event) => {
+      if (event.target === templateDemoModal) closeTemplateDemo();
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeTemplateDemo();
+  });
 
   featureInputs.forEach((input) => {
     input.addEventListener("change", renderAiGuide);
