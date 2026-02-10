@@ -931,6 +931,17 @@ textarea:focus {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.template-filters {
+  margin: 0.55rem 0 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.template-grid-visual {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .template-card {
   border: 1px solid rgba(35, 80, 213, 0.2);
   border-radius: 0.9rem;
@@ -954,6 +965,90 @@ textarea:focus {
 
 .template-card span {
   color: #4a5677;
+}
+
+.template-card-visual {
+  padding: 0.65rem;
+  gap: 0.45rem;
+}
+
+.template-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(35, 80, 213, 0.15);
+  overflow: hidden;
+  background: #f7f9fe;
+  position: relative;
+}
+
+.template-thumb::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 16%;
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.template-thumb::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 10%;
+  height: 18%;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.template-thumb-saas {
+  background: linear-gradient(135deg, #1642c7, #8742dc 50%, #f02f6f);
+}
+
+.template-thumb-portal {
+  background: linear-gradient(135deg, #2a3f68, #476ca7 52%, #94a8cc);
+}
+
+.template-thumb-market {
+  background: linear-gradient(135deg, #6f34df, #4472f2 45%, #31c9ff);
+}
+
+.template-thumb-store {
+  background: linear-gradient(135deg, #f78b2a, #f05058 50%, #6e38e0);
+}
+
+.template-thumb-booking {
+  background: linear-gradient(135deg, #1ca68e, #29c7a3 50%, #2f8ad8);
+}
+
+.template-thumb-helpdesk {
+  background: linear-gradient(135deg, #3a4766, #536289 48%, #7685ad);
+}
+
+.template-thumb-community {
+  background: linear-gradient(135deg, #f02f6f, #7d34de 50%, #244fd4);
+}
+
+.template-thumb-membership {
+  background: linear-gradient(135deg, #ef4f32, #e3942b 48%, #efc74e);
+}
+
+.template-thumb-crm {
+  background: linear-gradient(135deg, #1d2f4f, #344f82 50%, #4667ad);
+}
+
+.template-thumb-hr {
+  background: linear-gradient(135deg, #0f7f7a, #24a69f 52%, #7ad3ce);
+}
+
+.template-thumb-realestate {
+  background: linear-gradient(135deg, #314460, #4f6f98 50%, #8fb4de);
+}
+
+.template-thumb-restaurant {
+  background: linear-gradient(135deg, #5b2618, #c14d2d 50%, #f0a53d);
 }
 
 .template-card.is-selected {

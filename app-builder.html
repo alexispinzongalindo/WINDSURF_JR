@@ -138,7 +138,7 @@
           <strong>Generate Brief + Create Project</strong>.
         </p>
         <div class="wizard-steps">
-          <button type="button" class="step-pill is-active" data-step-target="1">1. Template</button>
+          <button type="button" class="step-pill is-active" data-step-target="1">1. Template Gallery</button>
           <button type="button" class="step-pill" data-step-target="2">2. Features</button>
           <button type="button" class="step-pill" data-step-target="3">3. Stack</button>
           <button type="button" class="step-pill" data-step-target="4">4. Summary</button>
@@ -146,346 +146,88 @@
 
         <form id="builderForm" novalidate>
           <section class="builder-step is-active" data-step-panel="1">
-            <h3>Choose A Template</h3>
-            <p class="muted">Pick the closest starting structure for your app.</p>
-            <div class="template-library">
-              <article class="template-category">
-                <h4>Business & Operations</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="SaaS Dashboard" required />
-                    <strong>SaaS Dashboard</strong>
-                    <span>Auth, analytics, teams, and subscription-ready layout.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="CRM Workspace" />
-                    <strong>CRM Workspace</strong>
-                    <span>Leads, deals, notes, and pipeline tracking.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Client Portal" />
-                    <strong>Client Portal</strong>
-                    <span>File sharing, project updates, and status timelines.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Project Management Suite" />
-                    <strong>Project Management Suite</strong>
-                    <span>Tasks, milestones, team roles, and delivery boards.</span>
-                  </label>
-                </div>
-              </article>
-
-              <article class="template-category">
-                <h4>Commerce & Bookings</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Marketplace" />
-                    <strong>Marketplace</strong>
-                    <span>Listings, search, seller profiles, and checkout.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="E-commerce Storefront" />
-                    <strong>E-commerce Storefront</strong>
-                    <span>Catalog, cart, orders, and payment-ready UX.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Booking Platform" />
-                    <strong>Booking Platform</strong>
-                    <span>Schedules, time slots, reminders, and confirmations.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Directory Listings Hub" />
-                    <strong>Directory Listings Hub</strong>
-                    <span>Profiles, categories, maps, and lead capture.</span>
-                  </label>
-                </div>
-              </article>
-
-              <article class="template-category">
-                <h4>Community & Creator</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Community Platform" />
-                    <strong>Community Platform</strong>
-                    <span>Member feed, moderation, and discussion tools.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Social Network" />
-                    <strong>Social Network</strong>
-                    <span>Profiles, posts, follows, and engagement loops.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Creator Membership Hub" />
-                    <strong>Creator Membership Hub</strong>
-                    <span>Paid memberships, gated content, and announcements.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Forum Hub" />
-                    <strong>Forum Hub</strong>
-                    <span>Topics, threads, replies, and community management.</span>
-                  </label>
-                </div>
-              </article>
-
-              <article class="template-category">
-                <h4>Education</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Learning Management System" />
-                    <strong>Learning Management System</strong>
-                    <span>Courses, lessons, student progress, and quizzes.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Course Marketplace" />
-                    <strong>Course Marketplace</strong>
-                    <span>Instructor pages, productized classes, and checkout.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="School Portal" />
-                    <strong>School Portal</strong>
-                    <span>Teacher, parent, and student communication area.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Quiz Academy" />
-                    <strong>Quiz Academy</strong>
-                    <span>Test engine, scoring, analytics, and certificates.</span>
-                  </label>
-                </div>
-              </article>
-
-              <article class="template-category">
-                <h4>Finance</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Fintech Dashboard" />
-                    <strong>Fintech Dashboard</strong>
-                    <span>Accounts overview, KPIs, and secure transactions.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Invoicing App" />
-                    <strong>Invoicing App</strong>
-                    <span>Invoices, recurring billing, and payment status.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Expense Tracker" />
-                    <strong>Expense Tracker</strong>
-                    <span>Budgets, categories, and monthly reporting.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Subscription Billing" />
-                    <strong>Subscription Billing</strong>
-                    <span>Plans, renewals, dunning, and billing automation.</span>
-                  </label>
-                </div>
-              </article>
-
-              <article class="template-category">
-                <h4>Health & Wellness</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Health Clinic Portal" />
-                    <strong>Health Clinic Portal</strong>
-                    <span>Appointments, patient records, and reminders.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Fitness Coaching App" />
-                    <strong>Fitness Coaching App</strong>
-                    <span>Plans, habits, check-ins, and progress tracking.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Mental Wellness Tracker" />
-                    <strong>Mental Wellness Tracker</strong>
-                    <span>Journaling, mood logs, and guided routines.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Telehealth Booking" />
-                    <strong>Telehealth Booking</strong>
-                    <span>Virtual consultations, scheduling, and notes.</span>
-                  </label>
-                </div>
-              </article>
-
-              <article class="template-category">
-                <h4>Travel, Events & Hospitality</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Restaurant Ordering" />
-                    <strong>Restaurant Ordering</strong>
-                    <span>Menus, pickup slots, orders, and kitchen status.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Hotel Booking" />
-                    <strong>Hotel Booking</strong>
-                    <span>Room inventory, dates, pricing, and confirmations.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Travel Planner" />
-                    <strong>Travel Planner</strong>
-                    <span>Itineraries, maps, checklists, and sharing.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Event Ticketing" />
-                    <strong>Event Ticketing</strong>
-                    <span>Events, seat tiers, checkout, and QR entry.</span>
-                  </label>
-                </div>
-              </article>
-
-              <article class="template-category">
-                <h4>HR & Internal Tools</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="HR Recruiting Portal" />
-                    <strong>HR Recruiting Portal</strong>
-                    <span>Applicants, stages, interviews, and scorecards.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Payroll Dashboard" />
-                    <strong>Payroll Dashboard</strong>
-                    <span>Payslips, periods, approvals, and audit logs.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Employee Onboarding" />
-                    <strong>Employee Onboarding</strong>
-                    <span>Tasks, docs, role checklists, and completion stats.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Shift Scheduler" />
-                    <strong>Shift Scheduler</strong>
-                    <span>Rotas, availability, swaps, and attendance.</span>
-                  </label>
-                </div>
-              </article>
-
-              <article class="template-category">
-                <h4>Real Estate & Property</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Real Estate Listings" />
-                    <strong>Real Estate Listings</strong>
-                    <span>Property search, leads, tours, and offers.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Property Management" />
-                    <strong>Property Management</strong>
-                    <span>Units, tenants, rent, and maintenance tickets.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Rental Booking" />
-                    <strong>Rental Booking</strong>
-                    <span>Availability calendars, agreements, and payments.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Construction Tracker" />
-                    <strong>Construction Tracker</strong>
-                    <span>Milestones, inspections, budgets, and progress logs.</span>
-                  </label>
-                </div>
-              </article>
-
-              <article class="template-category">
-                <h4>Marketing & Sales</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Marketing Automation" />
-                    <strong>Marketing Automation</strong>
-                    <span>Campaign flows, segments, and trigger logic.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Email Campaign Studio" />
-                    <strong>Email Campaign Studio</strong>
-                    <span>Templates, sends, opens, and funnel stats.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Sales Pipeline CRM" />
-                    <strong>Sales Pipeline CRM</strong>
-                    <span>Opportunities, stages, forecasts, and close rate.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Lead Capture Funnel" />
-                    <strong>Lead Capture Funnel</strong>
-                    <span>Landing forms, qualification, and routing.</span>
-                  </label>
-                </div>
-              </article>
-
-              <article class="template-category">
-                <h4>Content & Media</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Content CMS" />
-                    <strong>Content CMS</strong>
-                    <span>Collections, drafts, publishing, and SEO fields.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Blog Platform" />
-                    <strong>Blog Platform</strong>
-                    <span>Posts, tags, comments, and newsletter hooks.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Newsletter Hub" />
-                    <strong>Newsletter Hub</strong>
-                    <span>Subscribers, campaigns, and send analytics.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Video Library" />
-                    <strong>Video Library</strong>
-                    <span>Channels, playlists, access tiers, and watch data.</span>
-                  </label>
-                </div>
-              </article>
-
-              <article class="template-category">
-                <h4>Support & IT</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Support Helpdesk" />
-                    <strong>Support Helpdesk</strong>
-                    <span>Ticket queues, SLAs, and assignment workflows.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Knowledge Base Portal" />
-                    <strong>Knowledge Base Portal</strong>
-                    <span>Articles, categories, search, and feedback.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="IT Service Desk" />
-                    <strong>IT Service Desk</strong>
-                    <span>Requests, approvals, assets, and priorities.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Incident Response Center" />
-                    <strong>Incident Response Center</strong>
-                    <span>Alerts, owners, timelines, and postmortems.</span>
-                  </label>
-                </div>
-              </article>
-
-              <article class="template-category">
-                <h4>AI & Automation</h4>
-                <div class="template-grid template-grid-wide">
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="AI Assistant Workspace" />
-                    <strong>AI Assistant Workspace</strong>
-                    <span>Prompt threads, context memory, and saved workflows.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Document Analyzer" />
-                    <strong>Document Analyzer</strong>
-                    <span>Upload, extraction, tagging, and insight generation.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Workflow Automation" />
-                    <strong>Workflow Automation</strong>
-                    <span>Triggers, actions, integrations, and logs.</span>
-                  </label>
-                  <label class="template-card">
-                    <input type="radio" name="appTemplate" value="Internal Copilot" />
-                    <strong>Internal Copilot</strong>
-                    <span>Team assistant for docs, support, and operations.</span>
-                  </label>
-                </div>
-              </article>
+            <h3>Browse Template Gallery (Optional)</h3>
+            <p class="muted">You can skip templates and use AI chat above. Or pick a visual starting point and we customize it for your customer.</p>
+            <div class="template-filters">
+              <button class="toggle-btn is-active" type="button" data-template-filter="all">All</button>
+              <button class="toggle-btn" type="button" data-template-filter="business">Business</button>
+              <button class="toggle-btn" type="button" data-template-filter="commerce">Commerce</button>
+              <button class="toggle-btn" type="button" data-template-filter="community">Community</button>
+              <button class="toggle-btn" type="button" data-template-filter="service">Service</button>
+            </div>
+            <div class="template-grid template-grid-visual">
+              <label class="template-card template-card-visual" data-template-category="business">
+                <input type="radio" name="appTemplate" value="SaaS Dashboard" />
+                <div class="template-thumb template-thumb-saas"></div>
+                <strong>SaaS Dashboard</strong>
+                <span>Admin, analytics, subscriptions.</span>
+              </label>
+              <label class="template-card template-card-visual" data-template-category="business">
+                <input type="radio" name="appTemplate" value="Client Portal" />
+                <div class="template-thumb template-thumb-portal"></div>
+                <strong>Client Portal</strong>
+                <span>Projects, files, progress timeline.</span>
+              </label>
+              <label class="template-card template-card-visual" data-template-category="commerce">
+                <input type="radio" name="appTemplate" value="Marketplace" />
+                <div class="template-thumb template-thumb-market"></div>
+                <strong>Marketplace</strong>
+                <span>Listings, checkout, seller profiles.</span>
+              </label>
+              <label class="template-card template-card-visual" data-template-category="commerce">
+                <input type="radio" name="appTemplate" value="E-commerce Storefront" />
+                <div class="template-thumb template-thumb-store"></div>
+                <strong>E-commerce Storefront</strong>
+                <span>Products, cart, customer accounts.</span>
+              </label>
+              <label class="template-card template-card-visual" data-template-category="service">
+                <input type="radio" name="appTemplate" value="Booking Platform" />
+                <div class="template-thumb template-thumb-booking"></div>
+                <strong>Booking Platform</strong>
+                <span>Calendar, availability, reminders.</span>
+              </label>
+              <label class="template-card template-card-visual" data-template-category="service">
+                <input type="radio" name="appTemplate" value="Support Helpdesk" />
+                <div class="template-thumb template-thumb-helpdesk"></div>
+                <strong>Support Helpdesk</strong>
+                <span>Ticket queues and SLA workflow.</span>
+              </label>
+              <label class="template-card template-card-visual" data-template-category="community">
+                <input type="radio" name="appTemplate" value="Community Platform" />
+                <div class="template-thumb template-thumb-community"></div>
+                <strong>Community Platform</strong>
+                <span>Feeds, groups, moderation.</span>
+              </label>
+              <label class="template-card template-card-visual" data-template-category="community">
+                <input type="radio" name="appTemplate" value="Creator Membership Hub" />
+                <div class="template-thumb template-thumb-membership"></div>
+                <strong>Creator Membership Hub</strong>
+                <span>Paid content and member access.</span>
+              </label>
+              <label class="template-card template-card-visual" data-template-category="business">
+                <input type="radio" name="appTemplate" value="CRM Workspace" />
+                <div class="template-thumb template-thumb-crm"></div>
+                <strong>CRM Workspace</strong>
+                <span>Leads, deals, team pipeline.</span>
+              </label>
+              <label class="template-card template-card-visual" data-template-category="business">
+                <input type="radio" name="appTemplate" value="HR Recruiting Portal" />
+                <div class="template-thumb template-thumb-hr"></div>
+                <strong>HR Recruiting Portal</strong>
+                <span>Candidates, stages, interviews.</span>
+              </label>
+              <label class="template-card template-card-visual" data-template-category="service">
+                <input type="radio" name="appTemplate" value="Real Estate Listings" />
+                <div class="template-thumb template-thumb-realestate"></div>
+                <strong>Real Estate Listings</strong>
+                <span>Properties, tours, lead capture.</span>
+              </label>
+              <label class="template-card template-card-visual" data-template-category="service">
+                <input type="radio" name="appTemplate" value="Restaurant Ordering" />
+                <div class="template-thumb template-thumb-restaurant"></div>
+                <strong>Restaurant Ordering</strong>
+                <span>Menu, orders, kitchen queue.</span>
+              </label>
             </div>
           </section>
 
@@ -566,7 +308,7 @@
           <article class="status-box">
             <h3>Required Services</h3>
             <ul class="checklist" id="builderRequirementsList">
-              <li>Pick a template and at least one feature to see requirements.</li>
+              <li>Pick features and stack details to see launch requirements.</li>
             </ul>
           </article>
           <article class="status-box">

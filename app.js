@@ -683,6 +683,7 @@ function initAppBuilder() {
   const fastPreviewFrame = document.querySelector("#builderFastPreviewFrame");
   const growthPanel = document.querySelector("#builderGrowthPanel");
   const growthList = document.querySelector("#builderGrowthList");
+  const templateFilterButtons = Array.from(document.querySelectorAll("[data-template-filter]"));
 
   if (!form || !output) return;
 
@@ -1045,6 +1046,16 @@ function initAppBuilder() {
     });
   };
 
+  const applyTemplateFilter = (category) => {
+    const normalized = String(category || "all").toLowerCase();
+    const cards = Array.from(form.querySelectorAll(".template-card[data-template-category]"));
+    cards.forEach((card) => {
+      const cardCategory = String(card.getAttribute("data-template-category") || "").toLowerCase();
+      const showCard = normalized === "all" || cardCategory === normalized;
+      card.classList.toggle("hidden", !showCard);
+    });
+  };
+
   stepButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       setActiveStep(Number(btn.dataset.stepTarget || "1"));
@@ -1055,6 +1066,16 @@ function initAppBuilder() {
     input.addEventListener("change", updateTemplateUI);
     input.addEventListener("change", renderAiGuide);
   });
+
+  if (templateFilterButtons.length > 0) {
+    templateFilterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const category = String(button.dataset.templateFilter || "all");
+        templateFilterButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+        applyTemplateFilter(category);
+      });
+    });
+  }
 
   featureInputs.forEach((input) => {
     input.addEventListener("change", renderAiGuide);
@@ -1116,6 +1137,7 @@ function initAppBuilder() {
   }
 
   updateTemplateUI();
+  applyTemplateFilter("all");
   setActiveStep(1);
   renderAiGuide();
   loadProviderHealth();
@@ -1243,15 +1265,16 @@ function initAppBuilder() {
     event.preventDefault();
 
     const template = form.querySelector("input[name='appTemplate']:checked");
+    const templateValue = template ? template.value : "AI Guided Build";
     const selectedFeatures = featureInputs.filter((item) => item.checked).map((item) => item.value);
     const projectName = valueOf("#builderProjectName");
     const owner = valueOf("#builderOwner");
     const stack = valueOf("#builderStack");
     const target = valueOf("#builderTarget");
 
-    if (!template || selectedFeatures.length === 0 || !projectName || !owner || !stack || !target) {
+    if (selectedFeatures.length === 0 || !projectName || !owner || !stack || !target) {
       showStatus(output, "error", "Brief not generated", [
-        "Select one template, at least one feature, and complete all stack details.",
+        "Select at least one feature and complete all stack details.",
       ]);
       return;
     }
@@ -1265,7 +1288,7 @@ function initAppBuilder() {
     const briefLines = [
       `Project: ${projectName}`,
       `Owner: ${owner}`,
-      `Template: ${template.value}`,
+      `Template: ${templateValue}`,
       `Core features: ${selectedFeatures.join(", ")}`,
       `Stack: ${stack}`,
       `Launch target: ${target}`,
@@ -1274,7 +1297,7 @@ function initAppBuilder() {
     const scaffold = await createStarterProject({
       projectName,
       owner,
-      template: template.value,
+      template: templateValue,
       features: selectedFeatures,
       stack,
       target,
@@ -1462,7 +1485,7 @@ function renderBuilderAiGuide({ rootSummary, rootRequirements, rootActions, temp
 
   if (!template && !stack && !target && items.length === 0) {
     rootSummary.innerHTML = "<h3>Waiting For Your Selections</h3><ul><li>Select stack and features to get live launch requirements.</li></ul>";
-    rootRequirements.innerHTML = "<li>Pick a template and at least one feature to see requirements.</li>";
+    rootRequirements.innerHTML = "<li>Pick features and stack details to generate service requirements.</li>";
     rootActions.innerHTML = "<li>Complete your selections in the Build Wizard above.</li>";
     return;
   }
@@ -1500,7 +1523,7 @@ function renderBuilderAiGuide({ rootSummary, rootRequirements, rootActions, temp
   }
 
   const actionLines = [];
-  actionLines.push("Finalize your app selections (template, features, stack, launch target).");
+  actionLines.push("Finalize your app selections (features, stack, and launch target).");
   if (missingRequired.length > 0) {
     const providers = missingRequired.filter((item) => item.providerId).map((item) => item.title);
     if (providers.length > 0) {
