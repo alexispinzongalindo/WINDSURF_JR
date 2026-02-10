@@ -2567,7 +2567,7 @@ function initPricing() {
         if (hint) {
           hint.textContent =
             activeBilling === "yearly"
-              ? "Yearly billing selected. Discount applied to all plans."
+              ? "Yearly billing selected. Pro and Teams are discounted."
               : "Monthly billing selected. Switch to yearly to lower recurring cost.";
         }
       });
@@ -2578,30 +2578,50 @@ function initPricing() {
 
   const seatInput = document.querySelector("#calcSeats");
   const seatLabel = document.querySelector("#seatCountLabel");
-  const supportSelect = document.querySelector("#calcSupport");
+  const planSelect = document.querySelector("#calcPlan");
+  const creditsSelect = document.querySelector("#calcCredits");
   const billingSelect = document.querySelector("#calcBilling");
   const result = document.querySelector("#calcResult");
 
-  if (!seatInput || !seatLabel || !supportSelect || !billingSelect || !result) return;
+  if (!seatInput || !seatLabel || !planSelect || !creditsSelect || !billingSelect || !result) return;
 
   const recalc = () => {
     const seats = Number(seatInput.value);
-    const support = supportSelect.value;
+    const plan = planSelect.value;
+    const credits = Number(creditsSelect.value);
     const billing = billingSelect.value;
-    const supportMultiplier = { standard: 1, priority: 1.2, dedicated: 1.35 }[support] || 1;
-    const seatRate = billing === "yearly" ? 5 : 6;
-    const platformFee = billing === "yearly" ? 32 : 39;
-    const monthlyTotal = Math.round(platformFee + seats * seatRate * supportMultiplier);
+    const isYearly = billing === "yearly";
+    const creditCostByPack = { 0: 0, 250: 10, 1000: 40, 5000: 180 };
+    const creditCost = creditCostByPack[credits] || 0;
 
     seatLabel.textContent = String(seats);
-    result.textContent =
-      billing === "yearly"
-        ? `$${monthlyTotal}/month estimated total (billed yearly)`
-        : `$${monthlyTotal}/month estimated total`;
+
+    if (plan === "enterprise") {
+      result.textContent = `Enterprise is custom. Add-on credits estimate: $${creditCost}/month + contract pricing`;
+      return;
+    }
+
+    let monthlyTotal = 0;
+    if (plan === "free") {
+      monthlyTotal = creditCost;
+    } else if (plan === "pro") {
+      const proBase = isYearly ? 12 : 15;
+      const extraSeats = Math.max(0, seats - 1);
+      monthlyTotal = proBase + extraSeats * proBase + creditCost;
+    } else if (plan === "teams") {
+      const effectiveSeats = Math.max(3, seats);
+      const teamSeatRate = isYearly ? 24 : 30;
+      monthlyTotal = effectiveSeats * teamSeatRate + creditCost;
+    }
+
+    result.textContent = isYearly
+      ? `$${Math.round(monthlyTotal)}/month estimated total (billed yearly)`
+      : `$${Math.round(monthlyTotal)}/month estimated total`;
   };
 
   seatInput.addEventListener("input", recalc);
-  supportSelect.addEventListener("change", recalc);
+  planSelect.addEventListener("change", recalc);
+  creditsSelect.addEventListener("change", recalc);
   billingSelect.addEventListener("change", recalc);
   recalc();
 }
@@ -2615,12 +2635,15 @@ function updatePlanCardPrices(planCards, billing) {
 
     if (!priceNode || !cycleNode) return;
 
+    const cycleMonthly = String(card.dataset.cycleMonthly || "/mo");
+    const cycleYearly = String(card.dataset.cycleYearly || "/mo (yearly)");
+
     if (billing === "yearly") {
       priceNode.textContent = String(yearly);
-      cycleNode.textContent = "/mo (yearly)";
+      cycleNode.textContent = cycleYearly;
     } else {
       priceNode.textContent = String(monthly);
-      cycleNode.textContent = "/mo";
+      cycleNode.textContent = cycleMonthly;
     }
   });
 }

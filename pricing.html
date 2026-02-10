@@ -6,7 +6,7 @@
     <title>Pricing | islaAPP</title>
     <meta
       name="description"
-      content="Explore islaAPP pricing plans with monthly and yearly billing, plus an interactive estimate calculator."
+      content="islaAPP pricing follows a modern SaaS model: Free, Pro, Teams, Enterprise, plus usage add-ons."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -74,8 +74,8 @@
 
     <main>
       <section class="page-intro">
-        <h1>Pricing Page</h1>
-        <p class="lead">Choose a Puerto Rico-friendly plan with clear setup and monthly management pricing.</p>
+        <h1>Simple Pricing That Scales</h1>
+        <p class="lead">Free for getting started, Pro for solo builders, Teams for organizations, and Enterprise for contracts.</p>
       </section>
 
       <section class="section-panel">
@@ -87,40 +87,55 @@
           <button class="toggle-btn is-active" type="button" data-billing="monthly">Monthly</button>
           <button class="toggle-btn" type="button" data-billing="yearly">Yearly</button>
         </div>
-        <p class="muted" id="billingHint">Yearly billing saves about 18% compared to monthly pricing.</p>
+        <p class="muted" id="billingHint">Yearly billing lowers Pro and Teams pricing by about 20%.</p>
 
         <div class="plan-grid">
-          <article class="plan-card" data-plan data-price-monthly="39" data-price-yearly="32">
-            <h3>Launch</h3>
-            <p class="price"><span data-price>39</span><small data-cycle>/mo</small></p>
+          <article class="plan-card" data-plan data-price-monthly="0" data-price-yearly="0" data-cycle-monthly="/mo" data-cycle-yearly="/mo (yearly)">
+            <h3>Free</h3>
+            <p class="price"><span data-price>0</span><small data-cycle>/mo</small></p>
             <ul>
-              <li>Setup fee: $99 (one-time)</li>
+              <li>No setup fee</li>
               <li>1 active project</li>
-              <li>Basic onboarding and launch check</li>
-              <li>Email support</li>
+              <li>Basic AI app generation</li>
+              <li>Preview and draft saving</li>
+              <li>Community support</li>
             </ul>
-            <a class="btn btn-ghost" href="app-builder.html">Choose Launch</a>
+            <a class="btn btn-ghost" href="onboarding.html">Start Free</a>
           </article>
-          <article class="plan-card featured" data-plan data-price-monthly="79" data-price-yearly="65">
+
+          <article class="plan-card featured" data-plan data-price-monthly="15" data-price-yearly="12" data-cycle-monthly="/mo" data-cycle-yearly="/mo (yearly)">
             <p class="tag">Most Popular</p>
-            <h3>Standard</h3>
-            <p class="price"><span data-price>79</span><small data-cycle>/mo</small></p>
+            <h3>Pro</h3>
+            <p class="price"><span data-price>15</span><small data-cycle>/mo</small></p>
             <ul>
-              <li>Setup fee: $149 (one-time)</li>
-              <li>5 active projects</li>
-              <li>Priority onboarding support</li>
-              <li>Monthly optimization review</li>
+              <li>500 AI credits/month</li>
+              <li>Premium models and faster generation</li>
+              <li>Unlimited inline edits</li>
+              <li>Priority support</li>
             </ul>
-            <a class="btn btn-primary" href="app-builder.html">Choose Standard</a>
+            <a class="btn btn-primary" href="app-builder.html">Choose Pro</a>
           </article>
-          <article class="plan-card" data-plan data-price-monthly="129" data-price-yearly="106">
-            <h3>Growth</h3>
-            <p class="price"><span data-price>129</span><small data-cycle>/mo</small></p>
+
+          <article class="plan-card" data-plan data-price-monthly="30" data-price-yearly="24" data-cycle-monthly="/user/mo" data-cycle-yearly="/user/mo (yearly)">
+            <h3>Teams</h3>
+            <p class="price"><span data-price>30</span><small data-cycle>/user/mo</small></p>
             <ul>
-              <li>Setup fee: $249 (one-time)</li>
-              <li>Unlimited projects</li>
-              <li>Dedicated launch specialist</li>
-              <li>Priority support + strategy sessions</li>
+              <li>500 AI credits/user/month</li>
+              <li>Centralized billing</li>
+              <li>Role-based team access</li>
+              <li>Ops dashboard controls</li>
+            </ul>
+            <a class="btn btn-ghost" href="app-builder.html">Choose Teams</a>
+          </article>
+
+          <article class="plan-card">
+            <h3>Enterprise</h3>
+            <p class="price">Custom<small>/contract</small></p>
+            <ul>
+              <li>Custom usage limits and volume pricing</li>
+              <li>SSO, governance, and compliance support</li>
+              <li>White-label workflow options</li>
+              <li>Dedicated success manager + SLA</li>
             </ul>
             <a class="btn btn-ghost" href="support.html">Talk To Sales</a>
           </article>
@@ -134,15 +149,25 @@
         </h2>
         <div class="form-grid">
           <label class="form-field">
-            Team Seats: <strong id="seatCountLabel">3</strong>
-            <input id="calcSeats" type="range" min="1" max="20" value="3" />
+            Plan
+            <select id="calcPlan">
+              <option value="free">Free</option>
+              <option value="pro" selected>Pro</option>
+              <option value="teams">Teams</option>
+              <option value="enterprise">Enterprise</option>
+            </select>
           </label>
           <label class="form-field">
-            Support Level
-            <select id="calcSupport">
-              <option value="standard">Standard</option>
-              <option value="priority">Priority</option>
-              <option value="dedicated">Dedicated</option>
+            Team Seats: <strong id="seatCountLabel">3</strong>
+            <input id="calcSeats" type="range" min="1" max="100" value="3" />
+          </label>
+          <label class="form-field">
+            Extra Credits / Month
+            <select id="calcCredits">
+              <option value="0" selected>No add-on credits</option>
+              <option value="250">+250 credits ($10)</option>
+              <option value="1000">+1,000 credits ($40)</option>
+              <option value="5000">+5,000 credits ($180)</option>
             </select>
           </label>
           <label class="form-field">
@@ -153,13 +178,38 @@
             </select>
           </label>
         </div>
-        <p class="estimate" id="calcResult">$57/month estimated total</p>
-        <p class="muted">Estimate includes launch-plan baseline, seats, and selected support multiplier.</p>
+        <p class="estimate" id="calcResult">$55/month estimated total</p>
+        <p class="muted">Estimate includes plan cost, seat count, and credit add-ons.</p>
+      </section>
+
+      <section class="section-panel">
+        <h2>
+          <svg class="mini-icon" viewBox="0 0 96 96" aria-hidden="true"><use href="#orbit-icon"></use></svg>
+          Usage Add-Ons
+        </h2>
+        <div class="feature-grid">
+          <article>
+            <h3>Credit Packs</h3>
+            <p>$10 / 250 credits, $40 / 1,000 credits, and discounted volume packs.</p>
+          </article>
+          <article>
+            <h3>Managed Setup</h3>
+            <p>Optional one-time setup for onboarding, integrations, and launch hardening.</p>
+          </article>
+          <article>
+            <h3>Service Margins</h3>
+            <p>Resale margin on domain, hosting, and database services with managed support.</p>
+          </article>
+          <article>
+            <h3>Enterprise Contracts</h3>
+            <p>Annual contracts for larger organizations needing controls and dedicated support.</p>
+          </article>
+        </div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <p><span class="brand-inline">islaAPP</span> pricing keeps costs clear from onboarding to launch.</p>
+      <p><span class="brand-inline">islaAPP</span> pricing follows the same growth model used by top AI products.</p>
       <small>&copy; <span data-year></span> islaAPP. All rights reserved.</small>
     </footer>
 
