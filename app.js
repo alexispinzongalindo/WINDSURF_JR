@@ -678,8 +678,8 @@ function initAppBuilder() {
   const fastOwnerInput = document.querySelector("#builderFastOwner");
   const fastSubmitButton = document.querySelector("#builderFastSubmit");
   const fastClearButton = document.querySelector("#builderFastClear");
-  const fastSummary = document.querySelector("#builderFastSummary");
-  const fastStatus = document.querySelector("#builderFastStatus");
+  const chatLog = document.querySelector("#builderChatLog");
+  const chatThinking = document.querySelector("#builderChatThinking");
   const fastPreviewFrame = document.querySelector("#builderFastPreviewFrame");
   const growthPanel = document.querySelector("#builderGrowthPanel");
   const growthList = document.querySelector("#builderGrowthList");
@@ -869,17 +869,35 @@ function initAppBuilder() {
     setActiveStep(4);
   };
 
-  const setFastSummary = (inferred) => {
-    if (!fastSummary) return;
-    fastSummary.innerHTML = `
-      <h3>AI First Draft Ready</h3>
-      <ul>
-        <li>Project: ${escapeHtml(inferred.projectName)}</li>
-        <li>Template: ${escapeHtml(inferred.template)}</li>
-        <li>Stack: ${escapeHtml(inferred.stack)}</li>
-        <li>Target: ${escapeHtml(inferred.target)}</li>
-      </ul>
-    `;
+  const scrollChatToBottom = () => {
+    if (!(chatLog instanceof HTMLElement)) return;
+    chatLog.scrollTop = chatLog.scrollHeight;
+  };
+
+  const appendChatMessage = (role, text) => {
+    if (!(chatLog instanceof HTMLElement)) return;
+    const article = document.createElement("article");
+    article.className = `ai-msg ${role === "user" ? "ai-msg-user" : "ai-msg-assistant"}`;
+    const paragraph = document.createElement("p");
+    paragraph.textContent = String(text || "");
+    article.appendChild(paragraph);
+    chatLog.appendChild(article);
+    scrollChatToBottom();
+  };
+
+  const appendChatMessageHtml = (role, htmlContent) => {
+    if (!(chatLog instanceof HTMLElement)) return;
+    const article = document.createElement("article");
+    article.className = `ai-msg ${role === "user" ? "ai-msg-user" : "ai-msg-assistant"}`;
+    article.innerHTML = String(htmlContent || "");
+    chatLog.appendChild(article);
+    scrollChatToBottom();
+  };
+
+  const setThinking = (isThinking) => {
+    if (!(chatThinking instanceof HTMLElement)) return;
+    chatThinking.classList.toggle("hidden", !isThinking);
+    if (isThinking) scrollChatToBottom();
   };
 
   const renderGrowthRecommendations = (inferred) => {
@@ -936,21 +954,18 @@ function initAppBuilder() {
   };
 
   const renderFastIdleState = () => {
-    if (fastSummary) {
-      fastSummary.innerHTML = `
-        <h3>AI Waiting For Prompt</h3>
-        <ul>
-          <li>Describe your app idea above and click Build First Version.</li>
-        </ul>
-      `;
+    if (chatLog instanceof HTMLElement) {
+      chatLog.innerHTML = "";
+      appendChatMessage(
+        "assistant",
+        "Tell me what you want to build. I will think, generate the first draft, and then guide your next steps."
+      );
     }
     if (fastPreviewFrame instanceof HTMLIFrameElement) {
+      fastPreviewFrame.src = "about:blank";
       fastPreviewFrame.srcdoc = "";
     }
-    if (fastStatus) {
-      fastStatus.classList.add("hidden");
-      fastStatus.innerHTML = "";
-    }
+    setThinking(false);
     if (growthPanel) growthPanel.classList.add("hidden");
   };
 
@@ -1134,28 +1149,45 @@ function initAppBuilder() {
       const prompt = valueOf("#builderFastPrompt");
       const ownerName = valueOf("#builderFastOwner");
       if (!prompt) {
-        if (fastStatus) {
-          showStatus(fastStatus, "error", "Prompt required", ["Type what you want to build before running AI generation."]);
-        }
+        appendChatMessage("assistant", "Please type your app idea first, then click Send To AI.");
         return;
       }
 
+      appendChatMessage("user", prompt);
+      if (fastPromptInput instanceof HTMLTextAreaElement) {
+        fastPromptInput.value = "";
+      }
       writeFastPromptState();
       if (fastSubmitButton instanceof HTMLButtonElement) {
         fastSubmitButton.disabled = true;
-        fastSubmitButton.textContent = "Building...";
+        fastSubmitButton.textContent = "Thinking...";
       }
+      setThinking(true);
 
       try {
+        await new Promise((resolve) => window.setTimeout(resolve, 850));
         const inferred = inferDraftFromPrompt(prompt, ownerName);
         applyInferredDraftToWizard(inferred);
         saveDraft(false);
-        setFastSummary(inferred);
         renderGrowthRecommendations(inferred);
 
         if (fastPreviewFrame instanceof HTMLIFrameElement) {
+          fastPreviewFrame.src = "about:blank";
           fastPreviewFrame.srcdoc = quickPreviewHtml(inferred);
         }
+
+        appendChatMessageHtml(
+          "assistant",
+          `
+            <p>I built your first draft for <strong>${escapeHtml(inferred.projectName)}</strong>.</p>
+            <ul>
+              <li>Template: ${escapeHtml(inferred.template)}</li>
+              <li>Stack: ${escapeHtml(inferred.stack)}</li>
+              <li>Target: ${escapeHtml(inferred.target)}</li>
+            </ul>
+            <p>Preview is now shown on the right.</p>
+          `
+        );
 
         const scaffold = await createStarterProject({
           projectName: inferred.projectName,
@@ -1171,26 +1203,37 @@ function initAppBuilder() {
           if (previewUrl && fastPreviewFrame instanceof HTMLIFrameElement) {
             fastPreviewFrame.src = previewUrl;
           }
-          if (fastStatus) {
-            showStatus(fastStatus, "success", "First version generated", [
-              `Project: ${inferred.projectName}`,
-              `Template: ${inferred.template}`,
-              `Stack: ${inferred.stack}`,
-              "AI proof is ready. Now review next-step recommendations below.",
-              `Project folder created: ${String(scaffold.projectDir || "")}`,
-            ]);
-          }
-        } else if (fastStatus) {
-          showStatus(fastStatus, "success", "AI draft generated", [
-            "Preview was created from your prompt.",
-            "Project scaffold could not be created right now.",
-            `Reason: ${scaffold.error || "Unknown error"}`,
-          ]);
+          const projectDir = escapeHtml(String(scaffold.projectDir || ""));
+          const previewLink = previewUrl
+            ? `<a href="${escapeAttribute(previewUrl)}" target="_blank" rel="noopener noreferrer">open the preview in a new tab</a>`
+            : "review the preview on this page";
+          appendChatMessageHtml(
+            "assistant",
+            `
+              <p>Proof complete. I also created your project scaffold at <code>${projectDir}</code>.</p>
+              <p>You can ${previewLink}.</p>
+              <p>Next: follow the AI Next Steps panel below and connect required providers in <a href="${escapeAttribute(
+                "setup.html"
+              )}">Setup Wizard</a>.</p>
+            `
+          );
+        } else {
+          appendChatMessageHtml(
+            "assistant",
+            `
+              <p>Your AI draft and preview are ready, but project scaffolding failed.</p>
+              <p>Reason: ${escapeHtml(scaffold.error || "Unknown error")}.</p>
+              <p>Run <code>python3 dev_server.py</code> in this project folder, then try again.</p>
+            `
+          );
         }
+      } catch (error) {
+        appendChatMessage("assistant", `I hit an error while building the draft: ${error instanceof Error ? error.message : "Unknown error"}`);
       } finally {
+        setThinking(false);
         if (fastSubmitButton instanceof HTMLButtonElement) {
           fastSubmitButton.disabled = false;
-          fastSubmitButton.textContent = "Build First Version";
+          fastSubmitButton.textContent = "Send To AI";
         }
       }
     });

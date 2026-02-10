@@ -86,50 +86,46 @@
           Create With AI (Fast Start)
         </h2>
         <p class="muted">Type what you want. AI builds the first draft now. After you see it working, AI shows only the next required setup.</p>
-        <form id="builderFastForm" novalidate>
-          <div class="form-grid">
-            <label class="form-field form-field-full">
-              What do you want to build?
-              <textarea
-                id="builderFastPrompt"
-                rows="4"
-                placeholder="Example: Build me a booking app for barbers with login, admin dashboard, and payments."
-                required
-              ></textarea>
-            </label>
-            <label class="form-field">
-              Your Name (optional)
-              <input id="builderFastOwner" type="text" placeholder="Owner name" />
-            </label>
-          </div>
-          <div class="actions">
-            <button class="btn btn-primary" type="submit" id="builderFastSubmit">Build First Version</button>
-            <button class="btn btn-ghost" type="button" id="builderFastClear">Clear Prompt</button>
-          </div>
-        </form>
         <div class="fast-build-grid">
-          <article class="status-box" id="builderFastSummary">
-            <h3>AI Waiting For Prompt</h3>
-            <ul>
-              <li>Describe your app idea above and click Build First Version.</li>
-            </ul>
+          <article class="status-box ai-chat-shell">
+            <h3>AI Builder Chat</h3>
+            <div class="ai-chat-log" id="builderChatLog" aria-live="polite">
+              <article class="ai-msg ai-msg-assistant">
+                <p>Tell me what you want to build. I will think, generate the first draft, and then guide your next steps.</p>
+              </article>
+            </div>
+            <div class="ai-chat-thinking hidden" id="builderChatThinking">AI is thinking...</div>
+            <form id="builderFastForm" class="ai-chat-composer" novalidate>
+              <label class="form-field form-field-full">
+                Describe your app
+                <textarea
+                  id="builderFastPrompt"
+                  rows="3"
+                  placeholder="Build me a booking app for barbers with login, admin dashboard, and payments."
+                  required
+                ></textarea>
+              </label>
+              <label class="form-field">
+                Your Name (optional)
+                <input id="builderFastOwner" type="text" placeholder="Owner name" />
+              </label>
+              <div class="actions">
+                <button class="btn btn-primary" type="submit" id="builderFastSubmit">Send To AI</button>
+                <button class="btn btn-ghost" type="button" id="builderFastClear">Clear Chat</button>
+              </div>
+            </form>
           </article>
           <article class="status-box">
             <h3>Instant Preview</h3>
-            <iframe
-              id="builderFastPreviewFrame"
-              class="fast-preview-frame"
-              title="AI app preview"
-            ></iframe>
+            <iframe id="builderFastPreviewFrame" class="fast-preview-frame" title="AI app preview"></iframe>
+            <article class="status-box hidden" id="builderGrowthPanel">
+              <h3>AI Next Steps (After Proof)</h3>
+              <ul class="checklist" id="builderGrowthList">
+                <li>Run your first AI build to unlock next-step recommendations.</li>
+              </ul>
+            </article>
           </article>
         </div>
-        <section class="status-box hidden" id="builderFastStatus" aria-live="polite"></section>
-        <article class="status-box hidden" id="builderGrowthPanel">
-          <h3>AI Next Steps (After Proof)</h3>
-          <ul class="checklist" id="builderGrowthList">
-            <li>Run your first AI build to unlock next-step recommendations.</li>
-          </ul>
-        </article>
       </section>
 
       <section class="section-panel">
