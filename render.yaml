@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: islaapp
+    name: islaapp-winsurf-jr
     runtime: python
     plan: free
     region: oregon
