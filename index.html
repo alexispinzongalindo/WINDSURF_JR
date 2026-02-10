@@ -16,7 +16,7 @@
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="page-home">
     <svg class="sprite" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id="brand-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -57,10 +57,78 @@
         </svg>
         <span class="brand-name"><span>isla</span><strong>APP</strong></span>
       </a>
-      <nav>
-        <a href="app-builder.html">Product</a>
-        <a href="app-builder.html">Templates</a>
-        <a href="guide.html">Resources</a>
+      <nav class="marketing-nav">
+        <div class="nav-item has-menu">
+          <button class="nav-trigger" type="button" data-menu-target="menuProduct" aria-expanded="false">Product</button>
+          <div class="mega-menu" id="menuProduct" role="menu">
+            <a class="mega-link" href="app-builder.html">
+              <strong>AI App Builder</strong>
+              <span>Build from prompt and preview instantly.</span>
+            </a>
+            <a class="mega-link" href="services.html">
+              <strong>Integrations</strong>
+              <span>Connect hosting, domain, and database providers.</span>
+            </a>
+            <a class="mega-link" href="app-builder.html">
+              <strong>Template Marketplace</strong>
+              <span>Browse and customize visual template starters.</span>
+            </a>
+            <a class="mega-link" href="projects.html">
+              <strong>Project Workspace</strong>
+              <span>Manage generated projects and previews.</span>
+            </a>
+            <a class="mega-link" href="ops.html">
+              <strong>Ops Dashboard</strong>
+              <span>Track service requests and provisioning status.</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-item has-menu">
+          <button class="nav-trigger" type="button" data-menu-target="menuUseCases" aria-expanded="false">Use Cases</button>
+          <div class="mega-menu" id="menuUseCases" role="menu">
+            <a class="mega-link" href="app-builder.html">
+              <strong>Productivity</strong>
+              <span>Internal tools, dashboards, workflow automation.</span>
+            </a>
+            <a class="mega-link" href="app-builder.html">
+              <strong>E-commerce & Retail</strong>
+              <span>Stores, catalogs, marketplace and ordering flows.</span>
+            </a>
+            <a class="mega-link" href="app-builder.html">
+              <strong>Education</strong>
+              <span>Portals, LMS platforms, and student tools.</span>
+            </a>
+            <a class="mega-link" href="app-builder.html">
+              <strong>Health & Wellness</strong>
+              <span>Booking apps, clinics, and coaching systems.</span>
+            </a>
+            <a class="mega-link" href="app-builder.html">
+              <strong>Business Intelligence</strong>
+              <span>Reporting and analytics experiences.</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-item has-menu">
+          <button class="nav-trigger" type="button" data-menu-target="menuResources" aria-expanded="false">Resources</button>
+          <div class="mega-menu" id="menuResources" role="menu">
+            <a class="mega-link" href="guide.html">
+              <strong>Docs & FAQs</strong>
+              <span>Step-by-step onboarding and launch guidance.</span>
+            </a>
+            <a class="mega-link" href="support.html">
+              <strong>Blog & Insights</strong>
+              <span>Best practices for app growth and operations.</span>
+            </a>
+            <a class="mega-link" href="support.html">
+              <strong>Community</strong>
+              <span>Ask questions and exchange ideas with builders.</span>
+            </a>
+            <a class="mega-link" href="support.html">
+              <strong>Hire a Partner</strong>
+              <span>Get expert help for custom implementations.</span>
+            </a>
+          </div>
+        </div>
         <a href="pricing.html">Pricing</a>
         <a href="support.html">Enterprise</a>
       </nav>
@@ -83,6 +151,70 @@
           <a href="app-builder.html">Onboarding Portal</a>
           <a href="app-builder.html">Room Visualizer</a>
           <a href="app-builder.html">Networking App</a>
+        </div>
+      </section>
+
+      <section class="section-panel">
+        <h2>
+          <svg class="mini-icon" viewBox="0 0 96 96" aria-hidden="true"><use href="#orbit-icon"></use></svg>
+          Browse By Category
+        </h2>
+        <div class="category-grid">
+          <article class="category-card"><h3>Productivity</h3><p>55 Apps</p></article>
+          <article class="category-card"><h3>Educational</h3><p>43 Apps</p></article>
+          <article class="category-card"><h3>Financial</h3><p>37 Apps</p></article>
+          <article class="category-card"><h3>Entertainment</h3><p>35 Apps</p></article>
+          <article class="category-card"><h3>Health & Wellness</h3><p>38 Apps</p></article>
+          <article class="category-card"><h3>Business Intelligence</h3><p>20 Apps</p></article>
+          <article class="category-card"><h3>Creative Tools</h3><p>16 Apps</p></article>
+          <article class="category-card"><h3>Marketing & Sales</h3><p>18 Apps</p></article>
+          <article class="category-card"><h3>E-commerce & Retail</h3><p>14 Apps</p></article>
+          <article class="category-card"><h3>Community</h3><p>13 Apps</p></article>
+          <article class="category-card"><h3>HR & Recruitment</h3><p>10 Apps</p></article>
+          <article class="category-card"><h3>Travel Planning</h3><p>9 Apps</p></article>
+        </div>
+      </section>
+
+      <section class="section-panel">
+        <h2>
+          <svg class="mini-icon" viewBox="0 0 96 96" aria-hidden="true"><use href="#orbit-icon"></use></svg>
+          Start With A Template
+        </h2>
+        <p class="muted">Choose a starter template and customize it with AI for your customer.</p>
+        <div class="template-showcase-grid">
+          <article class="template-showcase-card">
+            <div class="template-showcase-thumb template-thumb-market"></div>
+            <h3>Glidron</h3>
+            <p>Premium digital marketplace with secure checkout and instant delivery.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="app-builder.html">View Template</a>
+            </div>
+          </article>
+          <article class="template-showcase-card">
+            <div class="template-showcase-thumb template-thumb-restaurant"></div>
+            <h3>GourmetGo APP</h3>
+            <p>Restaurant ordering and management with multilingual and mobile-first UX.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="app-builder.html">View Template</a>
+            </div>
+          </article>
+          <article class="template-showcase-card">
+            <div class="template-showcase-thumb template-thumb-store"></div>
+            <h3>Moda Studio</h3>
+            <p>Fashion catalog and commerce template for curated product collections.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="app-builder.html">View Template</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-panel enterprise-hero">
+        <p class="eyebrow">Enterprise Solutions</p>
+        <h2>Ideas shouldn’t wait for sprints.</h2>
+        <p class="lead">Scale secure, production-ready apps with dedicated support and rollout controls.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="support.html">Talk To Sales</a>
         </div>
       </section>
 

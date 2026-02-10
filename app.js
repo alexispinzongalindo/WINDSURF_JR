@@ -5,6 +5,7 @@ const OPS_SESSION_TOKEN_KEY = "islaapp_session_token";
 
 (function initSite() {
   setYear();
+  initMarketingNav();
   initOnboardingChecklist();
   initOnboardingPlan();
   initOnboardingAICoach();
@@ -17,6 +18,51 @@ const OPS_SESSION_TOKEN_KEY = "islaapp_session_token";
   initPricing();
   initSupportForm();
 })();
+
+function initMarketingNav() {
+  const nav = document.querySelector(".page-home .marketing-nav");
+  if (!nav) return;
+
+  const menuItems = Array.from(nav.querySelectorAll(".nav-item.has-menu"));
+  if (menuItems.length === 0) return;
+
+  const closeAllMenus = () => {
+    menuItems.forEach((item) => {
+      item.classList.remove("is-open");
+      const trigger = item.querySelector(".nav-trigger");
+      if (trigger instanceof HTMLButtonElement) {
+        trigger.setAttribute("aria-expanded", "false");
+      }
+    });
+  };
+
+  menuItems.forEach((item) => {
+    const trigger = item.querySelector(".nav-trigger");
+    if (!(trigger instanceof HTMLButtonElement)) return;
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      const isOpen = item.classList.contains("is-open");
+      closeAllMenus();
+      if (!isOpen) {
+        item.classList.add("is-open");
+        trigger.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Node)) return;
+    if (!nav.contains(event.target)) {
+      closeAllMenus();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeAllMenus();
+    }
+  });
+}
 
 function setYear() {
   const yearNodes = document.querySelectorAll("[data-year]");

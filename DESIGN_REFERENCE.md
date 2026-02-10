@@ -31,3 +31,14 @@ Use these notes as the visual direction for future islaAPP UI updates.
 - Clear card layout with credits/limits and highlights.
 - Minimal friction for deciding a plan.
 
+## 6) Header + Mega Menus
+- Keep only 5 primary header items visible.
+- Use dropdown mega-menu panels for deeper navigation details.
+- Menu cards should include short title + one-line explainer.
+
+## 7) Use Cases Blocks
+- Use bold split layouts with visual mockups on one side and message on the other.
+- Prefer rounded cards with gradient backgrounds and clean typography.
+
+## 8) Enterprise Hero
+- Use a dedicated enterprise band with soft gradient and direct `Talk to sales` CTA.
