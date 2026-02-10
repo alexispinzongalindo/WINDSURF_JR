@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template Catalog | islaAPP</title>
+    <meta
+      name="description"
+      content="Browse islaAPP templates by category, preview them, and jump straight into customization."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <svg class="sprite" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="brand-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#f02f6f" />
+          <stop offset="45%" stop-color="#7d34de" />
+          <stop offset="100%" stop-color="#244fd4" />
+        </linearGradient>
+        <filter id="logo-shadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="6" stdDeviation="4" flood-color="#2d43b8" flood-opacity=".3" />
+        </filter>
+        <symbol id="orbit-icon" viewBox="0 0 96 96">
+          <g filter="url(#logo-shadow)">
+            <path
+              d="M16 49c0-18.2 14.8-33 33-33s33 14.8 33 33-14.8 33-33 33-33-14.8-33-33z"
+              fill="none"
+              stroke="url(#brand-gradient)"
+              stroke-width="12"
+              stroke-linecap="round"
+            />
+            <path d="M8 49h80" fill="none" stroke="url(#brand-gradient)" stroke-width="10" stroke-linecap="round" />
+            <path
+              d="M32 30c6-4.5 17-5.2 24.8.4"
+              fill="none"
+              stroke="#efe7dc"
+              stroke-width="4.6"
+              stroke-linecap="round"
+            />
+          </g>
+        </symbol>
+      </defs>
+    </svg>
+
+    <div class="noise" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <svg class="brand-icon" viewBox="0 0 96 96" role="img" aria-label="islaAPP logo icon">
+          <use href="#orbit-icon"></use>
+        </svg>
+        <span class="brand-name"><span>isla</span><strong>APP</strong></span>
+      </a>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="app-builder.html">Product</a>
+        <a class="is-current" href="templates.html">Templates</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="support.html">Enterprise</a>
+      </nav>
+      <a class="btn btn-small" href="app-builder.html">Start Building</a>
+    </header>
+
+    <main>
+      <section class="page-intro">
+        <h1>Template Catalog</h1>
+        <p class="lead">Browse by category, open a full template detail page, then use or clone directly into App Builder.</p>
+      </section>
+
+      <section class="section-panel" id="templatesCatalog">
+        <div class="form-grid">
+          <label class="form-field">
+            Search templates
+            <input id="templatesSearch" type="text" placeholder="Search template name or description..." />
+          </label>
+        </div>
+        <div class="template-filters">
+          <button class="toggle-btn is-active" type="button" data-catalog-filter="all">All</button>
+          <button class="toggle-btn" type="button" data-catalog-filter="business">Business</button>
+          <button class="toggle-btn" type="button" data-catalog-filter="commerce">Commerce</button>
+          <button class="toggle-btn" type="button" data-catalog-filter="community">Community</button>
+          <button class="toggle-btn" type="button" data-catalog-filter="service">Service</button>
+        </div>
+
+        <div class="template-showcase-grid" id="templatesCatalogGrid">
+          <article class="template-showcase-card" data-template-card data-category="business" data-name="SaaS Dashboard" data-description="Admin analytics subscriptions">
+            <div class="template-showcase-thumb template-thumb-saas"></div>
+            <h3>SaaS Dashboard</h3>
+            <p>Analytics and admin-focused SaaS baseline with role-ready structure.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=saas-dashboard">View App</a>
+            </div>
+          </article>
+          <article class="template-showcase-card" data-template-card data-category="business" data-name="Client Portal" data-description="Projects files progress timeline">
+            <div class="template-showcase-thumb template-thumb-portal"></div>
+            <h3>Client Portal</h3>
+            <p>Agency-style workspace with client timelines and project sharing.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=client-portal">View App</a>
+            </div>
+          </article>
+          <article class="template-showcase-card" data-template-card data-category="commerce" data-name="Marketplace" data-description="Listings checkout sellers">
+            <div class="template-showcase-thumb template-thumb-market"></div>
+            <h3>Marketplace</h3>
+            <p>Multi-vendor commerce template with listings and checkout flow.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=marketplace">View App</a>
+            </div>
+          </article>
+          <article class="template-showcase-card" data-template-card data-category="commerce" data-name="E-commerce Storefront" data-description="Products cart orders">
+            <div class="template-showcase-thumb template-thumb-store"></div>
+            <h3>E-commerce Storefront</h3>
+            <p>Direct-to-consumer storefront with product and order UX sections.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=ecommerce-storefront">View App</a>
+            </div>
+          </article>
+          <article class="template-showcase-card" data-template-card data-category="service" data-name="Booking Platform" data-description="Calendar reminders scheduling">
+            <div class="template-showcase-thumb template-thumb-booking"></div>
+            <h3>Booking Platform</h3>
+            <p>Appointment-first flow with availability and notification hooks.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=booking-platform">View App</a>
+            </div>
+          </article>
+          <article class="template-showcase-card" data-template-card data-category="service" data-name="Support Helpdesk" data-description="Tickets SLA support">
+            <div class="template-showcase-thumb template-thumb-helpdesk"></div>
+            <h3>Support Helpdesk</h3>
+            <p>Ticket queue structure for support teams and response tracking.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=support-helpdesk">View App</a>
+            </div>
+          </article>
+          <article class="template-showcase-card" data-template-card data-category="community" data-name="Community Platform" data-description="Feeds groups moderation">
+            <div class="template-showcase-thumb template-thumb-community"></div>
+            <h3>Community Platform</h3>
+            <p>Group and member interactions with moderation-ready layout.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=community-platform">View App</a>
+            </div>
+          </article>
+          <article class="template-showcase-card" data-template-card data-category="community" data-name="Creator Membership Hub" data-description="Membership paid content">
+            <div class="template-showcase-thumb template-thumb-membership"></div>
+            <h3>Creator Membership Hub</h3>
+            <p>Paid access and premium content flow for creator businesses.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=creator-membership-hub">View App</a>
+            </div>
+          </article>
+          <article class="template-showcase-card" data-template-card data-category="business" data-name="CRM Workspace" data-description="Leads deals pipeline">
+            <div class="template-showcase-thumb template-thumb-crm"></div>
+            <h3>CRM Workspace</h3>
+            <p>Sales and pipeline operations with team-friendly data model.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=crm-workspace">View App</a>
+            </div>
+          </article>
+          <article class="template-showcase-card" data-template-card data-category="business" data-name="HR Recruiting Portal" data-description="Hiring interviews candidates">
+            <div class="template-showcase-thumb template-thumb-hr"></div>
+            <h3>HR Recruiting Portal</h3>
+            <p>Recruiting funnel with candidates, stages, and scorecards.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=hr-recruiting-portal">View App</a>
+            </div>
+          </article>
+          <article class="template-showcase-card" data-template-card data-category="service" data-name="Real Estate Listings" data-description="Properties tours leads">
+            <div class="template-showcase-thumb template-thumb-realestate"></div>
+            <h3>Real Estate Listings</h3>
+            <p>Property browsing and lead capture for broker teams.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=real-estate-listings">View App</a>
+            </div>
+          </article>
+          <article class="template-showcase-card" data-template-card data-category="service" data-name="Restaurant Ordering" data-description="Menus orders kitchen queue">
+            <div class="template-showcase-thumb template-thumb-restaurant"></div>
+            <h3>Restaurant Ordering</h3>
+            <p>Food ordering and kitchen operations with mobile-first UX.</p>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=restaurant-ordering">View App</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p><span class="brand-inline">islaAPP</span> template catalog helps clients pick quickly even when they are unsure what to build.</p>
+      <small>&copy; <span data-year></span> islaAPP. All rights reserved.</small>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

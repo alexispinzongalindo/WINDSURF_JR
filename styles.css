@@ -385,6 +385,44 @@ h1 span {
   border: 1px solid rgba(35, 80, 213, 0.18);
 }
 
+.template-view-layout {
+  display: grid;
+  gap: 0.95rem;
+  grid-template-columns: 1.15fr 0.85fr;
+}
+
+.template-view-media {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.template-view-preview {
+  width: 100%;
+  min-height: 430px;
+  border-radius: 1rem;
+  border: 1px solid rgba(35, 80, 213, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.template-view-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.14) 60%, rgba(255, 255, 255, 0.62) 100%);
+}
+
+.template-view-copy {
+  display: grid;
+  align-content: start;
+  gap: 0.7rem;
+}
+
+.template-view-copy h1 {
+  margin: 0;
+}
+
 .enterprise-hero {
   text-align: center;
   background: linear-gradient(120deg, #c5cde4 0%, #d5d0dc 50%, #f4b48f 100%);
@@ -1497,7 +1535,8 @@ textarea:focus {
   }
 
   .category-grid,
-  .template-showcase-grid {
+  .template-showcase-grid,
+  .template-view-layout {
     grid-template-columns: 1fr;
   }
 

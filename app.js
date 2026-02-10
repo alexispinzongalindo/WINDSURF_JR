@@ -6,6 +6,8 @@ const OPS_SESSION_TOKEN_KEY = "islaapp_session_token";
 (function initSite() {
   setYear();
   initMarketingNav();
+  initTemplatesPage();
+  initTemplateViewPage();
   initOnboardingChecklist();
   initOnboardingPlan();
   initOnboardingAICoach();
@@ -61,6 +63,357 @@ function initMarketingNav() {
     if (event.key === "Escape") {
       closeAllMenus();
     }
+  });
+}
+
+function getTemplateCatalog() {
+  return [
+    {
+      id: "saas-dashboard",
+      name: "SaaS Dashboard",
+      category: "business",
+      thumbClass: "template-thumb-saas",
+      shortDescription: "Admin, analytics, subscriptions.",
+      longDescription: "Best for analytics products, admin dashboards, and subscription-ready SaaS launches.",
+      stack: "React + Supabase",
+      target: "MVP in 1 month",
+      features: ["User authentication", "Admin dashboard", "Analytics reports", "Team collaboration"],
+    },
+    {
+      id: "client-portal",
+      name: "Client Portal",
+      category: "business",
+      thumbClass: "template-thumb-portal",
+      shortDescription: "Projects, files, progress timeline.",
+      longDescription: "Best for agencies and service teams managing client projects and shared files.",
+      stack: "React + Supabase",
+      target: "MVP in 1 month",
+      features: ["User authentication", "Team collaboration", "Notifications", "Admin dashboard"],
+    },
+    {
+      id: "marketplace",
+      name: "Marketplace",
+      category: "commerce",
+      thumbClass: "template-thumb-market",
+      shortDescription: "Listings, checkout, seller profiles.",
+      longDescription: "Best for multi-vendor catalogs where customers browse listings and checkout online.",
+      stack: "Next.js + PostgreSQL",
+      target: "Production in 2 months",
+      features: ["User authentication", "Payments and billing", "Notifications", "Admin dashboard"],
+    },
+    {
+      id: "ecommerce-storefront",
+      name: "E-commerce Storefront",
+      category: "commerce",
+      thumbClass: "template-thumb-store",
+      shortDescription: "Products, cart, customer accounts.",
+      longDescription: "Best for direct-to-consumer stores with inventory, cart, and order workflows.",
+      stack: "Next.js + PostgreSQL",
+      target: "Production in 2 months",
+      features: ["User authentication", "Payments and billing", "Notifications", "Analytics reports"],
+    },
+    {
+      id: "booking-platform",
+      name: "Booking Platform",
+      category: "service",
+      thumbClass: "template-thumb-booking",
+      shortDescription: "Calendar, availability, reminders.",
+      longDescription: "Best for appointment-based businesses that need scheduling and reminders.",
+      stack: "React + Supabase",
+      target: "Beta in 2 weeks",
+      features: ["User authentication", "Notifications", "Admin dashboard"],
+    },
+    {
+      id: "support-helpdesk",
+      name: "Support Helpdesk",
+      category: "service",
+      thumbClass: "template-thumb-helpdesk",
+      shortDescription: "Ticket queues and SLA workflow.",
+      longDescription: "Best for support teams handling tickets, priorities, and service SLAs.",
+      stack: "Node API + React Frontend",
+      target: "MVP in 1 month",
+      features: ["User authentication", "Team collaboration", "Notifications", "Analytics reports"],
+    },
+    {
+      id: "community-platform",
+      name: "Community Platform",
+      category: "community",
+      thumbClass: "template-thumb-community",
+      shortDescription: "Feeds, groups, moderation.",
+      longDescription: "Best for groups, memberships, and moderated social discussion spaces.",
+      stack: "React + Supabase",
+      target: "MVP in 1 month",
+      features: ["User authentication", "Team collaboration", "Notifications"],
+    },
+    {
+      id: "creator-membership-hub",
+      name: "Creator Membership Hub",
+      category: "community",
+      thumbClass: "template-thumb-membership",
+      shortDescription: "Paid content and member access.",
+      longDescription: "Best for creators selling premium content and gated member access.",
+      stack: "React + Supabase",
+      target: "MVP in 1 month",
+      features: ["User authentication", "Payments and billing", "Notifications", "Analytics reports"],
+    },
+    {
+      id: "crm-workspace",
+      name: "CRM Workspace",
+      category: "business",
+      thumbClass: "template-thumb-crm",
+      shortDescription: "Leads, deals, team pipeline.",
+      longDescription: "Best for pipeline management, lead tracking, and sales follow-up operations.",
+      stack: "Node API + React Frontend",
+      target: "MVP in 1 month",
+      features: ["User authentication", "Team collaboration", "Admin dashboard", "Analytics reports"],
+    },
+    {
+      id: "hr-recruiting-portal",
+      name: "HR Recruiting Portal",
+      category: "business",
+      thumbClass: "template-thumb-hr",
+      shortDescription: "Candidates, stages, interviews.",
+      longDescription: "Best for hiring teams managing candidates, stages, and interview processes.",
+      stack: "Node API + React Frontend",
+      target: "MVP in 1 month",
+      features: ["User authentication", "Team collaboration", "Notifications", "Analytics reports"],
+    },
+    {
+      id: "real-estate-listings",
+      name: "Real Estate Listings",
+      category: "service",
+      thumbClass: "template-thumb-realestate",
+      shortDescription: "Properties, tours, lead capture.",
+      longDescription: "Best for brokers and agencies showcasing properties and capturing buyer leads.",
+      stack: "React + Supabase",
+      target: "MVP in 1 month",
+      features: ["User authentication", "Notifications", "Admin dashboard"],
+    },
+    {
+      id: "restaurant-ordering",
+      name: "Restaurant Ordering",
+      category: "service",
+      thumbClass: "template-thumb-restaurant",
+      shortDescription: "Menu, orders, kitchen queue.",
+      longDescription: "Best for restaurants and food operators taking digital orders and tracking kitchen status.",
+      stack: "React + Supabase",
+      target: "Beta in 2 weeks",
+      features: ["User authentication", "Payments and billing", "Notifications", "Admin dashboard"],
+    },
+  ];
+}
+
+function findTemplateById(templateId) {
+  const id = String(templateId || "").trim().toLowerCase();
+  if (!id) return null;
+  return getTemplateCatalog().find((item) => item.id === id) || null;
+}
+
+function findTemplateByName(templateName) {
+  const name = String(templateName || "").trim().toLowerCase();
+  if (!name) return null;
+  return getTemplateCatalog().find((item) => item.name.toLowerCase() === name) || null;
+}
+
+function buildAppPreviewHtml({ projectName, template, target, features, owner }) {
+  const featureItems = (Array.isArray(features) ? features : []).map((item) => `<li>${escapeHtml(String(item || ""))}</li>`).join("");
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${escapeHtml(projectName)} Preview</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Manrope", sans-serif;
+        color: #1d2233;
+        background: linear-gradient(145deg, #efe7dc, #ddd4c5);
+      }
+      main {
+        width: min(900px, 94vw);
+        margin: 1.4rem auto;
+        background: #fffaf2;
+        border: 1px solid rgba(35, 80, 213, 0.18);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+      }
+      .badge {
+        display: inline-flex;
+        border-radius: 999px;
+        padding: 0.2rem 0.55rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: linear-gradient(130deg, #2350d5, #e72a6f);
+        color: white;
+      }
+      h1 { margin: 0.6rem 0 0.2rem; font-size: 1.5rem; }
+      p { margin: 0.35rem 0; color: #3a4561; }
+      ul {
+        margin: 0.7rem 0 0;
+        padding-left: 1.2rem;
+      }
+      li + li { margin-top: 0.25rem; }
+      .proof {
+        margin-top: 1rem;
+        border-radius: 10px;
+        border: 1px solid rgba(18, 95, 68, 0.35);
+        background: #f2faf6;
+        padding: 0.65rem 0.75rem;
+        color: #125f44;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <span class="badge">${escapeHtml(template)}</span>
+      <h1>${escapeHtml(projectName)}</h1>
+      <p><strong>Owner:</strong> ${escapeHtml(owner)}</p>
+      <p><strong>Launch target:</strong> ${escapeHtml(target)}</p>
+      <p><strong>AI generated first working draft:</strong></p>
+      <ul>${featureItems}</ul>
+      <div class="proof">Preview is live. Next, AI will ask only what is needed to launch.</div>
+    </main>
+  </body>
+</html>`;
+}
+
+function initTemplatesPage() {
+  const grid = document.querySelector("#templatesCatalogGrid");
+  if (!(grid instanceof HTMLElement)) return;
+
+  const cards = Array.from(grid.querySelectorAll("[data-template-card]"));
+  const filterButtons = Array.from(document.querySelectorAll("[data-catalog-filter]"));
+  const searchInput = document.querySelector("#templatesSearch");
+
+  const applyFilters = () => {
+    const activeFilterButton = filterButtons.find((button) => button.classList.contains("is-active"));
+    const activeCategory = String(activeFilterButton?.dataset.catalogFilter || "all").toLowerCase();
+    const searchValue = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
+
+    cards.forEach((card) => {
+      const category = String(card.getAttribute("data-category") || "").toLowerCase();
+      const name = String(card.getAttribute("data-name") || "").toLowerCase();
+      const description = String(card.getAttribute("data-description") || "").toLowerCase();
+      const categoryMatch = activeCategory === "all" || category === activeCategory;
+      const searchMatch = !searchValue || name.includes(searchValue) || description.includes(searchValue);
+      card.classList.toggle("hidden", !(categoryMatch && searchMatch));
+    });
+  };
+
+  if (filterButtons.length > 0) {
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        filterButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+        applyFilters();
+      });
+    });
+  }
+
+  if (searchInput instanceof HTMLInputElement) {
+    searchInput.addEventListener("input", applyFilters);
+  }
+
+  applyFilters();
+}
+
+function initTemplateViewPage() {
+  const root = document.querySelector("#templateViewRoot");
+  if (!(root instanceof HTMLElement)) return;
+
+  const title = document.querySelector("#templateViewTitle");
+  const subtitle = document.querySelector("#templateViewSubtitle");
+  const description = document.querySelector("#templateViewDescription");
+  const highlights = document.querySelector("#templateViewHighlights");
+  const previewCard = document.querySelector("#templateViewPreview");
+  const viewButton = document.querySelector("#templateViewOpenDemo");
+  const useButton = document.querySelector("#templateViewUseTemplate");
+  const cloneButton = document.querySelector("#templateViewCloneTemplate");
+  const modal = document.querySelector("#templateViewerModal");
+  const modalFrame = document.querySelector("#templateViewerFrame");
+  const modalTitle = document.querySelector("#templateViewerTitle");
+  const modalClose = document.querySelector("#templateViewerClose");
+
+  const params = new URLSearchParams(window.location.search);
+  const selected =
+    findTemplateById(params.get("template")) ||
+    findTemplateById(params.get("template_id")) ||
+    findTemplateByName(params.get("template")) ||
+    getTemplateCatalog()[0];
+
+  if (!selected) return;
+
+  if (title instanceof HTMLElement) title.textContent = selected.name;
+  if (subtitle instanceof HTMLElement) subtitle.textContent = `${selected.category.toUpperCase()} TEMPLATE`;
+  if (description instanceof HTMLElement) description.textContent = selected.longDescription;
+  if (highlights instanceof HTMLElement) {
+    highlights.innerHTML = selected.features.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  }
+  if (previewCard instanceof HTMLElement) {
+    previewCard.className = `template-view-preview ${selected.thumbClass}`;
+  }
+
+  const openDemo = () => {
+    if (!(modal instanceof HTMLElement) || !(modalFrame instanceof HTMLIFrameElement)) return;
+    modalFrame.src = "about:blank";
+    modalFrame.srcdoc = buildAppPreviewHtml({
+      projectName: `${selected.name} Demo`,
+      template: selected.name,
+      target: selected.target,
+      features: selected.features,
+      owner: "islaAPP",
+    });
+    if (modalTitle instanceof HTMLElement) modalTitle.textContent = `${selected.name} Demo`;
+    modal.classList.remove("hidden");
+    document.body.classList.add("modal-open");
+  };
+
+  const closeDemo = () => {
+    if (!(modal instanceof HTMLElement) || !(modalFrame instanceof HTMLIFrameElement)) return;
+    modal.classList.add("hidden");
+    modalFrame.src = "about:blank";
+    modalFrame.srcdoc = "";
+    document.body.classList.remove("modal-open");
+  };
+
+  const buildBuilderUrl = (autoClone) => {
+    const query = new URLSearchParams({
+      template_id: selected.id,
+      template: selected.name,
+      stack: selected.stack,
+      target: selected.target,
+      features: selected.features.join("|"),
+      project: `${selected.name} Client Build`,
+      source: "template-catalog",
+    });
+    if (autoClone) {
+      query.set("autoclone", "1");
+    }
+    return `app-builder.html?${query.toString()}`;
+  };
+
+  if (viewButton instanceof HTMLButtonElement) {
+    viewButton.addEventListener("click", openDemo);
+  }
+  if (useButton instanceof HTMLAnchorElement) {
+    useButton.href = buildBuilderUrl(false);
+  }
+  if (cloneButton instanceof HTMLAnchorElement) {
+    cloneButton.href = buildBuilderUrl(true);
+  }
+
+  if (modalClose instanceof HTMLButtonElement) {
+    modalClose.addEventListener("click", closeDemo);
+  }
+  if (modal instanceof HTMLElement) {
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) closeDemo();
+    });
+  }
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeDemo();
   });
 }
 
@@ -752,72 +1105,18 @@ function initAppBuilder() {
   const fastStorageKey = "islaapp_builder_fast_prompt";
   let providerHealthById = {};
   let activeTemplateName = "";
+  const templateCatalog = getTemplateCatalog();
 
-  const templateThumbClassByName = {
-    "SaaS Dashboard": "template-thumb-saas",
-    "Client Portal": "template-thumb-portal",
-    Marketplace: "template-thumb-market",
-    "E-commerce Storefront": "template-thumb-store",
-    "Booking Platform": "template-thumb-booking",
-    "Support Helpdesk": "template-thumb-helpdesk",
-    "Community Platform": "template-thumb-community",
-    "Creator Membership Hub": "template-thumb-membership",
-    "CRM Workspace": "template-thumb-crm",
-    "HR Recruiting Portal": "template-thumb-hr",
-    "Real Estate Listings": "template-thumb-realestate",
-    "Restaurant Ordering": "template-thumb-restaurant",
-  };
-
-  const templateMetaByName = {
-    "SaaS Dashboard": {
-      description: "Best for analytics products, admin dashboards, and subscription-ready SaaS launches.",
-      highlights: ["Admin area + metrics board", "Roles and user accounts", "Upgrade-ready billing layout"],
-    },
-    "Client Portal": {
-      description: "Best for agencies and service teams managing client projects and shared files.",
-      highlights: ["Client timeline + status", "Secure document area", "Project communication hub"],
-    },
-    Marketplace: {
-      description: "Best for multi-vendor catalogs where customers browse listings and checkout online.",
-      highlights: ["Seller + buyer experience", "Product listings + search", "Checkout flow support"],
-    },
-    "E-commerce Storefront": {
-      description: "Best for direct-to-consumer stores with inventory, cart, and order workflows.",
-      highlights: ["Catalog + product pages", "Cart + checkout structure", "Order management baseline"],
-    },
-    "Booking Platform": {
-      description: "Best for appointment-based businesses that need scheduling and reminders.",
-      highlights: ["Availability calendar", "Reservation flows", "Booking confirmations"],
-    },
-    "Support Helpdesk": {
-      description: "Best for support teams handling tickets, priorities, and service SLAs.",
-      highlights: ["Ticket queue board", "Status + assignment logic", "Support analytics sections"],
-    },
-    "Community Platform": {
-      description: "Best for groups, memberships, and moderated social discussion spaces.",
-      highlights: ["Feed and post structure", "Moderation controls", "Member profile layout"],
-    },
-    "Creator Membership Hub": {
-      description: "Best for creators selling premium content and gated member access.",
-      highlights: ["Member-only content area", "Subscription-style access", "Creator dashboard tools"],
-    },
-    "CRM Workspace": {
-      description: "Best for pipeline management, lead tracking, and sales follow-up operations.",
-      highlights: ["Lead records", "Deal stage workflow", "Team collaboration boards"],
-    },
-    "HR Recruiting Portal": {
-      description: "Best for hiring teams managing candidates, stages, and interview processes.",
-      highlights: ["Candidate pipeline", "Interview stage tracking", "Recruiter collaboration workspace"],
-    },
-    "Real Estate Listings": {
-      description: "Best for brokers and agencies showcasing properties and capturing buyer leads.",
-      highlights: ["Property listing cards", "Agent lead capture forms", "Search and filter layout"],
-    },
-    "Restaurant Ordering": {
-      description: "Best for restaurants and food operators taking digital orders and tracking kitchen status.",
-      highlights: ["Menu + item structure", "Cart and order submission", "Kitchen queue workflow"],
-    },
-  };
+  const templateThumbClassByName = Object.fromEntries(templateCatalog.map((item) => [item.name, item.thumbClass]));
+  const templateMetaByName = Object.fromEntries(
+    templateCatalog.map((item) => [
+      item.name,
+      {
+        description: item.longDescription,
+        highlights: Array.isArray(item.features) && item.features.length > 0 ? item.features : ["Responsive layout", "Launch-ready baseline", "AI customization flow"],
+      },
+    ])
+  );
 
   const readFastPromptState = () => parseChecklistState(localStorage.getItem(fastStorageKey));
 
@@ -914,70 +1213,7 @@ function initAppBuilder() {
     };
   };
 
-  const quickPreviewHtml = ({ projectName, template, target, features, owner }) => {
-    const featureItems = features.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
-    return `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${escapeHtml(projectName)} Preview</title>
-    <style>
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: "Manrope", sans-serif;
-        color: #1d2233;
-        background: linear-gradient(145deg, #efe7dc, #ddd4c5);
-      }
-      main {
-        width: min(900px, 94vw);
-        margin: 1.4rem auto;
-        background: #fffaf2;
-        border: 1px solid rgba(35, 80, 213, 0.18);
-        border-radius: 14px;
-        padding: 1rem 1.1rem;
-      }
-      .badge {
-        display: inline-flex;
-        border-radius: 999px;
-        padding: 0.2rem 0.55rem;
-        font-size: 0.75rem;
-        font-weight: 700;
-        background: linear-gradient(130deg, #2350d5, #e72a6f);
-        color: white;
-      }
-      h1 { margin: 0.6rem 0 0.2rem; font-size: 1.5rem; }
-      p { margin: 0.35rem 0; color: #3a4561; }
-      ul {
-        margin: 0.7rem 0 0;
-        padding-left: 1.2rem;
-      }
-      li + li { margin-top: 0.25rem; }
-      .proof {
-        margin-top: 1rem;
-        border-radius: 10px;
-        border: 1px solid rgba(18, 95, 68, 0.35);
-        background: #f2faf6;
-        padding: 0.65rem 0.75rem;
-        color: #125f44;
-        font-weight: 700;
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <span class="badge">${escapeHtml(template)}</span>
-      <h1>${escapeHtml(projectName)}</h1>
-      <p><strong>Owner:</strong> ${escapeHtml(owner)}</p>
-      <p><strong>Launch target:</strong> ${escapeHtml(target)}</p>
-      <p><strong>AI generated first working draft:</strong></p>
-      <ul>${featureItems}</ul>
-      <div class="proof">Preview is live. Next, AI will ask only what is needed to launch.</div>
-    </main>
-  </body>
-</html>`;
-  };
+  const quickPreviewHtml = (payload) => buildAppPreviewHtml(payload);
 
   const buildTemplateDemoHtml = (templateName) => {
     const meta = templateMetaByName[templateName] || {
@@ -1340,6 +1576,36 @@ function initAppBuilder() {
   setSelectValue("#builderStack", savedDraft.stack);
   setSelectValue("#builderTarget", savedDraft.target);
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const templateFromUrl =
+    findTemplateById(urlParams.get("template_id")) ||
+    findTemplateByName(urlParams.get("template")) ||
+    null;
+  const urlFeatures = String(urlParams.get("features") || "")
+    .split("|")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (templateFromUrl) {
+    const templateMatch = templateInputs.find((input) => input.value === templateFromUrl.name);
+    if (templateMatch) templateMatch.checked = true;
+
+    if (urlFeatures.length > 0) {
+      featureInputs.forEach((input) => {
+        input.checked = urlFeatures.includes(input.value);
+      });
+    } else {
+      featureInputs.forEach((input) => {
+        input.checked = templateFromUrl.features.includes(input.value);
+      });
+    }
+
+    setInputValue("#builderProjectName", String(urlParams.get("project") || `${templateFromUrl.name} Build`));
+    setInputValue("#builderOwner", String(urlParams.get("owner") || "Founder"));
+    setSelectValue("#builderStack", String(urlParams.get("stack") || templateFromUrl.stack));
+    setSelectValue("#builderTarget", String(urlParams.get("target") || templateFromUrl.target));
+  }
+
   const savedFast = readFastPromptState();
   if (fastPromptInput instanceof HTMLTextAreaElement && typeof savedFast.prompt === "string") {
     fastPromptInput.value = savedFast.prompt;
@@ -1350,10 +1616,74 @@ function initAppBuilder() {
 
   updateTemplateUI();
   applyTemplateFilter("all");
-  setActiveStep(1);
+  setActiveStep(templateFromUrl ? 2 : 1);
   renderAiGuide();
   loadProviderHealth();
   renderFastIdleState();
+
+  if (templateFromUrl) {
+    showStatus(output, "success", "Template loaded", [
+      `Template: ${templateFromUrl.name}`,
+      "Selections were prefilled from template details.",
+      "Adjust anything you want, then generate your project.",
+    ]);
+  }
+
+  if (templateFromUrl && String(urlParams.get("autoclone") || "") === "1") {
+    const autoCloneKey = `islaapp_autoclone_${templateFromUrl.id}`;
+    const alreadyRan = sessionStorage.getItem(autoCloneKey) === "1";
+    if (!alreadyRan) {
+      sessionStorage.setItem(autoCloneKey, "1");
+      (async () => {
+        const selectedFeatures = featureInputs.filter((item) => item.checked).map((item) => item.value);
+        const projectName = valueOf("#builderProjectName");
+        const owner = valueOf("#builderOwner");
+        const stack = valueOf("#builderStack");
+        const target = valueOf("#builderTarget");
+        if (!projectName || !owner || !stack || !target || selectedFeatures.length === 0) {
+          showStatus(output, "error", "Clone blocked", [
+            "Template loaded, but required fields are incomplete.",
+            "Complete stack/target/features, then click Generate Brief + Create Project.",
+          ]);
+          return;
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Cloning...";
+        }
+
+        const scaffold = await createStarterProject({
+          projectName,
+          owner,
+          template: templateFromUrl.name,
+          features: selectedFeatures,
+          stack,
+          target,
+        });
+
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Generate Brief + Create Project";
+        }
+
+        if (scaffold.ok) {
+          showStatus(output, "success", "Template cloned", [
+            `Template: ${templateFromUrl.name}`,
+            `Project folder created: ${String(scaffold.projectDir || "")}`,
+            "Open Projects dashboard to review files and preview.",
+          ]);
+          setActiveStep(4);
+        } else {
+          showStatus(output, "error", "Template clone failed", [
+            `Template: ${templateFromUrl.name}`,
+            `Reason: ${String(scaffold.error || "Unknown error")}`,
+            "Run python3 dev_server.py and try clone again.",
+          ]);
+        }
+      })();
+    }
+  }
 
   if (saveDraftBtn) {
     saveDraftBtn.addEventListener("click", () => {
