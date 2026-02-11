@@ -421,21 +421,75 @@ function initMarketingNav() {
   });
 }
 
-function createUnsplashTemplateImage(photoId, altText) {
-  const normalizedId = String(photoId || "").startsWith("photo-") ? String(photoId || "") : `photo-${String(photoId || "")}`;
-  const base = `https://images.unsplash.com/${normalizedId}`;
-  const widths = [480, 768, 1080, 1400];
-  const buildSrcSet = (format) =>
-    widths
-      .map((width) => `${base}?auto=format&fit=crop&w=${width}&q=78&fm=${format} ${width}w`)
-      .join(", ");
+function createTemplateStudioImage(presetKey, altText) {
+  const palettes = {
+    saas: { from: "#1b4ddf", to: "#7a36de", accent: "#38d0ff" },
+    portal: { from: "#2b3f66", to: "#4f78b8", accent: "#85b6ff" },
+    market: { from: "#6633de", to: "#2e86ff", accent: "#37e0d8" },
+    store: { from: "#ff7a2f", to: "#d9348f", accent: "#ffa95e" },
+    booking: { from: "#0f8f84", to: "#3289e1", accent: "#6ce0c9" },
+    helpdesk: { from: "#33415f", to: "#576d96", accent: "#9fb7e1" },
+    community: { from: "#f02f6f", to: "#6438e0", accent: "#ff95bd" },
+    membership: { from: "#e85a2e", to: "#f0b13d", accent: "#ffe17e" },
+    crm: { from: "#233656", to: "#4666a7", accent: "#7ca8ff" },
+    hr: { from: "#0b8f80", to: "#46c1b8", accent: "#9ce6d7" },
+    realestate: { from: "#2e4768", to: "#6f9cc8", accent: "#b7d7ff" },
+    restaurant: { from: "#8a2f1d", to: "#e46b2d", accent: "#ffc06c" },
+  };
 
+  const palette = palettes[String(presetKey || "").toLowerCase()] || palettes.saas;
+  const safeAlt = String(altText || "").trim() || "Template visual preview";
+
+  const svg = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="${safeAlt}">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="${palette.from}"/>
+      <stop offset="100%" stop-color="${palette.to}"/>
+    </linearGradient>
+    <linearGradient id="cardGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="${palette.accent}" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <circle cx="1330" cy="190" r="220" fill="${palette.accent}" opacity="0.26"/>
+  <circle cx="250" cy="860" r="280" fill="#ffffff" opacity="0.09"/>
+  <rect x="118" y="95" width="1364" height="810" rx="34" fill="#ffffff" fill-opacity="0.9"/>
+  <rect x="170" y="145" width="1260" height="70" rx="18" fill="#eff3ff"/>
+  <rect x="200" y="168" width="290" height="24" rx="12" fill="${palette.from}" fill-opacity="0.18"/>
+  <rect x="1120" y="166" width="120" height="28" rx="14" fill="${palette.to}" fill-opacity="0.3"/>
+  <rect x="1260" y="166" width="140" height="28" rx="14" fill="${palette.accent}" fill-opacity="0.35"/>
+  <rect x="170" y="250" width="410" height="610" rx="24" fill="#f7f9ff"/>
+  <rect x="620" y="250" width="810" height="290" rx="24" fill="#f8faff"/>
+  <rect x="620" y="570" width="380" height="290" rx="24" fill="#f8fbff"/>
+  <rect x="1020" y="570" width="410" height="290" rx="24" fill="#f8fbff"/>
+  <rect x="210" y="300" width="330" height="26" rx="13" fill="${palette.from}" fill-opacity="0.16"/>
+  <rect x="210" y="340" width="220" height="18" rx="9" fill="${palette.to}" fill-opacity="0.12"/>
+  <rect x="210" y="385" width="330" height="150" rx="16" fill="url(#cardGlow)"/>
+  <rect x="210" y="565" width="150" height="120" rx="16" fill="${palette.from}" fill-opacity="0.12"/>
+  <rect x="390" y="565" width="150" height="120" rx="16" fill="${palette.to}" fill-opacity="0.12"/>
+  <rect x="210" y="710" width="330" height="120" rx="16" fill="${palette.accent}" fill-opacity="0.16"/>
+  <rect x="660" y="300" width="300" height="22" rx="11" fill="${palette.from}" fill-opacity="0.15"/>
+  <rect x="660" y="338" width="200" height="16" rx="8" fill="${palette.to}" fill-opacity="0.12"/>
+  <rect x="660" y="380" width="730" height="120" rx="16" fill="url(#cardGlow)"/>
+  <path d="M700 468 C790 370, 950 470, 1050 395 C1120 340, 1210 360, 1330 420" fill="none" stroke="${palette.from}" stroke-width="14" stroke-linecap="round" stroke-opacity="0.68"/>
+  <circle cx="1330" cy="420" r="14" fill="${palette.accent}"/>
+  <rect x="660" y="620" width="300" height="22" rx="11" fill="${palette.from}" fill-opacity="0.15"/>
+  <rect x="660" y="656" width="240" height="16" rx="8" fill="${palette.to}" fill-opacity="0.12"/>
+  <rect x="660" y="700" width="300" height="120" rx="16" fill="${palette.from}" fill-opacity="0.12"/>
+  <rect x="1060" y="620" width="300" height="22" rx="11" fill="${palette.to}" fill-opacity="0.15"/>
+  <rect x="1060" y="656" width="230" height="16" rx="8" fill="${palette.from}" fill-opacity="0.12"/>
+  <rect x="1060" y="700" width="300" height="120" rx="16" fill="${palette.to}" fill-opacity="0.12"/>
+</svg>`;
+
+  const uri = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
   return {
-    alt: String(altText || "").trim(),
-    avifSrcSet: buildSrcSet("avif"),
-    webpSrcSet: buildSrcSet("webp"),
-    jpgSrcSet: buildSrcSet("jpg"),
-    fallbackSrc: `${base}?auto=format&fit=crop&w=1080&q=80&fm=jpg`,
+    alt: safeAlt,
+    avifSrcSet: "",
+    webpSrcSet: "",
+    jpgSrcSet: "",
+    fallbackSrc: uri,
   };
 }
 
@@ -453,11 +507,11 @@ function renderTemplateImagePicture(template, options) {
 
   return `
     <picture class="${escapeAttribute(className)}">
-      <source type="image/avif" srcset="${escapeAttribute(String(image.avifSrcSet || ""))}" sizes="${escapeAttribute(sizes)}" />
-      <source type="image/webp" srcset="${escapeAttribute(String(image.webpSrcSet || ""))}" sizes="${escapeAttribute(sizes)}" />
+      ${image.avifSrcSet ? `<source type="image/avif" srcset="${escapeAttribute(String(image.avifSrcSet || ""))}" sizes="${escapeAttribute(sizes)}" />` : ""}
+      ${image.webpSrcSet ? `<source type="image/webp" srcset="${escapeAttribute(String(image.webpSrcSet || ""))}" sizes="${escapeAttribute(sizes)}" />` : ""}
       <img
         src="${escapeAttribute(String(image.fallbackSrc || ""))}"
-        srcset="${escapeAttribute(String(image.jpgSrcSet || ""))}"
+        ${image.jpgSrcSet ? `srcset="${escapeAttribute(String(image.jpgSrcSet || ""))}"` : ""}
         sizes="${escapeAttribute(sizes)}"
         alt="${escapeAttribute(alt)}"
         loading="${eager ? "eager" : "lazy"}"
@@ -476,7 +530,7 @@ function getTemplateCatalog() {
       category: "business",
       status: "Featured",
       thumbClass: "template-thumb-saas",
-      image: createUnsplashTemplateImage("1460925895917-afdab827c52f", "SaaS analytics dashboard on laptop"),
+      image: createTemplateStudioImage("saas", "SaaS analytics dashboard visual"),
       shortDescription: "Admin, analytics, subscriptions.",
       longDescription: "Best for analytics products, admin dashboards, and subscription-ready SaaS launches.",
       stack: "React + Supabase",
@@ -492,7 +546,7 @@ function getTemplateCatalog() {
       category: "business",
       status: "Customizable",
       thumbClass: "template-thumb-portal",
-      image: createUnsplashTemplateImage("1517245386807-bb43f82c33c4", "Team collaboration meeting in office"),
+      image: createTemplateStudioImage("portal", "Client portal workspace visual"),
       shortDescription: "Projects, files, progress timeline.",
       longDescription: "Best for agencies and service teams managing client projects and shared files.",
       stack: "React + Supabase",
@@ -508,7 +562,7 @@ function getTemplateCatalog() {
       category: "commerce",
       status: "Featured",
       thumbClass: "template-thumb-market",
-      image: createUnsplashTemplateImage("1556740749-887f6717d7e4", "Online marketplace shopping workflow"),
+      image: createTemplateStudioImage("market", "Marketplace app visual"),
       shortDescription: "Listings, checkout, seller profiles.",
       longDescription: "Best for multi-vendor catalogs where customers browse listings and checkout online.",
       stack: "Next.js + PostgreSQL",
@@ -524,7 +578,7 @@ function getTemplateCatalog() {
       category: "commerce",
       status: "Popular",
       thumbClass: "template-thumb-store",
-      image: createUnsplashTemplateImage("1472851294608-062f824d29cc", "Ecommerce storefront with products on display"),
+      image: createTemplateStudioImage("store", "Ecommerce storefront visual"),
       shortDescription: "Products, cart, customer accounts.",
       longDescription: "Best for direct-to-consumer stores with inventory, cart, and order workflows.",
       stack: "Next.js + PostgreSQL",
@@ -540,7 +594,7 @@ function getTemplateCatalog() {
       category: "service",
       status: "Fast launch",
       thumbClass: "template-thumb-booking",
-      image: createUnsplashTemplateImage("1515378791036-0648a3ef77b2", "Booking and scheduling calendar on desktop"),
+      image: createTemplateStudioImage("booking", "Booking platform visual"),
       shortDescription: "Calendar, availability, reminders.",
       longDescription: "Best for appointment-based businesses that need scheduling and reminders.",
       stack: "React + Supabase",
@@ -556,7 +610,7 @@ function getTemplateCatalog() {
       category: "service",
       status: "Customizable",
       thumbClass: "template-thumb-helpdesk",
-      image: createUnsplashTemplateImage("1522071820081-009f0129c71c", "Customer support and helpdesk team at work"),
+      image: createTemplateStudioImage("helpdesk", "Support helpdesk visual"),
       shortDescription: "Ticket queues and SLA workflow.",
       longDescription: "Best for support teams handling tickets, priorities, and service SLAs.",
       stack: "Node API + React Frontend",
@@ -572,7 +626,7 @@ function getTemplateCatalog() {
       category: "community",
       status: "Popular",
       thumbClass: "template-thumb-community",
-      image: createUnsplashTemplateImage("1529156069898-49953e39b3ac", "Community members collaborating together"),
+      image: createTemplateStudioImage("community", "Community platform visual"),
       shortDescription: "Feeds, groups, moderation.",
       longDescription: "Best for groups, memberships, and moderated social discussion spaces.",
       stack: "React + Supabase",
@@ -588,7 +642,7 @@ function getTemplateCatalog() {
       category: "community",
       status: "Featured",
       thumbClass: "template-thumb-membership",
-      image: createUnsplashTemplateImage("1498050108023-c5249f4df085", "Creator workspace with content tools"),
+      image: createTemplateStudioImage("membership", "Creator membership hub visual"),
       shortDescription: "Paid content and member access.",
       longDescription: "Best for creators selling premium content and gated member access.",
       stack: "React + Supabase",
@@ -604,7 +658,7 @@ function getTemplateCatalog() {
       category: "business",
       status: "Enterprise ready",
       thumbClass: "template-thumb-crm",
-      image: createUnsplashTemplateImage("1454165804606-c3d57bc86b40", "CRM sales dashboard and business workspace"),
+      image: createTemplateStudioImage("crm", "CRM workspace visual"),
       shortDescription: "Leads, deals, team pipeline.",
       longDescription: "Best for pipeline management, lead tracking, and sales follow-up operations.",
       stack: "Node API + React Frontend",
@@ -620,7 +674,7 @@ function getTemplateCatalog() {
       category: "business",
       status: "Enterprise ready",
       thumbClass: "template-thumb-hr",
-      image: createUnsplashTemplateImage("1450101499163-c8848c66ca85", "Recruiting and interview process workspace"),
+      image: createTemplateStudioImage("hr", "HR recruiting portal visual"),
       shortDescription: "Candidates, stages, interviews.",
       longDescription: "Best for hiring teams managing candidates, stages, and interview processes.",
       stack: "Node API + React Frontend",
@@ -636,7 +690,7 @@ function getTemplateCatalog() {
       category: "service",
       status: "Customizable",
       thumbClass: "template-thumb-realestate",
-      image: createUnsplashTemplateImage("1560518883-ce09059eeffa", "Modern house exterior for real estate listing"),
+      image: createTemplateStudioImage("realestate", "Real estate listings visual"),
       shortDescription: "Properties, tours, lead capture.",
       longDescription: "Best for brokers and agencies showcasing properties and capturing buyer leads.",
       stack: "React + Supabase",
@@ -652,7 +706,7 @@ function getTemplateCatalog() {
       category: "service",
       status: "Fast launch",
       thumbClass: "template-thumb-restaurant",
-      image: createUnsplashTemplateImage("1414235077428-338989a2e8c0", "Restaurant meal ordering and menu preview"),
+      image: createTemplateStudioImage("restaurant", "Restaurant ordering visual"),
       shortDescription: "Menu, orders, kitchen queue.",
       longDescription: "Best for restaurants and food operators taking digital orders and tracking kitchen status.",
       stack: "React + Supabase",
@@ -695,60 +749,209 @@ function buildAppPreviewHtml({ projectName, template, target, features, owner })
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${escapeHtml(projectName)} Preview</title>
     <style>
+      :root { color-scheme: light; }
       * { box-sizing: border-box; }
       body {
         margin: 0;
-        font-family: "Manrope", sans-serif;
-        color: #1d2233;
-        background: linear-gradient(145deg, #efe7dc, #ddd4c5);
+        font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #1f2942;
+        background:
+          radial-gradient(circle at 85% 10%, rgba(244, 106, 186, 0.24), rgba(244, 106, 186, 0) 44%),
+          radial-gradient(circle at 12% 86%, rgba(74, 125, 255, 0.2), rgba(74, 125, 255, 0) 42%),
+          linear-gradient(148deg, #f6f8ff, #eef2ff 48%, #f8f3ff);
       }
-      main {
-        width: min(900px, 94vw);
-        margin: 1.4rem auto;
-        background: #fffaf2;
-        border: 1px solid rgba(35, 80, 213, 0.18);
-        border-radius: 14px;
-        padding: 1rem 1.1rem;
+      .wrap {
+        width: min(1040px, 95vw);
+        margin: 1.2rem auto;
       }
-      .badge {
-        display: inline-flex;
-        border-radius: 999px;
-        padding: 0.2rem 0.55rem;
-        font-size: 0.75rem;
-        font-weight: 700;
-        background: linear-gradient(130deg, #2350d5, #e72a6f);
+      .shell {
+        border: 1px solid rgba(50, 86, 199, 0.2);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 14px 40px rgba(38, 58, 115, 0.12);
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.7rem 0.9rem;
+        background: linear-gradient(130deg, #1f4bdb, #7637de 55%, #ef2d72);
         color: white;
       }
-      h1 { margin: 0.6rem 0 0.2rem; font-size: 1.5rem; }
-      p { margin: 0.35rem 0; color: #3a4561; }
-      ul {
-        margin: 0.7rem 0 0;
-        padding-left: 1.2rem;
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
       }
-      li + li { margin-top: 0.25rem; }
+      .dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 999px;
+        background: #fff;
+      }
+      .actions {
+        display: inline-flex;
+        gap: 0.35rem;
+      }
+      .actions i {
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.75);
+        display: inline-block;
+      }
+      .body {
+        display: grid;
+        grid-template-columns: 230px 1fr;
+        min-height: 520px;
+      }
+      .sidebar {
+        background: #f8faff;
+        border-right: 1px solid rgba(50, 86, 199, 0.14);
+        padding: 0.95rem 0.75rem;
+      }
+      .chip {
+        display: inline-flex;
+        border-radius: 999px;
+        padding: 0.24rem 0.55rem;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: white;
+        background: linear-gradient(120deg, #1f4bdb, #e72a6f);
+      }
+      .menu {
+        margin: 0.9rem 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 0.45rem;
+      }
+      .menu li {
+        border: 1px solid rgba(44, 72, 164, 0.14);
+        border-radius: 0.6rem;
+        padding: 0.46rem 0.52rem;
+        font-size: 0.78rem;
+        color: #324465;
+        background: #fff;
+      }
+      .main {
+        padding: 0.95rem;
+        display: grid;
+        gap: 0.8rem;
+        grid-template-rows: auto auto 1fr auto;
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.2rem;
+        line-height: 1.28;
+        color: #1e2a46;
+      }
+      .meta {
+        margin: 0.35rem 0 0;
+        color: #415274;
+        font-size: 0.86rem;
+      }
+      .hero {
+        border: 1px solid rgba(57, 86, 179, 0.18);
+        border-radius: 0.85rem;
+        padding: 0.72rem 0.8rem;
+        background: linear-gradient(125deg, #f8fbff, #fef8ff);
+      }
+      .widgets {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .card {
+        border: 1px solid rgba(50, 86, 199, 0.14);
+        border-radius: 0.8rem;
+        background: #fff;
+        padding: 0.7rem;
+      }
+      .card strong {
+        color: #21345c;
+        font-size: 0.86rem;
+      }
+      ul {
+        margin: 0.5rem 0 0;
+        padding-left: 1.05rem;
+      }
+      li {
+        color: #41506d;
+        font-size: 0.8rem;
+      }
+      li + li { margin-top: 0.23rem; }
       .proof {
-        margin-top: 1rem;
-        border-radius: 10px;
-        border: 1px solid rgba(18, 95, 68, 0.35);
-        background: #f2faf6;
-        padding: 0.65rem 0.75rem;
-        color: #125f44;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(16, 121, 90, 0.3);
+        background: #ecfbf5;
+        color: #17634c;
+        padding: 0.58rem 0.68rem;
+        font-size: 0.8rem;
         font-weight: 700;
+      }
+      @media (max-width: 820px) {
+        .body { grid-template-columns: 1fr; }
+        .sidebar { border-right: none; border-bottom: 1px solid rgba(50, 86, 199, 0.14); }
+        .widgets { grid-template-columns: 1fr; }
       }
     </style>
   </head>
   <body>
-    <main>
-      <span class="badge">${escapeHtml(template)}</span>
-      <h1>${escapeHtml(projectName)}</h1>
-      <p><strong>Owner:</strong> ${escapeHtml(owner)}</p>
-      <p><strong>Launch target:</strong> ${escapeHtml(target)}</p>
-      <p><strong>AI generated first working draft:</strong></p>
-      <ul>${featureItems}</ul>
-      <div class="proof">Preview is live. Next, AI will ask only what is needed to launch.</div>
-    </main>
+    <div class="wrap">
+      <section class="shell">
+        <header class="topbar">
+          <span class="logo"><i class="dot"></i> islaAPP Live Prototype</span>
+          <span class="actions"><i></i><i></i><i></i></span>
+        </header>
+        <div class="body">
+          <aside class="sidebar">
+            <span class="chip">${escapeHtml(template)}</span>
+            <ul class="menu">
+              <li>Overview</li>
+              <li>Customers</li>
+              <li>Automation</li>
+              <li>Billing</li>
+              <li>Settings</li>
+            </ul>
+          </aside>
+          <main class="main">
+            <article class="hero">
+              <h1>${escapeHtml(projectName)}</h1>
+              <p class="meta"><strong>Owner:</strong> ${escapeHtml(owner)} • <strong>Target:</strong> ${escapeHtml(target)}</p>
+            </article>
+            <section class="widgets">
+              <article class="card">
+                <strong>AI-generated first version includes</strong>
+                <ul>${featureItems}</ul>
+              </article>
+              <article class="card">
+                <strong>Launch guidance</strong>
+                <ul>
+                  <li>Add domain and hosting only when needed</li>
+                  <li>Enable database as features expand</li>
+                  <li>Publish after test flow passes</li>
+                </ul>
+              </article>
+            </section>
+            <div class="proof">Prototype is working. Next, AI asks for only the required launch services.</div>
+          </main>
+        </div>
+      </section>
+    </div>
   </body>
 </html>`;
+}
+
+function toHtmlDataUrl(htmlDocument) {
+  return `data:text/html;charset=UTF-8,${encodeURIComponent(String(htmlDocument || ""))}`;
 }
 
 function initTemplatesPage() {
@@ -912,7 +1115,15 @@ function initTemplateViewPage() {
   const openDemo = () => {
     if (!(modal instanceof HTMLElement) || !(modalFrame instanceof HTMLIFrameElement)) return;
     modalFrame.srcdoc = "";
-    modalFrame.src = liveHref;
+    modalFrame.src = toHtmlDataUrl(
+      buildAppPreviewHtml({
+        projectName: `${selected.name} Demo`,
+        template: selected.name,
+        target: selected.target,
+        features: selected.features,
+        owner: "islaAPP",
+      })
+    );
     if (modalTitle instanceof HTMLElement) modalTitle.textContent = `${selected.name} Demo`;
     modal.classList.remove("hidden");
     document.body.classList.add("modal-open");
@@ -1012,13 +1223,16 @@ function initTemplateLivePage() {
   if (cloneButton instanceof HTMLAnchorElement) cloneButton.href = buildBuilderUrl(true);
 
   if (frame instanceof HTMLIFrameElement) {
-    frame.srcdoc = buildAppPreviewHtml({
-      projectName: `${selected.name} Live`,
-      template: selected.name,
-      target: selected.target,
-      features: selected.features,
-      owner: "islaAPP",
-    });
+    frame.srcdoc = "";
+    frame.src = toHtmlDataUrl(
+      buildAppPreviewHtml({
+        projectName: `${selected.name} Live`,
+        template: selected.name,
+        target: selected.target,
+        features: selected.features,
+        owner: "islaAPP",
+      })
+    );
   }
 }
 
@@ -2162,15 +2376,11 @@ function initAppBuilder() {
     const selectedTemplate = String(templateName || "").trim();
     if (!selectedTemplate) return;
     if (!(templateDemoModal instanceof HTMLElement) || !(templateDemoFrame instanceof HTMLIFrameElement)) return;
-    const templateMeta = templateByName[selectedTemplate] || null;
-    const templateHref = templateMeta
-      ? resolveTemplateLiveUrl(templateMeta.liveUrl || `template-live.html?template=${templateMeta.id}`)
-      : "";
     if (templateDemoTitle instanceof HTMLElement) {
       templateDemoTitle.textContent = `${selectedTemplate} Demo`;
     }
     templateDemoFrame.srcdoc = "";
-    templateDemoFrame.src = templateHref || "about:blank";
+    templateDemoFrame.src = toHtmlDataUrl(buildTemplateDemoHtml(selectedTemplate));
     templateDemoModal.classList.remove("hidden");
     document.body.classList.add("modal-open");
   };
