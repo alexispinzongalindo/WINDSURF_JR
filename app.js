@@ -493,6 +493,37 @@ function createTemplateStudioImage(presetKey, altText) {
   };
 }
 
+function createTemplatePhotoImage(presetKey, altText) {
+  const photoSources = {
+    saas: "https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    portal: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    market: "https://images.pexels.com/photos/3850220/pexels-photo-3850220.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    store: "https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    booking: "https://images.pexels.com/photos/669615/pexels-photo-669615.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    helpdesk: "https://images.pexels.com/photos/8867436/pexels-photo-8867436.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    community: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    membership: "https://images.pexels.com/photos/4050315/pexels-photo-4050315.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    crm: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    hr: "https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    realestate: "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    restaurant: "https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=1600",
+  };
+
+  const key = String(presetKey || "").toLowerCase();
+  const photo = String(photoSources[key] || "").trim();
+  const fallback = createTemplateStudioImage(key, altText);
+  if (!photo) return fallback;
+
+  return {
+    alt: String(altText || "").trim() || fallback.alt,
+    avifSrcSet: "",
+    webpSrcSet: "",
+    jpgSrcSet: "",
+    fallbackSrc: photo,
+    backupSrc: String(fallback.fallbackSrc || ""),
+  };
+}
+
 function renderTemplateImagePicture(template, options) {
   const config = options && typeof options === "object" ? options : {};
   const className = String(config.className || "template-media-picture");
@@ -511,12 +542,14 @@ function renderTemplateImagePicture(template, options) {
       ${image.webpSrcSet ? `<source type="image/webp" srcset="${escapeAttribute(String(image.webpSrcSet || ""))}" sizes="${escapeAttribute(sizes)}" />` : ""}
       <img
         src="${escapeAttribute(String(image.fallbackSrc || ""))}"
+        ${image.backupSrc ? `data-fallback-src="${escapeAttribute(String(image.backupSrc || ""))}"` : ""}
         ${image.jpgSrcSet ? `srcset="${escapeAttribute(String(image.jpgSrcSet || ""))}"` : ""}
         sizes="${escapeAttribute(sizes)}"
         alt="${escapeAttribute(alt)}"
         loading="${eager ? "eager" : "lazy"}"
         decoding="async"
         fetchpriority="${eager ? "high" : "low"}"
+        onerror="if(this.dataset.fallbackSrc && this.src !== this.dataset.fallbackSrc){ this.src = this.dataset.fallbackSrc; }"
       />
     </picture>
   `;
@@ -530,7 +563,7 @@ function getTemplateCatalog() {
       category: "business",
       status: "Featured",
       thumbClass: "template-thumb-saas",
-      image: createTemplateStudioImage("saas", "SaaS analytics dashboard visual"),
+      image: createTemplatePhotoImage("saas", "SaaS analytics dashboard visual"),
       shortDescription: "Admin, analytics, subscriptions.",
       longDescription: "Best for analytics products, admin dashboards, and subscription-ready SaaS launches.",
       stack: "React + Supabase",
@@ -546,7 +579,7 @@ function getTemplateCatalog() {
       category: "business",
       status: "Customizable",
       thumbClass: "template-thumb-portal",
-      image: createTemplateStudioImage("portal", "Client portal workspace visual"),
+      image: createTemplatePhotoImage("portal", "Client portal workspace visual"),
       shortDescription: "Projects, files, progress timeline.",
       longDescription: "Best for agencies and service teams managing client projects and shared files.",
       stack: "React + Supabase",
@@ -562,7 +595,7 @@ function getTemplateCatalog() {
       category: "commerce",
       status: "Featured",
       thumbClass: "template-thumb-market",
-      image: createTemplateStudioImage("market", "Marketplace app visual"),
+      image: createTemplatePhotoImage("market", "Marketplace app visual"),
       shortDescription: "Listings, checkout, seller profiles.",
       longDescription: "Best for multi-vendor catalogs where customers browse listings and checkout online.",
       stack: "Next.js + PostgreSQL",
@@ -578,7 +611,7 @@ function getTemplateCatalog() {
       category: "commerce",
       status: "Popular",
       thumbClass: "template-thumb-store",
-      image: createTemplateStudioImage("store", "Ecommerce storefront visual"),
+      image: createTemplatePhotoImage("store", "Ecommerce storefront visual"),
       shortDescription: "Products, cart, customer accounts.",
       longDescription: "Best for direct-to-consumer stores with inventory, cart, and order workflows.",
       stack: "Next.js + PostgreSQL",
@@ -594,7 +627,7 @@ function getTemplateCatalog() {
       category: "service",
       status: "Fast launch",
       thumbClass: "template-thumb-booking",
-      image: createTemplateStudioImage("booking", "Booking platform visual"),
+      image: createTemplatePhotoImage("booking", "Booking platform visual"),
       shortDescription: "Calendar, availability, reminders.",
       longDescription: "Best for appointment-based businesses that need scheduling and reminders.",
       stack: "React + Supabase",
@@ -610,7 +643,7 @@ function getTemplateCatalog() {
       category: "service",
       status: "Customizable",
       thumbClass: "template-thumb-helpdesk",
-      image: createTemplateStudioImage("helpdesk", "Support helpdesk visual"),
+      image: createTemplatePhotoImage("helpdesk", "Support helpdesk visual"),
       shortDescription: "Ticket queues and SLA workflow.",
       longDescription: "Best for support teams handling tickets, priorities, and service SLAs.",
       stack: "Node API + React Frontend",
@@ -626,7 +659,7 @@ function getTemplateCatalog() {
       category: "community",
       status: "Popular",
       thumbClass: "template-thumb-community",
-      image: createTemplateStudioImage("community", "Community platform visual"),
+      image: createTemplatePhotoImage("community", "Community platform visual"),
       shortDescription: "Feeds, groups, moderation.",
       longDescription: "Best for groups, memberships, and moderated social discussion spaces.",
       stack: "React + Supabase",
@@ -642,7 +675,7 @@ function getTemplateCatalog() {
       category: "community",
       status: "Featured",
       thumbClass: "template-thumb-membership",
-      image: createTemplateStudioImage("membership", "Creator membership hub visual"),
+      image: createTemplatePhotoImage("membership", "Creator membership hub visual"),
       shortDescription: "Paid content and member access.",
       longDescription: "Best for creators selling premium content and gated member access.",
       stack: "React + Supabase",
@@ -658,7 +691,7 @@ function getTemplateCatalog() {
       category: "business",
       status: "Enterprise ready",
       thumbClass: "template-thumb-crm",
-      image: createTemplateStudioImage("crm", "CRM workspace visual"),
+      image: createTemplatePhotoImage("crm", "CRM workspace visual"),
       shortDescription: "Leads, deals, team pipeline.",
       longDescription: "Best for pipeline management, lead tracking, and sales follow-up operations.",
       stack: "Node API + React Frontend",
@@ -674,7 +707,7 @@ function getTemplateCatalog() {
       category: "business",
       status: "Enterprise ready",
       thumbClass: "template-thumb-hr",
-      image: createTemplateStudioImage("hr", "HR recruiting portal visual"),
+      image: createTemplatePhotoImage("hr", "HR recruiting portal visual"),
       shortDescription: "Candidates, stages, interviews.",
       longDescription: "Best for hiring teams managing candidates, stages, and interview processes.",
       stack: "Node API + React Frontend",
@@ -690,7 +723,7 @@ function getTemplateCatalog() {
       category: "service",
       status: "Customizable",
       thumbClass: "template-thumb-realestate",
-      image: createTemplateStudioImage("realestate", "Real estate listings visual"),
+      image: createTemplatePhotoImage("realestate", "Real estate listings visual"),
       shortDescription: "Properties, tours, lead capture.",
       longDescription: "Best for brokers and agencies showcasing properties and capturing buyer leads.",
       stack: "React + Supabase",
@@ -706,7 +739,7 @@ function getTemplateCatalog() {
       category: "service",
       status: "Fast launch",
       thumbClass: "template-thumb-restaurant",
-      image: createTemplateStudioImage("restaurant", "Restaurant ordering visual"),
+      image: createTemplatePhotoImage("restaurant", "Restaurant ordering visual"),
       shortDescription: "Menu, orders, kitchen queue.",
       longDescription: "Best for restaurants and food operators taking digital orders and tracking kitchen status.",
       stack: "React + Supabase",
