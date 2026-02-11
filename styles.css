@@ -1424,6 +1424,7 @@ textarea:focus {
   border: 1px solid rgba(35, 80, 213, 0.18);
   border-radius: 0.8rem;
   background: white;
+  overflow: auto;
 }
 
 .template-grid {
@@ -1650,6 +1651,7 @@ textarea:focus {
   border: 1px solid rgba(35, 80, 213, 0.22);
   border-radius: 0.8rem;
   background: white;
+  overflow: auto;
 }
 
 .feature-picks {

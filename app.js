@@ -950,8 +950,73 @@ function buildAppPreviewHtml({ projectName, template, target, features, owner })
 </html>`;
 }
 
-function toHtmlDataUrl(htmlDocument) {
-  return `data:text/html;charset=UTF-8,${encodeURIComponent(String(htmlDocument || ""))}`;
+function buildAppPreviewEmbed({ projectName, template, target, features, owner }) {
+  const featureItems = (Array.isArray(features) ? features : [])
+    .map((item) => `<li style="margin-top:6px;">${escapeHtml(String(item || ""))}</li>`)
+    .join("");
+  return `
+    <section style="font-family:Manrope,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1f2942;background:linear-gradient(148deg,#f6f8ff,#eef2ff 48%,#f8f3ff);min-height:100%;padding:12px;">
+      <div style="border:1px solid rgba(50,86,199,.2);border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 14px 40px rgba(38,58,115,.12);max-width:1020px;margin:0 auto;">
+        <header style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.7rem .9rem;background:linear-gradient(130deg,#1f4bdb,#7637de 55%,#ef2d72);color:#fff;">
+          <span style="display:inline-flex;align-items:center;gap:.45rem;font-size:.82rem;font-weight:800;letter-spacing:.02em;"><i style="width:.55rem;height:.55rem;border-radius:999px;background:#fff;display:inline-block;"></i>islaAPP Live Prototype</span>
+          <span style="display:inline-flex;gap:.35rem;"><i style="width:.45rem;height:.45rem;border-radius:999px;background:rgba(255,255,255,.75);display:inline-block;"></i><i style="width:.45rem;height:.45rem;border-radius:999px;background:rgba(255,255,255,.75);display:inline-block;"></i><i style="width:.45rem;height:.45rem;border-radius:999px;background:rgba(255,255,255,.75);display:inline-block;"></i></span>
+        </header>
+        <div style="display:grid;grid-template-columns:220px 1fr;min-height:420px;">
+          <aside style="background:#f8faff;border-right:1px solid rgba(50,86,199,.14);padding:.95rem .75rem;">
+            <span style="display:inline-flex;border-radius:999px;padding:.24rem .55rem;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:linear-gradient(120deg,#1f4bdb,#e72a6f);">${escapeHtml(template)}</span>
+            <ul style="list-style:none;padding:0;margin:.9rem 0 0;display:grid;gap:.45rem;">
+              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">Overview</li>
+              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">Customers</li>
+              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">Automation</li>
+              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">Billing</li>
+              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">Settings</li>
+            </ul>
+          </aside>
+          <main style="padding:.95rem;display:grid;gap:.8rem;align-content:start;">
+            <article style="border:1px solid rgba(57,86,179,.18);border-radius:.85rem;padding:.72rem .8rem;background:linear-gradient(125deg,#f8fbff,#fef8ff);">
+              <h3 style="margin:0;font-size:1.16rem;line-height:1.28;color:#1e2a46;">${escapeHtml(projectName)}</h3>
+              <p style="margin:.35rem 0 0;color:#415274;font-size:.86rem;"><strong>Owner:</strong> ${escapeHtml(owner)} • <strong>Target:</strong> ${escapeHtml(target)}</p>
+            </article>
+            <section style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;">
+              <article style="border:1px solid rgba(50,86,199,.14);border-radius:.8rem;background:#fff;padding:.7rem;">
+                <strong style="color:#21345c;font-size:.86rem;">AI-generated first version includes</strong>
+                <ul style="margin:.5rem 0 0;padding-left:1.05rem;">${featureItems}</ul>
+              </article>
+              <article style="border:1px solid rgba(50,86,199,.14);border-radius:.8rem;background:#fff;padding:.7rem;">
+                <strong style="color:#21345c;font-size:.86rem;">Launch guidance</strong>
+                <ul style="margin:.5rem 0 0;padding-left:1.05rem;">
+                  <li style="margin-top:6px;">Add domain and hosting only when needed</li>
+                  <li style="margin-top:6px;">Enable database as features expand</li>
+                  <li style="margin-top:6px;">Publish after test flow passes</li>
+                </ul>
+              </article>
+            </section>
+            <div style="border-radius:.75rem;border:1px solid rgba(16,121,90,.3);background:#ecfbf5;color:#17634c;padding:.58rem .68rem;font-size:.8rem;font-weight:700;">Prototype is working. Next, AI asks for only the required launch services.</div>
+          </main>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderPreviewSurface(surfaceNode, previewPayload) {
+  if (!(surfaceNode instanceof HTMLElement)) return;
+  if (surfaceNode instanceof HTMLIFrameElement) {
+    surfaceNode.src = "about:blank";
+    surfaceNode.srcdoc = buildAppPreviewHtml(previewPayload);
+    return;
+  }
+  surfaceNode.innerHTML = buildAppPreviewEmbed(previewPayload);
+}
+
+function clearPreviewSurface(surfaceNode) {
+  if (!(surfaceNode instanceof HTMLElement)) return;
+  if (surfaceNode instanceof HTMLIFrameElement) {
+    surfaceNode.src = "about:blank";
+    surfaceNode.srcdoc = "";
+    return;
+  }
+  surfaceNode.innerHTML = "";
 }
 
 function initTemplatesPage() {
@@ -1113,27 +1178,23 @@ function initTemplateViewPage() {
   }
 
   const openDemo = () => {
-    if (!(modal instanceof HTMLElement) || !(modalFrame instanceof HTMLIFrameElement)) return;
-    modalFrame.srcdoc = "";
-    modalFrame.src = toHtmlDataUrl(
-      buildAppPreviewHtml({
-        projectName: `${selected.name} Demo`,
-        template: selected.name,
-        target: selected.target,
-        features: selected.features,
-        owner: "islaAPP",
-      })
-    );
+    if (!(modal instanceof HTMLElement) || !(modalFrame instanceof HTMLElement)) return;
+    renderPreviewSurface(modalFrame, {
+      projectName: `${selected.name} Demo`,
+      template: selected.name,
+      target: selected.target,
+      features: selected.features,
+      owner: "islaAPP",
+    });
     if (modalTitle instanceof HTMLElement) modalTitle.textContent = `${selected.name} Demo`;
     modal.classList.remove("hidden");
     document.body.classList.add("modal-open");
   };
 
   const closeDemo = () => {
-    if (!(modal instanceof HTMLElement) || !(modalFrame instanceof HTMLIFrameElement)) return;
+    if (!(modal instanceof HTMLElement) || !(modalFrame instanceof HTMLElement)) return;
     modal.classList.add("hidden");
-    modalFrame.src = "about:blank";
-    modalFrame.srcdoc = "";
+    clearPreviewSurface(modalFrame);
     document.body.classList.remove("modal-open");
   };
 
@@ -1222,17 +1283,14 @@ function initTemplateLivePage() {
   if (useButton instanceof HTMLAnchorElement) useButton.href = buildBuilderUrl(false);
   if (cloneButton instanceof HTMLAnchorElement) cloneButton.href = buildBuilderUrl(true);
 
-  if (frame instanceof HTMLIFrameElement) {
-    frame.srcdoc = "";
-    frame.src = toHtmlDataUrl(
-      buildAppPreviewHtml({
-        projectName: `${selected.name} Live`,
-        template: selected.name,
-        target: selected.target,
-        features: selected.features,
-        owner: "islaAPP",
-      })
-    );
+  if (frame instanceof HTMLElement) {
+    renderPreviewSurface(frame, {
+      projectName: `${selected.name} Live`,
+      template: selected.name,
+      target: selected.target,
+      features: selected.features,
+      owner: "islaAPP",
+    });
   }
 }
 
@@ -2107,7 +2165,7 @@ function initAppBuilder() {
     }
   };
 
-  const quickPreviewHtml = (payload) => buildAppPreviewHtml(payload);
+  const quickPreviewHtml = (payload) => buildAppPreviewEmbed(payload);
 
   const buildTemplateDemoHtml = (templateName) => {
     const meta = templateMetaByName[templateName] || {
@@ -2365,22 +2423,20 @@ function initAppBuilder() {
   };
 
   const closeTemplateDemo = () => {
-    if (!(templateDemoModal instanceof HTMLElement) || !(templateDemoFrame instanceof HTMLIFrameElement)) return;
+    if (!(templateDemoModal instanceof HTMLElement) || !(templateDemoFrame instanceof HTMLElement)) return;
     templateDemoModal.classList.add("hidden");
-    templateDemoFrame.src = "about:blank";
-    templateDemoFrame.srcdoc = "";
+    clearPreviewSurface(templateDemoFrame);
     document.body.classList.remove("modal-open");
   };
 
   const openTemplateDemo = (templateName) => {
     const selectedTemplate = String(templateName || "").trim();
     if (!selectedTemplate) return;
-    if (!(templateDemoModal instanceof HTMLElement) || !(templateDemoFrame instanceof HTMLIFrameElement)) return;
+    if (!(templateDemoModal instanceof HTMLElement) || !(templateDemoFrame instanceof HTMLElement)) return;
     if (templateDemoTitle instanceof HTMLElement) {
       templateDemoTitle.textContent = `${selectedTemplate} Demo`;
     }
-    templateDemoFrame.srcdoc = "";
-    templateDemoFrame.src = toHtmlDataUrl(buildTemplateDemoHtml(selectedTemplate));
+    templateDemoFrame.innerHTML = buildTemplateDemoHtml(selectedTemplate);
     templateDemoModal.classList.remove("hidden");
     document.body.classList.add("modal-open");
   };
