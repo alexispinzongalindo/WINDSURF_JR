@@ -1635,6 +1635,80 @@ function initAppBuilder() {
     };
   };
 
+  const requestAiBuildDraft = async ({ prompt, owner }) => {
+    const localFallback = inferDraftFromPrompt(prompt, owner);
+    const templateOptions = templateInputs.map((input) => String(input.value || ""));
+    const featureOptions = featureInputs.map((input) => String(input.value || ""));
+    const stackOptions = Array.from(form.querySelectorAll("#builderStack option")).map((option) => String(option.value || ""));
+    const targetOptions = Array.from(form.querySelectorAll("#builderTarget option")).map((option) => String(option.value || ""));
+
+    const normalizeChoice = (value, options, fallbackValue) => {
+      const text = String(value || "").trim();
+      if (!text) return fallbackValue;
+      const match = options.find((option) => option.toLowerCase() === text.toLowerCase());
+      return match || fallbackValue;
+    };
+
+    const normalizeFeatures = (values, fallbackValues) => {
+      if (!Array.isArray(values)) return fallbackValues;
+      const selected = [];
+      values.forEach((item) => {
+        const text = String(item || "").trim();
+        if (!text) return;
+        const match = featureOptions.find((option) => option.toLowerCase() === text.toLowerCase());
+        if (match && !selected.includes(match)) selected.push(match);
+      });
+      return selected.length > 0 ? selected : fallbackValues;
+    };
+
+    try {
+      const response = await fetch("/api/ai-build", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, owner }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok || !payload.ok || !payload.draft || typeof payload.draft !== "object") {
+        return {
+          ok: false,
+          draft: localFallback,
+          source: "local",
+          note: String(payload && payload.error ? payload.error : "AI endpoint unavailable. Using local fallback."),
+        };
+      }
+
+      const rawDraft = payload.draft;
+      const mergedDraft = {
+        ...localFallback,
+        projectName: String(rawDraft.projectName || "").trim() || localFallback.projectName,
+        owner: String(rawDraft.owner || "").trim() || localFallback.owner,
+        template: normalizeChoice(rawDraft.template, templateOptions, localFallback.template),
+        features: normalizeFeatures(rawDraft.features, localFallback.features),
+        stack: normalizeChoice(rawDraft.stack, stackOptions, localFallback.stack),
+        target: normalizeChoice(rawDraft.target, targetOptions, localFallback.target),
+        summary: String(rawDraft.summary || "").trim(),
+        nextSteps: Array.isArray(rawDraft.nextSteps)
+          ? rawDraft.nextSteps.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 4)
+          : [],
+      };
+
+      return {
+        ok: true,
+        draft: mergedDraft,
+        source: String(payload.source || "fallback"),
+        note: String(payload.note || "").trim(),
+      };
+    } catch (_error) {
+      return {
+        ok: false,
+        draft: localFallback,
+        source: "local",
+        note: "AI endpoint unavailable. Using local fallback.",
+      };
+    }
+  };
+
   const quickPreviewHtml = (payload) => buildAppPreviewHtml(payload);
 
   const buildTemplateDemoHtml = (templateName) => {
@@ -1711,6 +1785,12 @@ function initAppBuilder() {
     recommendations.push(
       `AI proved the first build. Next, save this app and continue in <a href="${escapeAttribute("services.html")}">Services</a> when ready.`
     );
+
+    if (Array.isArray(inferred.nextSteps) && inferred.nextSteps.length > 0) {
+      inferred.nextSteps.slice(0, 3).forEach((step) => {
+        recommendations.push(escapeHtml(String(step)));
+      });
+    }
 
     if (missing.length > 0) {
       recommendations.push(
@@ -2152,7 +2232,8 @@ function initAppBuilder() {
 
       try {
         await new Promise((resolve) => window.setTimeout(resolve, 850));
-        const inferred = inferDraftFromPrompt(prompt, ownerName);
+        const aiResult = await requestAiBuildDraft({ prompt, owner: ownerName });
+        const inferred = aiResult.draft;
         applyInferredDraftToWizard(inferred);
         saveDraft(false);
         renderGrowthRecommendations(inferred);
@@ -2172,6 +2253,13 @@ function initAppBuilder() {
               <li>Target: ${escapeHtml(inferred.target)}</li>
             </ul>
             <p>Preview is now shown on the right.</p>
+            ${
+              aiResult.source === "openai"
+                ? "<p><strong>AI mode:</strong> OpenAI planning is active.</p>"
+                : `<p><strong>AI mode:</strong> Local fallback plan${
+                    aiResult.note ? ` (${escapeHtml(aiResult.note)})` : ""
+                  }.</p>`
+            }
           `
         );
 
@@ -3705,6 +3793,8 @@ async function initProviderSetupPage() {
     SUPABASE_ORG_ID: "#setupSupabaseOrgId",
     SUPABASE_DB_PASS: "#setupSupabaseDbPass",
     NEON_API_KEY: "#setupNeonApiKey",
+    OPENAI_API_KEY: "#setupOpenaiApiKey",
+    OPENAI_MODEL: "#setupOpenaiModel",
     DEFAULT_REGION: "#setupDefaultRegion",
     DEFAULT_DB_PASSWORD: "#setupDefaultDbPassword",
   };
@@ -3720,6 +3810,8 @@ async function initProviderSetupPage() {
     SUPABASE_ORG_ID: "Supabase Org ID",
     SUPABASE_DB_PASS: "Supabase DB Password",
     NEON_API_KEY: "Neon API Key",
+    OPENAI_API_KEY: "OpenAI API Key",
+    OPENAI_MODEL: "OpenAI Model",
     DEFAULT_REGION: "Default Region",
     DEFAULT_DB_PASSWORD: "Default DB Password",
   };

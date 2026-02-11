@@ -71,7 +71,43 @@ ALLOWED_PROVIDER_CONFIG_KEYS = {
     "NEON_PG_VERSION",
     "DEFAULT_REGION",
     "DEFAULT_DB_PASSWORD",
+    "OPENAI_API_KEY",
+    "OPENAI_MODEL",
 }
+AI_TEMPLATE_OPTIONS = [
+    "SaaS Dashboard",
+    "Client Portal",
+    "Marketplace",
+    "E-commerce Storefront",
+    "Booking Platform",
+    "Support Helpdesk",
+    "Community Platform",
+    "Creator Membership Hub",
+    "CRM Workspace",
+    "HR Recruiting Portal",
+    "Real Estate Listings",
+    "Restaurant Ordering",
+]
+AI_FEATURE_OPTIONS = [
+    "User authentication",
+    "Team collaboration",
+    "Payments and billing",
+    "Notifications",
+    "Admin dashboard",
+    "Analytics reports",
+]
+AI_STACK_OPTIONS = [
+    "HTML/CSS/JS",
+    "React + Supabase",
+    "Next.js + PostgreSQL",
+    "Node API + React Frontend",
+]
+AI_TARGET_OPTIONS = [
+    "Beta in 2 weeks",
+    "MVP in 1 month",
+    "Production in 2 months",
+    "Scale in 3+ months",
+]
 
 
 class AppHandler(SimpleHTTPRequestHandler):
@@ -166,6 +202,9 @@ class AppHandler(SimpleHTTPRequestHandler):
         if route == "/api/create-project":
             self.handle_create_project()
             return
+        if route == "/api/ai-build":
+            self.handle_ai_build()
+            return
         if route == "/api/service-request":
             self.handle_service_request()
             return
@@ -193,6 +232,21 @@ class AppHandler(SimpleHTTPRequestHandler):
 
         summary = create_project_scaffold(body)
         self.send_json(HTTPStatus.OK, summary)
+
+    def handle_ai_build(self) -> None:
+        body, error = self.read_json_body()
+        if error:
+            self.send_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": error})
+            return
+
+        prompt = str(body.get("prompt", "")).strip() if isinstance(body, dict) else ""
+        owner = str(body.get("owner", "")).strip() if isinstance(body, dict) else ""
+        if len(prompt) < 6:
+            self.send_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Prompt must be at least 6 characters."})
+            return
+
+        result = generate_ai_build_plan(prompt=prompt, owner=owner)
+        self.send_json(HTTPStatus.OK, result)
 
     def handle_service_request(self) -> None:
         body, error = self.read_json_body()
@@ -1006,6 +1060,12 @@ def provider_health() -> list[dict[str, Any]]:
             "configured": bool(env("NEON_API_KEY")),
             "required": ["NEON_API_KEY"],
         },
+        {
+            "id": "openai",
+            "configured": bool(env("OPENAI_API_KEY")),
+            "required": ["OPENAI_API_KEY"],
+            "note": "Optional. Enables smarter AI planning in App Builder.",
+        },
     ]
 
 
@@ -1169,6 +1229,220 @@ def env(name: str, default: str = "") -> str:
     if provider_value:
         return str(provider_value).strip()
     return str(default).strip()
+
+
+def suggest_project_name_from_prompt(prompt: str) -> str:
+    cleaned = re.sub(r"[^a-zA-Z0-9\s]", " ", prompt).strip()
+    if not cleaned:
+        return "My AI App"
+    stop_words = {"build", "create", "make", "app", "website", "site", "for", "with", "the", "a", "an", "to", "and"}
+    words = [word for word in cleaned.split() if len(word) > 2 and word.lower() not in stop_words][:3]
+    if not words:
+        return "My AI App"
+    title = " ".join(word.capitalize() for word in words)
+    return title if title.endswith("App") else f"{title} App"
+
+
+def infer_ai_draft_fallback(prompt: str, owner: str) -> dict[str, Any]:
+    normalized = prompt.strip().lower()
+    template = "SaaS Dashboard"
+    if re.search(r"(marketplace|ecommerce|store|shop|listing|booking)", normalized):
+        template = "Marketplace"
+    elif re.search(r"(community|social|forum|member|group)", normalized):
+        template = "Community Platform"
+    elif re.search(r"(client|portal|agency|crm|internal|helpdesk|service desk)", normalized):
+        template = "Client Portal"
+
+    features: list[str] = []
+    matcher_map = {
+        "User authentication": r"(login|log in|sign in|auth|account|register|user profile)",
+        "Team collaboration": r"(team|workspace|member|collaborat|organization|multi user)",
+        "Payments and billing": r"(payment|billing|checkout|subscription|invoice|charge)",
+        "Notifications": r"(notification|email|sms|alert|reminder|message)",
+        "Admin dashboard": r"(admin|dashboard|manage|management|backoffice|back office)",
+        "Analytics reports": r"(analytics|report|kpi|insight|metrics|tracking)",
+    }
+    for feature, pattern in matcher_map.items():
+        if re.search(pattern, normalized):
+            features.append(feature)
+    if not features:
+        features = ["Admin dashboard", "User authentication"]
+
+    stack = "React + Supabase"
+    if re.search(r"(landing page|portfolio|simple site|static|html css js)", normalized):
+        stack = "HTML/CSS/JS"
+    elif re.search(r"(next\.?js|nextjs)", normalized):
+        stack = "Next.js + PostgreSQL"
+    elif re.search(r"(node api|express|backend api|rest api)", normalized):
+        stack = "Node API + React Frontend"
+
+    target = "MVP in 1 month"
+    if re.search(r"(today|asap|quick|fast|two weeks|2 weeks|prototype|beta)", normalized):
+        target = "Beta in 2 weeks"
+    elif re.search(r"(production|launch|public)", normalized):
+        target = "Production in 2 months"
+    elif re.search(r"(scale|scaling|enterprise|global|high traffic)", normalized):
+        target = "Scale in 3+ months"
+
+    return {
+        "projectName": suggest_project_name_from_prompt(prompt),
+        "template": template,
+        "features": features,
+        "stack": stack,
+        "target": target,
+        "owner": owner.strip() or "Founder",
+        "summary": "AI produced a first draft and selected a launch path.",
+        "nextSteps": [
+            "Preview the generated draft and confirm the core workflow.",
+            "Connect required providers only after feature proof.",
+            "Generate scaffold and continue through services provisioning.",
+        ],
+    }
+
+
+def normalize_ai_choice(value: Any, allowed: list[str], fallback: str) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return fallback
+    for option in allowed:
+        if text.lower() == option.lower():
+            return option
+    return fallback
+
+
+def normalize_ai_features(value: Any, fallback: list[str]) -> list[str]:
+    if not isinstance(value, list):
+        return fallback
+    result: list[str] = []
+    for item in value:
+        text = str(item or "").strip()
+        if not text:
+            continue
+        for option in AI_FEATURE_OPTIONS:
+            if text.lower() == option.lower() and option not in result:
+                result.append(option)
+                break
+    return result or fallback
+
+
+def normalize_ai_draft_payload(raw: dict[str, Any], prompt: str, owner: str) -> dict[str, Any]:
+    fallback = infer_ai_draft_fallback(prompt, owner)
+    return {
+        "projectName": str(raw.get("projectName", "")).strip() or fallback["projectName"],
+        "template": normalize_ai_choice(raw.get("template"), AI_TEMPLATE_OPTIONS, fallback["template"]),
+        "features": normalize_ai_features(raw.get("features"), list(fallback["features"])),
+        "stack": normalize_ai_choice(raw.get("stack"), AI_STACK_OPTIONS, fallback["stack"]),
+        "target": normalize_ai_choice(raw.get("target"), AI_TARGET_OPTIONS, fallback["target"]),
+        "owner": str(raw.get("owner", "")).strip() or fallback["owner"],
+        "summary": str(raw.get("summary", "")).strip() or fallback["summary"],
+        "nextSteps": raw.get("nextSteps", fallback["nextSteps"]) if isinstance(raw.get("nextSteps"), list) else fallback["nextSteps"],
+    }
+
+
+def extract_openai_content(payload: Any) -> str:
+    if not isinstance(payload, dict):
+        return ""
+    choices = payload.get("choices", [])
+    if not isinstance(choices, list) or not choices:
+        return ""
+    first_choice = choices[0]
+    if not isinstance(first_choice, dict):
+        return ""
+    message = first_choice.get("message", {})
+    if not isinstance(message, dict):
+        return ""
+    content = message.get("content", "")
+    return str(content).strip()
+
+
+def generate_ai_build_plan(*, prompt: str, owner: str) -> dict[str, Any]:
+    fallback = infer_ai_draft_fallback(prompt, owner)
+    api_key = env("OPENAI_API_KEY")
+    model = env("OPENAI_MODEL", "gpt-4o-mini")
+
+    if not api_key:
+        return {
+            "ok": True,
+            "source": "fallback",
+            "draft": fallback,
+            "note": "OPENAI_API_KEY is not configured. Using local AI fallback.",
+        }
+
+    system_prompt = (
+        "You are an app planning assistant for islaAPP. Return only valid JSON with keys: "
+        "projectName, template, features, stack, target, owner, summary, nextSteps. "
+        "Use only these templates: "
+        + ", ".join(AI_TEMPLATE_OPTIONS)
+        + ". Use only these features: "
+        + ", ".join(AI_FEATURE_OPTIONS)
+        + ". Use only these stacks: "
+        + ", ".join(AI_STACK_OPTIONS)
+        + ". Use only these targets: "
+        + ", ".join(AI_TARGET_OPTIONS)
+        + ". nextSteps must be an array of 3 short strings."
+    )
+
+    user_prompt = (
+        f"Client request: {prompt}\n"
+        f"Owner: {owner or 'Founder'}\n"
+        "Generate best first draft plan."
+    )
+
+    response = provider_api_request(
+        method="POST",
+        url="https://api.openai.com/v1/chat/completions",
+        headers={"Authorization": f"Bearer {api_key}"},
+        payload={
+            "model": model,
+            "temperature": 0.2,
+            "response_format": {"type": "json_object"},
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+        },
+        timeout=40,
+    )
+
+    if not response.get("ok"):
+        error_payload = response.get("error", {})
+        error_text = str(error_payload)
+        return {
+            "ok": True,
+            "source": "fallback",
+            "draft": fallback,
+            "note": f"OpenAI request failed. Using fallback. Details: {error_text}",
+        }
+
+    content = extract_openai_content(response.get("data"))
+    if not content:
+        return {
+            "ok": True,
+            "source": "fallback",
+            "draft": fallback,
+            "note": "OpenAI returned empty content. Using fallback.",
+        }
+
+    try:
+        parsed = json.loads(content)
+    except json.JSONDecodeError:
+        return {
+            "ok": True,
+            "source": "fallback",
+            "draft": fallback,
+            "note": "OpenAI response was not valid JSON. Using fallback.",
+        }
+
+    if not isinstance(parsed, dict):
+        return {
+            "ok": True,
+            "source": "fallback",
+            "draft": fallback,
+            "note": "OpenAI response shape invalid. Using fallback.",
+        }
+
+    draft = normalize_ai_draft_payload(parsed, prompt, owner)
+    return {"ok": True, "source": "openai", "draft": draft}
 
 
 def provision_service_request(request_id: str, options: dict[str, str]) -> dict[str, Any]:

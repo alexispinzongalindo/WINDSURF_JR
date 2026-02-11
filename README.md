@@ -75,6 +75,7 @@ Set these before starting the server for real provisioning:
 - Dynadot: `DYNADOT_API_KEY`
 - Supabase: `SUPABASE_ACCESS_TOKEN`, `SUPABASE_ORG_ID`, `SUPABASE_DB_PASS`
 - Neon: `NEON_API_KEY`
+- OpenAI (optional for smarter App Builder planning): `OPENAI_API_KEY`
 
 You can also set these from the in-app Setup Wizard (`/setup.html`) after signing in on Ops.
 
@@ -84,6 +85,7 @@ Optional:
 - `RENDER_SERVICE_BRANCH`, `RENDER_SERVICE_REGION`, `RENDER_BUILD_COMMAND`, `RENDER_START_COMMAND`
 - `RENDER_OWNER_ID` (optional if auto-discovery works), `RENDER_OWNER_SLUG` or `RENDER_OWNER_NAME` to choose owner
 - `SUPABASE_REGION`, `NEON_REGION_ID`, `NEON_PG_VERSION`, `NEON_ORG_ID`
+- `OPENAI_MODEL` (default: `gpt-4o-mini`)
 - `DYNADOT_AUTO_REGISTER=true` to place real registration orders (default is availability-check only)
 - `DYNADOT_REGISTRATION_YEARS=1` registration term when auto-register is enabled
 
