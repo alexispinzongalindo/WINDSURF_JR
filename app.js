@@ -2011,6 +2011,8 @@ function initAppBuilder() {
   const templateDemoFrame = document.querySelector("#templateDemoFrame");
   const templateDemoTitle = document.querySelector("#templateDemoTitle");
   const templateDemoClose = document.querySelector("#templateDemoClose");
+  const advancedSections = Array.from(document.querySelectorAll(".builder-advanced"));
+  const advancedToggles = Array.from(document.querySelectorAll("[data-builder-advanced-toggle]"));
 
   if (!form || !output) return;
 
@@ -2035,6 +2037,22 @@ function initAppBuilder() {
       },
     ])
   );
+
+  let advancedVisible = false;
+  const setAdvancedVisible = (visible) => {
+    advancedVisible = Boolean(visible);
+    advancedSections.forEach((section) => {
+      if (section instanceof HTMLElement) {
+        section.classList.toggle("hidden", !advancedVisible);
+      }
+    });
+    advancedToggles.forEach((button) => {
+      if (button instanceof HTMLElement) {
+        button.setAttribute("aria-expanded", advancedVisible ? "true" : "false");
+        button.textContent = advancedVisible ? "Hide Advanced Options" : "Show Advanced Options";
+      }
+    });
+  };
 
   const readFastPromptState = () => parseChecklistState(localStorage.getItem(fastStorageKey));
 
@@ -2644,6 +2662,22 @@ function initAppBuilder() {
   renderAiGuide();
   loadProviderHealth();
   renderFastIdleState();
+  setAdvancedVisible(Boolean(templateFromUrl));
+
+  if (advancedToggles.length > 0) {
+    advancedToggles.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      button.addEventListener("click", () => {
+        setAdvancedVisible(!advancedVisible);
+        if (advancedVisible) {
+          const firstSection = advancedSections.find((node) => node instanceof HTMLElement);
+          if (firstSection instanceof HTMLElement) {
+            firstSection.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }
+      });
+    });
+  }
 
   if (templateFromUrl) {
     showStatus(output, "success", "Template loaded", [
@@ -2737,7 +2771,7 @@ function initAppBuilder() {
       const prompt = valueOf("#builderFastPrompt");
       const ownerName = valueOf("#builderFastOwner");
       if (!prompt) {
-        appendChatMessage("assistant", "Please type your app idea first, then click Send To AI.");
+        appendChatMessage("assistant", "Please type your app idea first, then click Build My First Version.");
         return;
       }
 
@@ -2757,6 +2791,7 @@ function initAppBuilder() {
         const aiResult = await requestAiBuildDraft({ prompt, owner: ownerName });
         const inferred = aiResult.draft;
         applyInferredDraftToWizard(inferred);
+        setAdvancedVisible(true);
         saveDraft(false);
         renderGrowthRecommendations(inferred);
 
@@ -2829,7 +2864,7 @@ function initAppBuilder() {
         setThinking(false);
         if (fastSubmitButton instanceof HTMLButtonElement) {
           fastSubmitButton.disabled = false;
-          fastSubmitButton.textContent = "Send To AI";
+          fastSubmitButton.textContent = "Build My First Version";
         }
       }
     });
@@ -3060,7 +3095,7 @@ function renderBuilderAiGuide({ rootSummary, rootRequirements, rootActions, temp
   if (!template && !stack && !target && items.length === 0) {
     rootSummary.innerHTML = "<h3>Waiting For Your Selections</h3><ul><li>Select stack and features to get live launch requirements.</li></ul>";
     rootRequirements.innerHTML = "<li>Pick features and stack details to generate service requirements.</li>";
-    rootActions.innerHTML = "<li>Complete your selections in the Build Wizard above.</li>";
+    rootActions.innerHTML = "<li>Use Advanced Builder only when you need manual controls.</li>";
     return;
   }
 

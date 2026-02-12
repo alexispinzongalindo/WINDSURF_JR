@@ -1361,6 +1361,10 @@ textarea:focus {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.builder-simple-actions {
+  margin-top: 0.95rem;
+}
+
 .ai-chat-shell {
   display: grid;
   gap: 0.7rem;

@@ -59,17 +59,12 @@
       </a>
       <nav>
         <a href="index.html">Home</a>
-        <a href="guide.html">AI Guide</a>
-        <a href="onboarding.html">Onboarding</a>
         <a class="is-current" href="app-builder.html">App Builder</a>
-        <a href="projects.html">Projects</a>
-        <a href="services.html">Services</a>
-        <a href="ops.html">Ops</a>
-        <a href="setup.html">Setup Wizard</a>
+        <a href="templates.html">Templates</a>
         <a href="pricing.html">Pricing</a>
         <a href="support.html">Support</a>
       </nav>
-      <a class="btn btn-small" href="pricing.html">Choose Plan</a>
+      <a class="btn btn-small" href="support.html">Need Help</a>
     </header>
 
     <main>
@@ -78,6 +73,11 @@
         <p class="lead">
           Start by describing your idea. islaAPP AI will build the first version, prove the concept, then guide next steps to launch.
         </p>
+        <ol class="steps">
+          <li><strong>Step 1:</strong> Describe your app.</li>
+          <li><strong>Step 2:</strong> Click <strong>Build My First Version</strong>.</li>
+          <li><strong>Step 3:</strong> Review preview, then open advanced options only if needed.</li>
+        </ol>
       </section>
 
       <section class="section-panel">
@@ -110,8 +110,8 @@
                 <input id="builderFastOwner" type="text" placeholder="Owner name" />
               </label>
               <div class="actions">
-                <button class="btn btn-primary" type="submit" id="builderFastSubmit">Send To AI</button>
-                <button class="btn btn-ghost" type="button" id="builderFastClear">Clear Chat</button>
+                <button class="btn btn-primary" type="submit" id="builderFastSubmit">Build My First Version</button>
+                <button class="btn btn-ghost" type="button" id="builderFastClear">Reset</button>
               </div>
             </form>
           </article>
@@ -126,16 +126,20 @@
             </article>
           </article>
         </div>
+        <div class="actions builder-simple-actions">
+          <button class="btn btn-ghost" type="button" data-builder-advanced-toggle aria-expanded="false">Show Advanced Options</button>
+          <a class="btn btn-ghost" href="templates.html">Browse Templates</a>
+        </div>
+        <p class="muted">Most users only need the AI box above. Advanced options are optional.</p>
       </section>
 
-      <section class="section-panel">
+      <section class="section-panel builder-advanced hidden">
         <h2>
           <svg class="mini-icon" viewBox="0 0 96 96" aria-hidden="true"><use href="#orbit-icon"></use></svg>
-          Build Wizard
+          Advanced Builder (Optional)
         </h2>
         <p class="muted">
-          For automatic project folder creation, run <code>python3 dev_server.py</code> from this workspace before using
-          <strong>Generate Brief + Create Project</strong>.
+          Use this only if you want manual control of templates, features, and stack settings.
         </p>
         <div class="wizard-steps">
           <button type="button" class="step-pill is-active" data-step-target="1">1. Template Gallery</button>
@@ -308,7 +312,7 @@
         </form>
       </section>
 
-      <section class="section-panel">
+      <section class="section-panel builder-advanced hidden">
         <h2>
           <svg class="mini-icon" viewBox="0 0 96 96" aria-hidden="true"><use href="#orbit-icon"></use></svg>
           AI Launch Guide
@@ -330,15 +334,15 @@
             </ul>
           </article>
           <article class="status-box">
-            <h3>Next Actions</h3>
-            <ol class="steps" id="builderNextActions">
-              <li>Complete your selections in the Build Wizard above.</li>
-            </ol>
-          </article>
-        </div>
+              <h3>Next Actions</h3>
+              <ol class="steps" id="builderNextActions">
+                <li>Open Advanced Builder only if you need manual control.</li>
+              </ol>
+            </article>
+          </div>
       </section>
 
-      <section class="section-panel">
+      <section class="section-panel builder-advanced hidden">
         <h2>
           <svg class="mini-icon" viewBox="0 0 96 96" aria-hidden="true"><use href="#orbit-icon"></use></svg>
           Next Step
