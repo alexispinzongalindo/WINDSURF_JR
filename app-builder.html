@@ -120,6 +120,32 @@
             <strong data-i18n-en="Project Ready" data-i18n-es="Proyecto listo">Project Ready</strong>
           </article>
         </div>
+        <div class="builder-graphic-deck" aria-hidden="true">
+          <article class="graphic-card">
+            <div class="graphic-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="graphic-lines">
+              <span></span><span></span><span></span>
+            </div>
+          </article>
+          <article class="graphic-card">
+            <div class="graphic-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="graphic-lines">
+              <span></span><span></span><span></span>
+            </div>
+          </article>
+          <article class="graphic-card">
+            <div class="graphic-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="graphic-lines">
+              <span></span><span></span><span></span>
+            </div>
+          </article>
+        </div>
         <div class="fast-build-grid">
           <article class="status-box ai-chat-shell">
             <h3 data-i18n-en="Describe Your App" data-i18n-es="Describe tu app">Describe Your App</h3>
@@ -141,40 +167,69 @@
                   required
                 ></textarea>
               </label>
-              <div class="quick-example-row" id="builderFastExamples">
-                <button class="toggle-btn" type="button" data-fast-example="Build a booking app for barbers with login, calendar, reminders, and payments.">Barber Booking</button>
-                <button class="toggle-btn" type="button" data-fast-example="Build a client portal for an agency to share files, timelines, and approvals.">Client Portal</button>
-                <button class="toggle-btn" type="button" data-fast-example="Build an ecommerce storefront with products, checkout, and order tracking.">E-commerce Store</button>
-                <button class="toggle-btn" type="button" data-fast-example="Build a community platform with member profiles, posts, and moderation tools.">Community App</button>
+              <div class="quick-example-row prompt-card-grid" id="builderFastExamples">
+                <button class="toggle-btn prompt-card" type="button" data-fast-example="Build a booking app for barbers with login, calendar, reminders, and payments.">
+                  <span class="prompt-card-badge" aria-hidden="true">01</span>
+                  <strong>Barber Booking</strong>
+                </button>
+                <button class="toggle-btn prompt-card" type="button" data-fast-example="Build a client portal for an agency to share files, timelines, and approvals.">
+                  <span class="prompt-card-badge" aria-hidden="true">02</span>
+                  <strong>Client Portal</strong>
+                </button>
+                <button class="toggle-btn prompt-card" type="button" data-fast-example="Build an ecommerce storefront with products, checkout, and order tracking.">
+                  <span class="prompt-card-badge" aria-hidden="true">03</span>
+                  <strong>E-commerce Store</strong>
+                </button>
+                <button class="toggle-btn prompt-card" type="button" data-fast-example="Build a community platform with member profiles, posts, and moderation tools.">
+                  <span class="prompt-card-badge" aria-hidden="true">04</span>
+                  <strong>Community App</strong>
+                </button>
               </div>
-              <div class="builder-ai-tools">
-                <button class="btn btn-ghost btn-small" type="button" id="builderEnhancePrompt">Enhance Prompt</button>
-                <button class="btn btn-ghost btn-small" type="button" id="builderIdeaBurst">Generate Ideas</button>
-                <button class="btn btn-ghost btn-small" type="button" id="builderFeatureHint">Suggest Features</button>
-                <button class="btn btn-ghost btn-small" type="button" id="builderApplyCustomization">Apply Customization</button>
-              </div>
-              <label class="form-field form-field-full">
-                AI customization (optional)
-                <textarea
-                  id="builderAiCustomizeInput"
-                  rows="2"
-                  placeholder="Example: make the layout card-based, bilingual (EN/ES), and use Puerto Rico inspired colors."
-                ></textarea>
-              </label>
-              <label class="form-field">
-                Your name (optional)
-                <input id="builderFastOwner" type="text" placeholder="Owner name" data-i18n-placeholder-en="Owner name" data-i18n-placeholder-es="Nombre del responsable" />
-              </label>
               <div class="actions">
                 <button class="btn btn-primary" type="submit" id="builderFastSubmit" data-i18n-en="Build My First Draft" data-i18n-es="Crear mi primer borrador">Build My First Draft</button>
                 <button class="btn btn-ghost" type="button" id="builderFastClear" data-i18n-en="Clear" data-i18n-es="Limpiar">Clear</button>
+              </div>
+              <button class="btn btn-ghost builder-options-toggle" type="button" id="builderToggleExtras" aria-expanded="false">Show Optional Settings</button>
+              <div class="builder-extra-options hidden" id="builderExtraOptions">
+                <label class="form-field">
+                  Your name (optional)
+                  <input id="builderFastOwner" type="text" placeholder="Owner name" data-i18n-placeholder-en="Owner name" data-i18n-placeholder-es="Nombre del responsable" />
+                </label>
+                <label class="form-field form-field-full">
+                  AI customization (optional)
+                  <textarea
+                    id="builderAiCustomizeInput"
+                    rows="2"
+                    placeholder="Example: make the layout card-based, bilingual (EN/ES), and use Puerto Rico inspired colors."
+                  ></textarea>
+                </label>
+                <div class="builder-ai-tools">
+                  <button class="btn btn-ghost btn-small" type="button" id="builderEnhancePrompt">Enhance Prompt</button>
+                  <button class="btn btn-ghost btn-small" type="button" id="builderIdeaBurst">Generate Ideas</button>
+                  <button class="btn btn-ghost btn-small" type="button" id="builderFeatureHint">Suggest Features</button>
+                  <button class="btn btn-ghost btn-small" type="button" id="builderApplyCustomization">Apply Customization</button>
+                </div>
               </div>
             </form>
           </article>
           <article class="status-box">
             <h3 data-i18n-en="Live Preview" data-i18n-es="Vista previa en vivo">Live Preview</h3>
+            <div class="builder-preview-art" id="builderPreviewArt" aria-hidden="true">
+              <article class="preview-art-card">
+                <div class="preview-art-header"></div>
+                <div class="preview-art-body">
+                  <span></span><span></span><span></span>
+                </div>
+              </article>
+              <article class="preview-art-card">
+                <div class="preview-art-header"></div>
+                <div class="preview-art-body">
+                  <span></span><span></span><span></span>
+                </div>
+              </article>
+            </div>
             <iframe id="builderFastPreviewFrame" class="fast-preview-frame" title="AI app preview"></iframe>
-            <article class="status-box builder-ai-live" id="builderAiLivePanel" aria-live="polite">
+            <article class="status-box builder-ai-live hidden" id="builderAiLivePanel" aria-live="polite">
               <h3>AI Live Intelligence</h3>
               <div class="ai-live-grid">
                 <article class="ai-live-card">

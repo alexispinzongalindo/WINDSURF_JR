@@ -2590,12 +2590,15 @@ function initAppBuilder() {
   const fastOwnerInput = document.querySelector("#builderFastOwner");
   const fastSubmitButton = document.querySelector("#builderFastSubmit");
   const fastClearButton = document.querySelector("#builderFastClear");
+  const extrasToggleButton = document.querySelector("#builderToggleExtras");
+  const extrasPanel = document.querySelector("#builderExtraOptions");
   const chatLog = document.querySelector("#builderChatLog");
   const chatThinking = document.querySelector("#builderChatThinking");
   const quickGuideText = document.querySelector("#builderQuickGuideText");
   const quickGuideList = document.querySelector("#builderQuickGuideList");
   const quickGuidePrimary = document.querySelector("#builderQuickGuidePrimary");
   const fastPreviewFrame = document.querySelector("#builderFastPreviewFrame");
+  const previewArt = document.querySelector("#builderPreviewArt");
   const growthPanel = document.querySelector("#builderGrowthPanel");
   const growthList = document.querySelector("#builderGrowthList");
   const templateFilterButtons = Array.from(document.querySelectorAll("[data-template-filter]"));
@@ -2614,6 +2617,7 @@ function initAppBuilder() {
   const aiStackHint = document.querySelector("#builderAiStackHint");
   const aiConfidence = document.querySelector("#builderAiConfidence");
   const aiSignals = document.querySelector("#builderAiSignals");
+  const aiLivePanel = document.querySelector("#builderAiLivePanel");
   const templateDetail = document.querySelector("#builderTemplateDetail");
   const templatePreview = document.querySelector("#builderTemplatePreview");
   const templateTitle = document.querySelector("#builderTemplateTitle");
@@ -2641,6 +2645,7 @@ function initAppBuilder() {
   const featureInputs = Array.from(form.querySelectorAll("input[name='appFeature']"));
   const storageKey = "islaapp_builder_draft";
   const fastStorageKey = "islaapp_builder_fast_prompt";
+  const extrasStorageKey = "islaapp_builder_extras_open";
   const latestProjectKey = "islaapp_last_created_project";
   let providerHealthById = {};
   let activeTemplateName = "";
@@ -2648,6 +2653,8 @@ function initAppBuilder() {
   let quickGuideAction = "step1";
   let activeStep = 1;
   let latestAiDraft = null;
+  let extrasVisible = false;
+  let hasBuiltDraft = false;
   const templateCatalog = getTemplateCatalog();
   const manualStepGuide = [
     {
@@ -2746,6 +2753,36 @@ function initAppBuilder() {
           : getCopy("Show Manual Options", "Mostrar opciones manuales");
       }
     });
+  };
+
+  const setAiPanelVisibility = () => {
+    if (!(aiLivePanel instanceof HTMLElement)) return;
+    aiLivePanel.classList.toggle("hidden", !(extrasVisible || hasBuiltDraft));
+  };
+
+  const setPreviewArtVisible = (visible) => {
+    if (!(previewArt instanceof HTMLElement)) return;
+    previewArt.classList.toggle("hidden", !Boolean(visible));
+  };
+
+  const setHasBuiltDraft = (value) => {
+    hasBuiltDraft = Boolean(value);
+    setAiPanelVisibility();
+  };
+
+  const setExtrasVisible = (visible, persist = true) => {
+    extrasVisible = Boolean(visible);
+    if (extrasPanel instanceof HTMLElement) {
+      extrasPanel.classList.toggle("hidden", !extrasVisible);
+    }
+    if (extrasToggleButton instanceof HTMLButtonElement) {
+      extrasToggleButton.setAttribute("aria-expanded", extrasVisible ? "true" : "false");
+      extrasToggleButton.textContent = extrasVisible ? "Hide Optional Settings" : "Show Optional Settings";
+    }
+    setAiPanelVisibility();
+    if (persist) {
+      localStorage.setItem(extrasStorageKey, extrasVisible ? "1" : "0");
+    }
   };
 
   const readFastPromptState = () => parseChecklistState(localStorage.getItem(fastStorageKey));
@@ -3154,6 +3191,7 @@ function initAppBuilder() {
       fastPreviewFrame.src = "about:blank";
       fastPreviewFrame.srcdoc = "";
     }
+    setPreviewArtVisible(true);
     setThinking(false);
     if (growthPanel) growthPanel.classList.add("hidden");
     const currentPrompt = fastPromptInput instanceof HTMLTextAreaElement ? String(fastPromptInput.value || "") : "";
@@ -3799,6 +3837,17 @@ function initAppBuilder() {
     aiCustomizeInput.value = savedFast.customization;
   }
 
+  const savedDraftExists =
+    Boolean(typeof savedDraft.projectName === "string" && savedDraft.projectName.trim()) ||
+    Boolean(typeof savedDraft.stack === "string" && savedDraft.stack.trim()) ||
+    Boolean(typeof savedDraft.target === "string" && savedDraft.target.trim()) ||
+    (Array.isArray(savedDraft.features) && savedDraft.features.length > 0);
+  setHasBuiltDraft(savedDraftExists);
+
+  const savedExtrasPreference = localStorage.getItem(extrasStorageKey) === "1";
+  const shouldShowExtrasOnLoad = Boolean(savedExtrasPreference || templateFromUrl || savedDraftExists);
+  setExtrasVisible(shouldShowExtrasOnLoad, false);
+
   updateTemplateUI();
   hydrateBuilderTemplateThumbs();
   activeTemplateFilter = "all";
@@ -3832,6 +3881,15 @@ function initAppBuilder() {
           }
         }
       });
+    });
+  }
+
+  if (extrasToggleButton instanceof HTMLButtonElement) {
+    extrasToggleButton.addEventListener("click", () => {
+      setExtrasVisible(!extrasVisible);
+      if (extrasVisible && extrasPanel instanceof HTMLElement) {
+        extrasPanel.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
     });
   }
 
@@ -3883,6 +3941,8 @@ function initAppBuilder() {
 
         if (scaffold.ok) {
           rememberLatestProject(scaffold.projectDir, "template-autoclone");
+          setHasBuiltDraft(true);
+          setExtrasVisible(true);
           showStatus(output, "success", "Template cloned", [
             `Template: ${templateFromUrl.name}`,
             `Project folder created: ${String(scaffold.projectDir || "")}`,
@@ -4124,13 +4184,16 @@ function initAppBuilder() {
           latestAiDraft = customized;
           applyInferredDraftToWizard(customized);
           setAdvancedVisible(true);
+          setHasBuiltDraft(true);
+          setExtrasVisible(true);
           saveDraft(false);
           renderGrowthRecommendations(customized);
 
-          if (fastPreviewFrame instanceof HTMLIFrameElement) {
-            fastPreviewFrame.src = "about:blank";
-            fastPreviewFrame.srcdoc = quickPreviewHtml(customized);
-          }
+        if (fastPreviewFrame instanceof HTMLIFrameElement) {
+          fastPreviewFrame.src = "about:blank";
+          fastPreviewFrame.srcdoc = quickPreviewHtml(customized);
+        }
+        setPreviewArtVisible(false);
 
           const changes = summarizeDraftChanges(beforeDraft, customized);
           appendChatMessageHtml(
@@ -4213,6 +4276,8 @@ function initAppBuilder() {
         latestAiDraft = inferred;
         applyInferredDraftToWizard(inferred);
         setAdvancedVisible(true);
+        setHasBuiltDraft(true);
+        setExtrasVisible(true);
         saveDraft(false);
         renderGrowthRecommendations(inferred);
         renderAiLiveSignals(`${prompt} ${instruction}`.trim(), inferred);
@@ -4221,6 +4286,7 @@ function initAppBuilder() {
           fastPreviewFrame.src = "about:blank";
           fastPreviewFrame.srcdoc = quickPreviewHtml(inferred);
         }
+        setPreviewArtVisible(false);
 
         appendChatMessageHtml(
           "assistant",
@@ -4258,6 +4324,9 @@ function initAppBuilder() {
           const previewUrl = inferPreviewUrlFromScaffold(scaffold, inferred.stack);
           if (previewUrl && fastPreviewFrame instanceof HTMLIFrameElement) {
             fastPreviewFrame.src = previewUrl;
+          }
+          if (previewUrl) {
+            setPreviewArtVisible(false);
           }
           const projectDir = escapeHtml(String(scaffold.projectDir || ""));
           const previewLink = previewUrl
@@ -4354,6 +4423,8 @@ function initAppBuilder() {
 
     if (scaffold.ok) {
       rememberLatestProject(scaffold.projectDir, "manual-submit");
+      setHasBuiltDraft(true);
+      setExtrasVisible(true);
       const successLines = briefLines.concat([
         `Project folder created: ${scaffold.projectDir}`,
         `Files: ${(scaffold.files || []).join(", ")}`,
