@@ -70,29 +70,49 @@
 
     <main>
       <section class="page-intro">
-        <h1>Templates (Optional)</h1>
-        <p class="lead">Use this page if you want a visual starter before building.</p>
-        <ol class="steps">
-          <li><strong>Step 1:</strong> Search or filter templates.</li>
-          <li><strong>Step 2:</strong> Open a template detail page.</li>
-          <li><strong>Step 3:</strong> Use the template in App Builder.</li>
-        </ol>
+        <h1 data-i18n-en="Templates (Optional)" data-i18n-es="Plantillas (opcional)">Templates (Optional)</h1>
+        <p class="lead" data-i18n-en="Use this page if you want a visual starter before building." data-i18n-es="Usa esta pagina si quieres un inicio visual antes de construir.">Use this page if you want a visual starter before building.</p>
+        <div class="visual-flow-grid">
+          <article class="visual-flow-card">
+            <span class="visual-flow-icon" aria-hidden="true">1</span>
+            <h3 data-i18n-en="Filter" data-i18n-es="Filtrar">Filter</h3>
+            <p data-i18n-en="Pick category and tag." data-i18n-es="Elige categoria y etiqueta.">Pick category and tag.</p>
+          </article>
+          <article class="visual-flow-card">
+            <span class="visual-flow-icon" aria-hidden="true">2</span>
+            <h3 data-i18n-en="Preview" data-i18n-es="Vista previa">Preview</h3>
+            <p data-i18n-en="Open template details." data-i18n-es="Abre detalles de plantilla.">Open template details.</p>
+          </article>
+          <article class="visual-flow-card">
+            <span class="visual-flow-icon" aria-hidden="true">3</span>
+            <h3 data-i18n-en="Use" data-i18n-es="Usar">Use</h3>
+            <p data-i18n-en="Launch in App Builder." data-i18n-es="Lanzar en App Builder.">Launch in App Builder.</p>
+          </article>
+        </div>
       </section>
 
       <section class="section-panel" id="templatesCatalog">
         <div class="form-grid">
           <label class="form-field">
-            Search templates
-            <input id="templatesSearch" type="text" placeholder="Search by name or description..." />
+            <span data-i18n-en="Search templates" data-i18n-es="Buscar plantillas">Search templates</span>
+            <input
+              id="templatesSearch"
+              type="text"
+              placeholder="Search by name or description..."
+              data-i18n-placeholder-en="Search by name, stack, tags, or use case..."
+              data-i18n-placeholder-es="Busca por nombre, stack, etiquetas o caso de uso..."
+            />
           </label>
         </div>
         <div class="template-filters">
-          <button class="toggle-btn is-active" type="button" data-catalog-filter="all">All</button>
-          <button class="toggle-btn" type="button" data-catalog-filter="business">Business</button>
-          <button class="toggle-btn" type="button" data-catalog-filter="commerce">Commerce</button>
-          <button class="toggle-btn" type="button" data-catalog-filter="community">Community</button>
-          <button class="toggle-btn" type="button" data-catalog-filter="service">Service</button>
+          <button class="toggle-btn is-active" type="button" data-catalog-filter="all" data-i18n-en="All" data-i18n-es="Todas">All</button>
+          <button class="toggle-btn" type="button" data-catalog-filter="business" data-i18n-en="Business" data-i18n-es="Negocios">Business</button>
+          <button class="toggle-btn" type="button" data-catalog-filter="commerce" data-i18n-en="Commerce" data-i18n-es="Comercio">Commerce</button>
+          <button class="toggle-btn" type="button" data-catalog-filter="community" data-i18n-en="Community" data-i18n-es="Comunidad">Community</button>
+          <button class="toggle-btn" type="button" data-catalog-filter="service" data-i18n-en="Service" data-i18n-es="Servicio">Service</button>
         </div>
+        <p class="muted" data-i18n-en="Popular tags" data-i18n-es="Etiquetas populares">Popular tags</p>
+        <div class="template-filters template-tag-filters" id="templatesTagFilters" aria-live="polite"></div>
         <p class="muted" id="templatesCatalogCount">Loading templates...</p>
         <div class="template-showcase-grid" id="templatesCatalogGrid"></div>
       </section>

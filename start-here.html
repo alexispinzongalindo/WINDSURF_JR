@@ -70,12 +70,24 @@
     <main id="startHereRoot">
       <section class="page-intro">
         <h1>Simple Start Guide</h1>
-        <p class="lead">If you are new, follow these 3 steps in order. This usually takes about 5 minutes.</p>
-        <ol class="steps">
-          <li><strong>Step 1:</strong> Describe your app idea in plain language.</li>
-          <li><strong>Step 2:</strong> Let AI generate your first draft.</li>
-          <li><strong>Step 3:</strong> Open Projects and review what was created.</li>
-        </ol>
+        <p class="lead">Visual 3-step flow. Minimal reading.</p>
+        <div class="visual-flow-grid">
+          <article class="visual-flow-card">
+            <span class="visual-flow-icon" aria-hidden="true">1</span>
+            <h3>Describe</h3>
+            <p>Type your app idea.</p>
+          </article>
+          <article class="visual-flow-card">
+            <span class="visual-flow-icon" aria-hidden="true">2</span>
+            <h3>Generate</h3>
+            <p>AI builds first draft.</p>
+          </article>
+          <article class="visual-flow-card">
+            <span class="visual-flow-icon" aria-hidden="true">3</span>
+            <h3>Review</h3>
+            <p>Open Projects.</p>
+          </article>
+        </div>
       </section>
 
       <section class="section-panel">
@@ -88,7 +100,12 @@
           <a class="btn btn-primary" id="startHereContinueBtn" href="app-builder.html?from=start-here">Continue</a>
           <button class="btn btn-ghost" type="button" id="startHereRefresh">Check Again</button>
         </div>
-        <ul class="checklist" id="startHereChecklist">
+        <div class="quickstart-grid" id="startHereChecklistCards">
+          <article class="quickstart-card"><p class="eyebrow">STEP 1</p><h3>Add Idea</h3></article>
+          <article class="quickstart-card"><p class="eyebrow">STEP 2</p><h3>Generate Draft</h3></article>
+          <article class="quickstart-card"><p class="eyebrow">STEP 3</p><h3>Open Projects</h3></article>
+        </div>
+        <ul class="checklist hidden" id="startHereChecklist">
           <li>Step 1: Add your idea in AI Builder.</li>
           <li>Step 2: Generate your first draft app in AI Builder.</li>
           <li>Step 3: Open Projects to view your generated app files.</li>
@@ -99,7 +116,7 @@
         <article class="quickstart-card">
           <p class="eyebrow">STEP 1</p>
           <h3>Describe Your Idea</h3>
-          <p>Use simple words like: "Build a booking app for barbers with login and payments."</p>
+          <p>Use one sentence.</p>
           <div class="actions">
             <a class="btn btn-primary" href="app-builder.html?from=start-here">Open AI Builder</a>
           </div>
@@ -107,7 +124,7 @@
         <article class="quickstart-card">
           <p class="eyebrow">STEP 2</p>
           <h3>Optional: Pick A Template</h3>
-          <p>If you prefer visuals first, browse templates and use one with one click.</p>
+          <p>Choose visual starter card.</p>
           <div class="actions">
             <a class="btn btn-primary" href="templates.html">Browse Templates</a>
           </div>
@@ -115,7 +132,7 @@
         <article class="quickstart-card">
           <p class="eyebrow">STEP 3</p>
           <h3>Review Your Created Project</h3>
-          <p>After generation, open Projects to view your files and preview link.</p>
+          <p>Open and test quickly.</p>
           <div class="actions">
             <a class="btn btn-primary" href="projects.html">Open Projects</a>
           </div>

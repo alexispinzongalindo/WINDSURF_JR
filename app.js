@@ -2,10 +2,79 @@
 
 const OPS_TOKEN_KEY = "islaapp_ops_token";
 const OPS_SESSION_TOKEN_KEY = "islaapp_session_token";
+const UI_LANGUAGE_KEY = "islaapp_ui_language";
+
+function getCurrentLanguage() {
+  const raw = String(localStorage.getItem(UI_LANGUAGE_KEY) || "en").trim().toLowerCase();
+  return raw === "es" ? "es" : "en";
+}
+
+function setCurrentLanguage(language) {
+  const normalized = String(language || "").trim().toLowerCase() === "es" ? "es" : "en";
+  localStorage.setItem(UI_LANGUAGE_KEY, normalized);
+  document.documentElement.lang = normalized;
+}
+
+function getCopy(english, spanish) {
+  return getCurrentLanguage() === "es" ? spanish : english;
+}
+
+function applyInlineI18n() {
+  const isSpanish = getCurrentLanguage() === "es";
+  const textAttr = isSpanish ? "data-i18n-es" : "data-i18n-en";
+  const placeholderAttr = isSpanish ? "data-i18n-placeholder-es" : "data-i18n-placeholder-en";
+  const titleAttr = isSpanish ? "data-i18n-title-es" : "data-i18n-title-en";
+
+  document.querySelectorAll("[data-i18n-en][data-i18n-es]").forEach((node) => {
+    const value = node.getAttribute(textAttr);
+    if (typeof value === "string") {
+      node.textContent = value;
+    }
+  });
+
+  document.querySelectorAll("[data-i18n-placeholder-en][data-i18n-placeholder-es]").forEach((node) => {
+    if (
+      node instanceof HTMLInputElement ||
+      node instanceof HTMLTextAreaElement ||
+      node instanceof HTMLSelectElement
+    ) {
+      const value = node.getAttribute(placeholderAttr);
+      if (typeof value === "string") node.placeholder = value;
+    }
+  });
+
+  document.querySelectorAll("[data-i18n-title-en][data-i18n-title-es]").forEach((node) => {
+    const value = node.getAttribute(titleAttr);
+    if (typeof value === "string") node.setAttribute("title", value);
+  });
+}
+
+function getTemplateStatusLabel(rawStatus) {
+  const status = String(rawStatus || "Customizable").trim();
+  const map = {
+    Featured: "Destacada",
+    Popular: "Popular",
+    Customizable: "Personalizable",
+    "Fast launch": "Lanzamiento rapido",
+    "Enterprise ready": "Lista para empresa",
+  };
+  if (getCurrentLanguage() !== "es") return status;
+  return map[status] || status;
+}
+
+function getTemplateCountLabel(count) {
+  const value = Number(count || 0);
+  if (getCurrentLanguage() === "es") {
+    return `${value} plantilla${value === 1 ? "" : "s"} mostrada${value === 1 ? "" : "s"}`;
+  }
+  return `${value} template${value === 1 ? "" : "s"} shown`;
+}
 
 (function initSite() {
+  setCurrentLanguage(getCurrentLanguage());
   setYear();
   initBeginnerExperience();
+  applyInlineI18n();
   initMarketingNav();
   initStartHerePage();
   initHomeCatalogSections();
@@ -151,6 +220,41 @@ function initGsapMotion(lenis) {
   }
 }
 
+function ensureLanguageToggle(topbar) {
+  if (!(topbar instanceof HTMLElement)) return;
+  const topbarAction = topbar.querySelector(".btn.btn-small");
+
+  let button = topbar.querySelector("[data-lang-toggle]");
+  if (!(button instanceof HTMLButtonElement)) {
+    button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn btn-ghost btn-small lang-toggle";
+    button.setAttribute("data-lang-toggle", "1");
+    if (topbarAction instanceof HTMLElement) {
+      topbar.insertBefore(button, topbarAction);
+    } else {
+      topbar.appendChild(button);
+    }
+  }
+
+  const current = getCurrentLanguage();
+  button.textContent = current === "es" ? "EN" : "ES";
+  button.setAttribute(
+    "title",
+    current === "es" ? "Switch to English" : "Cambiar a espanol"
+  );
+  button.setAttribute(
+    "aria-label",
+    current === "es" ? "Switch language to English" : "Cambiar idioma a espanol"
+  );
+
+  button.onclick = () => {
+    const next = getCurrentLanguage() === "es" ? "en" : "es";
+    setCurrentLanguage(next);
+    window.location.reload();
+  };
+}
+
 function initBeginnerExperience() {
   const topbar = document.querySelector(".topbar");
   if (!(topbar instanceof HTMLElement)) return;
@@ -159,12 +263,12 @@ function initBeginnerExperience() {
   const currentPage = String(window.location.pathname.split("/").pop() || "index.html").toLowerCase();
   if (nav instanceof HTMLElement && nav.dataset.simpleNav !== "1") {
     const simpleLinks = [
-      { href: "index.html", label: "Home" },
-      { href: "start-here.html", label: "Start Here" },
-      { href: "app-builder.html", label: "Build" },
-      { href: "templates.html", label: "Templates" },
-      { href: "projects.html", label: "Projects" },
-      { href: "support.html", label: "Help" },
+      { href: "index.html", label: getCopy("Home", "Inicio") },
+      { href: "start-here.html", label: getCopy("Start Here", "Comenzar") },
+      { href: "app-builder.html", label: getCopy("Build", "Construir") },
+      { href: "templates.html", label: getCopy("Templates", "Plantillas") },
+      { href: "projects.html", label: getCopy("Projects", "Proyectos") },
+      { href: "support.html", label: getCopy("Help", "Ayuda") },
     ];
     const navMarkup = simpleLinks
       .map((item) => {
@@ -180,12 +284,13 @@ function initBeginnerExperience() {
   if (topbarAction instanceof HTMLAnchorElement) {
     if (currentPage === "start-here.html") {
       topbarAction.href = "app-builder.html?from=start-here";
-      topbarAction.textContent = "Open Builder";
+      topbarAction.textContent = getCopy("Open Builder", "Abrir constructor");
     } else {
       topbarAction.href = "start-here.html";
-      topbarAction.textContent = "Start Here";
+      topbarAction.textContent = getCopy("Start Here", "Comenzar");
     }
   }
+  ensureLanguageToggle(topbar);
 
   const main = document.querySelector("main");
   if (!(main instanceof HTMLElement) || currentPage === "start-here.html") return;
@@ -195,10 +300,17 @@ function initBeginnerExperience() {
   banner.id = "beginnerBanner";
   banner.className = "beginner-banner";
   banner.innerHTML = `
-    <p><strong>New here?</strong> Use the simple 3-step path first. No technical setup required to start.</p>
+    <p><strong>${escapeHtml(getCopy("New here?", "Nuevo por aqui?"))}</strong> ${escapeHtml(
+      getCopy(
+        "Use the simple 3-step path first. No technical setup required to start.",
+        "Usa primero la ruta simple de 3 pasos. No se requiere configuracion tecnica para empezar."
+      )
+    )}</p>
     <div class="actions">
-      <a class="btn btn-primary" href="start-here.html">Open Start Here Guide</a>
-      <a class="btn btn-ghost" href="app-builder.html?from=start-here">Skip to AI Builder</a>
+      <a class="btn btn-primary" href="start-here.html">${escapeHtml(getCopy("Open Start Here Guide", "Abrir guia de inicio"))}</a>
+      <a class="btn btn-ghost" href="app-builder.html?from=start-here">${escapeHtml(
+        getCopy("Skip to AI Builder", "Ir al constructor IA")
+      )}</a>
     </div>
   `;
 
@@ -215,6 +327,7 @@ function initStartHerePage() {
   if (!(root instanceof HTMLElement)) return;
 
   const checklist = document.querySelector("#startHereChecklist");
+  const checklistCardsRoot = document.querySelector("#startHereChecklistCards");
   const continueBtn = document.querySelector("#startHereContinueBtn");
   const continueText = document.querySelector("#startHereContinueText");
   const refreshBtn = document.querySelector("#startHereRefresh");
@@ -272,23 +385,45 @@ function initStartHerePage() {
 
     checklist.innerHTML = lines.map((line) => `<li>${escapeHtml(line)}</li>`).join("");
 
+    if (checklistCardsRoot instanceof HTMLElement) {
+      const cards = Array.from(checklistCardsRoot.querySelectorAll(".quickstart-card"));
+      const state = [ideaReady, buildReady, projectReady];
+      cards.forEach((card, index) => {
+        const done = Boolean(state[index]);
+        card.classList.toggle("is-done", done);
+        card.classList.toggle("is-pending", !done);
+      });
+    }
+
     if (continueBtn instanceof HTMLAnchorElement) {
       if (!ideaReady) {
         continueBtn.href = "app-builder.html?from=start-here#builderFastForm";
-        continueBtn.textContent = "Start Step 1";
-        continueText.textContent = "First action: type your app idea in AI Builder.";
+        continueBtn.textContent = getCopy("Start Step 1", "Iniciar paso 1");
+        continueText.textContent = getCopy(
+          "First action: type your app idea in AI Builder.",
+          "Primera accion: escribe tu idea en AI Builder."
+        );
       } else if (!buildReady) {
         continueBtn.href = "app-builder.html?from=start-here";
-        continueBtn.textContent = "Start Step 2";
-        continueText.textContent = "Your idea is saved. Next action: generate your first draft app.";
+        continueBtn.textContent = getCopy("Start Step 2", "Iniciar paso 2");
+        continueText.textContent = getCopy(
+          "Your idea is saved. Next action: generate your first draft app.",
+          "Tu idea esta guardada. Siguiente accion: generar tu primer borrador."
+        );
       } else if (!projectReady) {
         continueBtn.href = "app-builder.html?from=start-here";
-        continueBtn.textContent = "Finish Step 3";
-        continueText.textContent = "Draft detected. Next action: click Create My Starter Project in App Builder.";
+        continueBtn.textContent = getCopy("Finish Step 3", "Finalizar paso 3");
+        continueText.textContent = getCopy(
+          "Draft detected. Next action: click Create My Starter Project in App Builder.",
+          "Borrador detectado. Siguiente accion: haz clic en Crear mi proyecto inicial."
+        );
       } else {
         continueBtn.href = "projects.html";
-        continueBtn.textContent = "Open My Projects";
-        continueText.textContent = "Great. Your project exists. Open Projects to preview and continue.";
+        continueBtn.textContent = getCopy("Open My Projects", "Abrir mis proyectos");
+        continueText.textContent = getCopy(
+          "Great. Your project exists. Open Projects to preview and continue.",
+          "Perfecto. Tu proyecto existe. Abre Proyectos para continuar."
+        );
       }
     }
   };
@@ -1409,54 +1544,131 @@ function initTemplatesPage() {
   const grid = document.querySelector("#templatesCatalogGrid");
   if (!(grid instanceof HTMLElement)) return;
 
-  const templates = getTemplateCatalog();
-  grid.innerHTML = templates
-    .map((template) => {
-      const descriptionSearchText = [template.shortDescription, template.longDescription, ...(Array.isArray(template.perfectFor) ? template.perfectFor : [])]
-        .filter(Boolean)
-        .join(" ");
-      const tags = (Array.isArray(template.techTags) ? template.techTags.slice(0, 3) : []).map(
-        (tag) => `<span class="template-card-tag">${escapeHtml(String(tag || ""))}</span>`
-      );
-      return `
-        <article
-          class="template-showcase-card"
-          data-template-card
-          data-category="${escapeAttribute(String(template.category || ""))}"
-          data-name="${escapeAttribute(String(template.name || ""))}"
-          data-description="${escapeAttribute(descriptionSearchText)}"
-        >
-          <div class="template-showcase-thumb ${escapeAttribute(String(template.thumbClass || ""))} has-photo">
-            ${renderTemplateImagePicture(template, { className: "template-media-picture", sizes: "(max-width: 980px) 100vw, 30vw" })}
-            <span class="template-thumb-status">${escapeHtml(String(template.status || "Customizable"))}</span>
-          </div>
-          <div class="template-card-meta-row">
-            <span class="template-meta-chip">${escapeHtml(String(template.stack || ""))}</span>
-            <span class="template-clone-count">${escapeHtml(formatCompactNumber(template.clones))} clones</span>
-          </div>
-          <h3>${escapeHtml(String(template.name || ""))}</h3>
-          <p>${escapeHtml(String(template.shortDescription || ""))}</p>
-          <div class="template-card-tags">${tags.join("")}</div>
-          <div class="actions">
-            <a class="btn btn-ghost btn-inline" href="template-view.html?template=${escapeAttribute(String(template.id || ""))}">View App</a>
-            <a
-              class="btn btn-ghost btn-inline"
-              href="${escapeAttribute(String(template.liveUrl || "#"))}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >Live URL</a>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-
-  const cards = Array.from(grid.querySelectorAll("[data-template-card]"));
+  const tagFilterRoot = document.querySelector("#templatesTagFilters");
   const filterButtons = Array.from(document.querySelectorAll("[data-catalog-filter]"));
   const searchInput = document.querySelector("#templatesSearch");
   const catalogCount = document.querySelector("#templatesCatalogCount");
+  const templates = getTemplateCatalog();
+  let activeTag = "all";
+
+  const deriveDiscoverTags = (template) => {
+    const statusLabel = getTemplateStatusLabel(template.status || "Customizable");
+    const combined = [
+      statusLabel,
+      String(template.stack || ""),
+      ...(Array.isArray(template.perfectFor) ? template.perfectFor.slice(0, 2) : []),
+      ...(Array.isArray(template.techTags) ? template.techTags.slice(0, 3) : []),
+    ]
+      .map((item) => String(item || "").trim())
+      .filter(Boolean);
+    return Array.from(new Set(combined)).slice(0, 6);
+  };
+
+  const renderCards = () => {
+    grid.innerHTML = templates
+      .map((template) => {
+        const discoverTags = deriveDiscoverTags(template);
+        const descriptionSearchText = [
+          template.shortDescription,
+          template.longDescription,
+          template.stack,
+          template.status,
+          ...(Array.isArray(template.perfectFor) ? template.perfectFor : []),
+          ...(Array.isArray(template.techTags) ? template.techTags : []),
+          ...discoverTags,
+        ]
+          .filter(Boolean)
+          .join(" ");
+        const tags = discoverTags.map(
+          (tag, index) => `<span class="template-card-tag ${index === 0 ? "is-status" : ""}">${escapeHtml(String(tag || ""))}</span>`
+        );
+        return `
+          <article
+            class="template-showcase-card"
+            data-template-card
+            data-category="${escapeAttribute(String(template.category || ""))}"
+            data-name="${escapeAttribute(String(template.name || ""))}"
+            data-description="${escapeAttribute(descriptionSearchText)}"
+            data-tags="${escapeAttribute(discoverTags.join(" ").toLowerCase())}"
+          >
+            <div class="template-showcase-thumb ${escapeAttribute(String(template.thumbClass || ""))} has-photo">
+              ${renderTemplateImagePicture(template, { className: "template-media-picture", sizes: "(max-width: 980px) 100vw, 30vw" })}
+              <span class="template-thumb-status">${escapeHtml(getTemplateStatusLabel(String(template.status || "Customizable")))}</span>
+            </div>
+            <div class="template-card-meta-row">
+              <span class="template-meta-chip">${escapeHtml(String(template.stack || ""))}</span>
+              <span class="template-clone-count">${escapeHtml(formatCompactNumber(template.clones))} ${escapeHtml(getCopy("clones", "clones"))}</span>
+            </div>
+            <h3>${escapeHtml(String(template.name || ""))}</h3>
+            <p>${escapeHtml(String(template.shortDescription || ""))}</p>
+            <div class="template-card-tags">${tags.join("")}</div>
+            <div class="actions">
+              <a class="btn btn-ghost btn-inline" href="template-view.html?template=${escapeAttribute(String(template.id || ""))}">${escapeHtml(
+                getCopy("View App", "Ver app")
+              )}</a>
+              <a
+                class="btn btn-ghost btn-inline"
+                href="${escapeAttribute(String(template.liveUrl || "#"))}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >${escapeHtml(getCopy("Live URL", "URL en vivo"))}</a>
+            </div>
+          </article>
+        `;
+      })
+      .join("");
+  };
+
+  const renderTagFilters = () => {
+    if (!(tagFilterRoot instanceof HTMLElement)) return;
+    const frequency = new Map();
+    templates.forEach((template) => {
+      const tags = [
+        ...(Array.isArray(template.techTags) ? template.techTags.slice(0, 4) : []),
+        ...(Array.isArray(template.perfectFor) ? template.perfectFor.slice(0, 2) : []),
+      ];
+      tags.forEach((tag) => {
+        const key = String(tag || "").trim();
+        if (!key) return;
+        frequency.set(key, Number(frequency.get(key) || 0) + 1);
+      });
+    });
+
+    const topTags = Array.from(frequency.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 9)
+      .map(([tag]) => tag);
+
+    const allButton = `
+      <button class="toggle-btn ${activeTag === "all" ? "is-active" : ""}" type="button" data-tag-filter="all">
+        ${escapeHtml(getCopy("All tags", "Todas las etiquetas"))}
+      </button>
+    `;
+    const tagButtons = topTags
+      .map((tag) => {
+        const normalized = String(tag || "").toLowerCase();
+        return `
+          <button class="toggle-btn ${activeTag === normalized ? "is-active" : ""}" type="button" data-tag-filter="${escapeAttribute(normalized)}">
+            ${escapeHtml(tag)}
+          </button>
+        `;
+      })
+      .join("");
+
+    tagFilterRoot.innerHTML = `${allButton}${tagButtons}`;
+    Array.from(tagFilterRoot.querySelectorAll("[data-tag-filter]")).forEach((button) => {
+      button.addEventListener("click", () => {
+        activeTag = String(button.getAttribute("data-tag-filter") || "all").toLowerCase();
+        Array.from(tagFilterRoot.querySelectorAll("[data-tag-filter]")).forEach((item) => {
+          item.classList.toggle("is-active", item === button);
+        });
+        applyFilters();
+      });
+    });
+  };
 
   const applyFilters = () => {
+    const cards = Array.from(grid.querySelectorAll("[data-template-card]"));
     const activeFilterButton = filterButtons.find((button) => button.classList.contains("is-active"));
     const activeCategory = String(activeFilterButton?.dataset.catalogFilter || "all").toLowerCase();
     const searchValue = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
@@ -1466,15 +1678,17 @@ function initTemplatesPage() {
       const category = String(card.getAttribute("data-category") || "").toLowerCase();
       const name = String(card.getAttribute("data-name") || "").toLowerCase();
       const description = String(card.getAttribute("data-description") || "").toLowerCase();
+      const tags = String(card.getAttribute("data-tags") || "").toLowerCase();
       const categoryMatch = activeCategory === "all" || category === activeCategory;
       const searchMatch = !searchValue || name.includes(searchValue) || description.includes(searchValue);
-      const visible = categoryMatch && searchMatch;
+      const tagMatch = activeTag === "all" || tags.includes(activeTag);
+      const visible = categoryMatch && searchMatch && tagMatch;
       if (visible) visibleCount += 1;
       card.classList.toggle("hidden", !visible);
     });
 
     if (catalogCount instanceof HTMLElement) {
-      catalogCount.textContent = `${visibleCount} templates`;
+      catalogCount.textContent = getTemplateCountLabel(visibleCount);
     }
   };
 
@@ -1491,6 +1705,8 @@ function initTemplatesPage() {
     searchInput.addEventListener("input", applyFilters);
   }
 
+  renderCards();
+  renderTagFilters();
   applyFilters();
 }
 
@@ -2354,6 +2570,10 @@ function initAppBuilder() {
 
   const stepButtons = Array.from(document.querySelectorAll("[data-step-target]"));
   const stepPanels = Array.from(document.querySelectorAll("[data-step-panel]"));
+  const stepStatusText = document.querySelector("#builderStepStatusText");
+  const stepProgressFill = document.querySelector("#builderStepProgressFill");
+  const prevStepButton = document.querySelector("#builderPrevStep");
+  const nextStepButton = document.querySelector("#builderNextStep");
   let templateInputs = [];
   const featureInputs = Array.from(form.querySelectorAll("input[name='appFeature']"));
   const storageKey = "islaapp_builder_draft";
@@ -2363,7 +2583,26 @@ function initAppBuilder() {
   let activeTemplateName = "";
   let fallbackTemplateName = "";
   let quickGuideAction = "step1";
+  let activeStep = 1;
   const templateCatalog = getTemplateCatalog();
+  const manualStepGuide = [
+    {
+      hint: () => getCopy("Step 1 of 4: Choose a template or skip to continue.", "Paso 1 de 4: Elige una plantilla o continua sin plantilla."),
+      nextLabel: () => getCopy("Continue to Features", "Continuar a funciones"),
+    },
+    {
+      hint: () => getCopy("Step 2 of 4: Pick at least one feature for your app.", "Paso 2 de 4: Elige al menos una funcion para tu app."),
+      nextLabel: () => getCopy("Continue to Details", "Continuar a detalles"),
+    },
+    {
+      hint: () => getCopy("Step 3 of 4: Complete project name, owner, stack, and target.", "Paso 3 de 4: Completa nombre, responsable, stack y objetivo."),
+      nextLabel: () => getCopy("Continue to Save", "Continuar a guardar"),
+    },
+    {
+      hint: () => getCopy("Step 4 of 4: Save your starter project.", "Paso 4 de 4: Guarda tu proyecto inicial."),
+      nextLabel: () => getCopy("Ready to Save", "Listo para guardar"),
+    },
+  ];
 
   const templateThumbClassByName = Object.fromEntries(templateCatalog.map((item) => [item.name, item.thumbClass]));
   const templateByName = Object.fromEntries(templateCatalog.map((item) => [item.name, item]));
@@ -2384,19 +2623,28 @@ function initAppBuilder() {
           const category = String(item.category || "");
           const name = String(item.name || "");
           const description = String(item.shortDescription || item.longDescription || "Template starting point.");
+          const status = getTemplateStatusLabel(String(item.status || "Customizable"));
+          const discoverTags = Array.from(
+            new Set([status, String(item.stack || ""), ...(Array.isArray(item.perfectFor) ? item.perfectFor.slice(0, 2) : [])].filter(Boolean))
+          ).slice(0, 4);
           const thumbClass = String(item.thumbClass || "template-thumb-saas");
           const searchText = [
             item.name,
             item.shortDescription,
             item.longDescription,
             item.stack,
+            item.status,
             ...(Array.isArray(item.perfectFor) ? item.perfectFor : []),
             ...(Array.isArray(item.techTags) ? item.techTags : []),
+            ...discoverTags,
           ]
             .map((value) => String(value || "").trim())
             .filter(Boolean)
             .join(" ")
             .toLowerCase();
+          const tags = discoverTags
+            .map((tag, index) => `<span class="template-card-tag ${index === 0 ? "is-status" : ""}">${escapeHtml(String(tag || ""))}</span>`)
+            .join("");
           return `
             <label class="template-card template-card-visual" data-template-category="${escapeAttribute(category)}" data-search="${escapeAttribute(
               searchText
@@ -2407,6 +2655,7 @@ function initAppBuilder() {
               <div class="template-thumb ${escapeAttribute(thumbClass)}"></div>
               <strong>${escapeHtml(name)}</strong>
               <span>${escapeHtml(description)}</span>
+              <div class="template-card-tags template-card-tags-compact">${tags}</div>
             </label>
           `;
         })
@@ -2428,7 +2677,9 @@ function initAppBuilder() {
     advancedToggles.forEach((button) => {
       if (button instanceof HTMLElement) {
         button.setAttribute("aria-expanded", advancedVisible ? "true" : "false");
-        button.textContent = advancedVisible ? "Hide Manual Options" : "Show Manual Options";
+        button.textContent = advancedVisible
+          ? getCopy("Hide Manual Options", "Ocultar opciones manuales")
+          : getCopy("Show Manual Options", "Mostrar opciones manuales");
       }
     });
   };
@@ -2735,7 +2986,10 @@ function initAppBuilder() {
       chatLog.innerHTML = "";
       appendChatMessage(
         "assistant",
-        "Tell me what you want to build. I will think, generate the first draft, and then guide your next steps."
+        getCopy(
+          "Tell me what you want to build. I will think, generate the first draft, and then guide your next steps.",
+          "Dime que quieres construir. Voy a pensar, generar el primer borrador y guiar tus siguientes pasos."
+        )
       );
     }
     if (fastPreviewFrame instanceof HTMLIFrameElement) {
@@ -2803,15 +3057,83 @@ function initAppBuilder() {
     }
   };
 
+  const validateStepBeforeNext = (step) => {
+    if (step === 2) {
+      const selectedFeatures = featureInputs.filter((item) => item.checked);
+      if (selectedFeatures.length === 0) {
+        return {
+          ok: false,
+          message: getCopy(
+            "Select at least one feature before continuing.",
+            "Selecciona al menos una funcion antes de continuar."
+          ),
+        };
+      }
+    }
+    if (step === 3) {
+      const projectName = valueOf("#builderProjectName");
+      const owner = valueOf("#builderOwner");
+      const stack = valueOf("#builderStack");
+      const target = valueOf("#builderTarget");
+      if (!projectName || !owner || !stack || !target) {
+        return {
+          ok: false,
+          message: getCopy(
+            "Complete project details before continuing.",
+            "Completa los detalles del proyecto antes de continuar."
+          ),
+        };
+      }
+    }
+    return { ok: true, message: "" };
+  };
+
+  const renderManualStepStatus = (messageOverride) => {
+    const clamped = Math.max(1, Math.min(4, Number(activeStep || 1)));
+    const progressPercent = (clamped / 4) * 100;
+    const stepLabels = [
+      getCopy("1. Templates", "1. Plantillas"),
+      getCopy("2. Features", "2. Funciones"),
+      getCopy("3. Details", "3. Detalles"),
+      getCopy("4. Save", "4. Guardar"),
+    ];
+
+    stepButtons.forEach((button, index) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      button.textContent = stepLabels[index] || button.textContent;
+    });
+
+    if (stepStatusText instanceof HTMLElement) {
+      const guide = manualStepGuide[clamped - 1];
+      stepStatusText.textContent = messageOverride || (guide && typeof guide.hint === "function" ? guide.hint() : "");
+    }
+    if (stepProgressFill instanceof HTMLElement) {
+      stepProgressFill.style.width = `${progressPercent}%`;
+    }
+    if (prevStepButton instanceof HTMLButtonElement) {
+      prevStepButton.disabled = clamped <= 1;
+    }
+    if (nextStepButton instanceof HTMLButtonElement) {
+      nextStepButton.disabled = clamped >= 4;
+      const guide = manualStepGuide[clamped - 1];
+      nextStepButton.textContent = guide && typeof guide.nextLabel === "function" ? guide.nextLabel() : getCopy("Continue", "Continuar");
+    }
+  };
+
   const setActiveStep = (step) => {
+    activeStep = Math.max(1, Math.min(4, Number(step || 1)));
     stepButtons.forEach((btn) => {
-      const isActive = btn.dataset.stepTarget === String(step);
+      const target = Number(btn.dataset.stepTarget || "1");
+      const isActive = target === activeStep;
+      const isComplete = target < activeStep;
       btn.classList.toggle("is-active", isActive);
+      btn.classList.toggle("is-complete", isComplete);
     });
     stepPanels.forEach((panel) => {
-      const isActive = panel.dataset.stepPanel === String(step);
+      const isActive = panel.dataset.stepPanel === String(activeStep);
       panel.classList.toggle("is-active", isActive);
     });
+    renderManualStepStatus("");
   };
 
   const getSelectedTemplateName = () => {
@@ -2824,21 +3146,22 @@ function initAppBuilder() {
 
   const renderBuilderLiveSummary = () => {
     if (!(liveSummaryList instanceof HTMLElement)) return;
-    const templateName = getSelectedTemplateName() || "Not selected yet";
+    const templateName = getSelectedTemplateName() || getCopy("Not selected yet", "No seleccionada");
     const selectedFeatures = featureInputs.filter((item) => item.checked).map((item) => item.value);
-    const stack = valueOf("#builderStack") || "Not selected";
-    const target = valueOf("#builderTarget") || "Not selected";
+    const stack = valueOf("#builderStack") || getCopy("Not selected", "No seleccionado");
+    const target = valueOf("#builderTarget") || getCopy("Not selected", "No seleccionado");
     const projectName = valueOf("#builderProjectName");
     const owner = valueOf("#builderOwner");
-    const readyToGenerate = Boolean(projectName && owner && stack !== "Not selected" && target !== "Not selected" && selectedFeatures.length > 0);
-    const featureText = selectedFeatures.length > 0 ? selectedFeatures.join(", ") : "0 selected";
+    const notSelectedLabel = getCopy("Not selected", "No seleccionado");
+    const readyToGenerate = Boolean(projectName && owner && stack !== notSelectedLabel && target !== notSelectedLabel && selectedFeatures.length > 0);
+    const featureText = selectedFeatures.length > 0 ? selectedFeatures.join(", ") : getCopy("0 selected", "0 seleccionadas");
 
     liveSummaryList.innerHTML = [
-      `Template: ${escapeHtml(templateName)}`,
-      `Features: ${escapeHtml(featureText)}`,
-      `Stack: ${escapeHtml(stack)}`,
-      `Launch target: ${escapeHtml(target)}`,
-      `Ready to generate: ${readyToGenerate ? "Yes" : "No"}`,
+      `${escapeHtml(getCopy("Template", "Plantilla"))}: ${escapeHtml(templateName)}`,
+      `${escapeHtml(getCopy("Features", "Funciones"))}: ${escapeHtml(featureText)}`,
+      `${escapeHtml(getCopy("Stack", "Stack"))}: ${escapeHtml(stack)}`,
+      `${escapeHtml(getCopy("Launch target", "Objetivo de lanzamiento"))}: ${escapeHtml(target)}`,
+      `${escapeHtml(getCopy("Ready to generate", "Listo para generar"))}: ${readyToGenerate ? escapeHtml(getCopy("Yes", "Si")) : escapeHtml(getCopy("No", "No"))}`,
     ]
       .map((line) => `<li>${line}</li>`)
       .join("");
@@ -2886,27 +3209,45 @@ function initAppBuilder() {
     const hasIdea = Boolean(promptValue || getSelectedTemplateName() || projectName || savedDraft.projectName);
     const hasDraft = Boolean(savedDraft.hasDraft || hasProject);
 
-    const step1 = hasIdea ? "[Done] Step 1: Describe your idea." : "[Pending] Step 1: Describe your idea.";
-    const step2 = hasDraft ? "[Done] Step 2: Build your first draft." : "[Pending] Step 2: Build your first draft.";
-    const step3 = hasProject ? "[Done] Step 3: Save your starter project." : "[Pending] Step 3: Save your starter project.";
+    const step1 = hasIdea
+      ? getCopy("[Done] Step 1: Describe your idea.", "[Listo] Paso 1: Describe tu idea.")
+      : getCopy("[Pending] Step 1: Describe your idea.", "[Pendiente] Paso 1: Describe tu idea.");
+    const step2 = hasDraft
+      ? getCopy("[Done] Step 2: Build your first draft.", "[Listo] Paso 2: Crea tu primer borrador.")
+      : getCopy("[Pending] Step 2: Build your first draft.", "[Pendiente] Paso 2: Crea tu primer borrador.");
+    const step3 = hasProject
+      ? getCopy("[Done] Step 3: Save your starter project.", "[Listo] Paso 3: Guarda tu proyecto inicial.")
+      : getCopy("[Pending] Step 3: Save your starter project.", "[Pendiente] Paso 3: Guarda tu proyecto inicial.");
     quickGuideList.innerHTML = [step1, step2, step3].map((line) => `<li>${escapeHtml(line)}</li>`).join("");
 
     if (!hasIdea) {
       quickGuideAction = "step1";
-      quickGuideText.textContent = "Step 1 now: type your app idea above, then click Build My First Draft.";
-      quickGuidePrimary.textContent = "Start Step 1";
+      quickGuideText.textContent = getCopy(
+        "Step 1 now: type your app idea above, then click Build My First Draft.",
+        "Paso 1 ahora: escribe tu idea arriba y haz clic en Crear mi primer borrador."
+      );
+      quickGuidePrimary.textContent = getCopy("Start Step 1", "Iniciar paso 1");
     } else if (!hasDraft) {
       quickGuideAction = "step2";
-      quickGuideText.textContent = "Step 2 now: click Build My First Draft to generate your app.";
-      quickGuidePrimary.textContent = "Start Step 2";
+      quickGuideText.textContent = getCopy(
+        "Step 2 now: click Build My First Draft to generate your app.",
+        "Paso 2 ahora: haz clic en Crear mi primer borrador para generar tu app."
+      );
+      quickGuidePrimary.textContent = getCopy("Start Step 2", "Iniciar paso 2");
     } else if (!hasProject) {
       quickGuideAction = "step3";
-      quickGuideText.textContent = "Step 3 now: open Manual Options and click Create My Starter Project.";
-      quickGuidePrimary.textContent = "Start Step 3";
+      quickGuideText.textContent = getCopy(
+        "Step 3 now: open Manual Options and click Create My Starter Project.",
+        "Paso 3 ahora: abre opciones manuales y haz clic en Crear mi proyecto inicial."
+      );
+      quickGuidePrimary.textContent = getCopy("Start Step 3", "Iniciar paso 3");
     } else {
       quickGuideAction = "done";
-      quickGuideText.textContent = "Great. Your starter project exists. Open Projects to continue.";
-      quickGuidePrimary.textContent = "Open Projects";
+      quickGuideText.textContent = getCopy(
+        "Great. Your starter project exists. Open Projects to continue.",
+        "Perfecto. Tu proyecto inicial existe. Abre Proyectos para continuar."
+      );
+      quickGuidePrimary.textContent = getCopy("Open Projects", "Abrir proyectos");
     }
   };
 
@@ -3016,9 +3357,38 @@ function initAppBuilder() {
 
   stepButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
-      setActiveStep(Number(btn.dataset.stepTarget || "1"));
+      const target = Math.max(1, Math.min(4, Number(btn.dataset.stepTarget || "1")));
+      if (target > activeStep) {
+        const validation = validateStepBeforeNext(activeStep);
+        if (!validation.ok) {
+          renderManualStepStatus(validation.message);
+          return;
+        }
+      }
+      setActiveStep(target);
     });
   });
+
+  if (prevStepButton instanceof HTMLButtonElement) {
+    prevStepButton.addEventListener("click", () => {
+      setActiveStep(activeStep - 1);
+      const panel = form.querySelector(`[data-step-panel='${activeStep}']`);
+      if (panel instanceof HTMLElement) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  if (nextStepButton instanceof HTMLButtonElement) {
+    nextStepButton.addEventListener("click", () => {
+      const validation = validateStepBeforeNext(activeStep);
+      if (!validation.ok) {
+        renderManualStepStatus(validation.message);
+        return;
+      }
+      setActiveStep(activeStep + 1);
+      const panel = form.querySelector(`[data-step-panel='${activeStep}']`);
+      if (panel instanceof HTMLElement) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
 
   templateInputs.forEach((input) => {
     input.addEventListener("change", updateTemplateUI);
