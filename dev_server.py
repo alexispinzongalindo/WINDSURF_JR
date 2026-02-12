@@ -1625,6 +1625,173 @@ def generate_ai_static_files(*, context: dict[str, Any], prompt: str, instructio
     return {"ok": True, "source": "openai", "files": files, "note": "OpenAI generated customized static app files."}
 
 
+def ai_targets_for_stack(stack: str) -> list[str]:
+    if stack == "React + Supabase":
+        return ["README.md", "src/App.jsx", "src/App.css"]
+    if stack == "Next.js + PostgreSQL":
+        return ["README.md", "app/page.js", "app/globals.css"]
+    if stack == "Node API + React Frontend":
+        return ["README.md", "api/server.js", "web/src/App.jsx", "web/src/App.css"]
+    return []
+
+
+def validate_ai_file_output(path: str, content: str) -> bool:
+    text = strip_markdown_fence(content).strip()
+    if len(text) < 20:
+        return False
+    if path.endswith(".jsx") and "export default" not in text:
+        return False
+    if path == "api/server.js" and "/api/health" not in text:
+        return False
+    if path == "app/page.js" and "HomePage" not in text and "export default function" not in text:
+        return False
+    return True
+
+
+def generate_ai_framework_files(
+    *,
+    context: dict[str, Any],
+    prompt: str,
+    instruction: str,
+    stack: str,
+    fallback_files: dict[str, str],
+) -> dict[str, Any]:
+    targets = ai_targets_for_stack(stack)
+    if len(targets) == 0:
+        return {
+            "ok": False,
+            "source": "fallback",
+            "files": fallback_files,
+            "note": f"No AI file targets configured for stack: {stack}",
+        }
+
+    api_key = env("OPENAI_API_KEY")
+    model = env("OPENAI_MODEL", "gpt-4o-mini")
+    if not api_key:
+        return {
+            "ok": False,
+            "source": "fallback",
+            "files": fallback_files,
+            "note": "OPENAI_API_KEY is not configured. Using scaffold template files.",
+        }
+
+    system_prompt = (
+        "You generate production-minded starter code updates for a web stack. "
+        "Return only valid JSON with shape: {\"files\": {\"path\": \"content\"}}. "
+        "Only include these file paths exactly: "
+        + ", ".join(targets)
+        + ". Keep code runnable with existing package.json and tooling. "
+        "Do not wrap code in markdown fences."
+    )
+
+    project_context = json.dumps(
+        {
+            "projectName": context.get("project_name", ""),
+            "owner": context.get("owner", ""),
+            "template": context.get("template", ""),
+            "stack": context.get("stack", ""),
+            "target": context.get("target", ""),
+            "features": context.get("features", []),
+            "targets": targets,
+        },
+        ensure_ascii=False,
+    )
+    user_prompt = (
+        f"Project context: {project_context}\n"
+        f"Original build request: {prompt}\n"
+        f"Customization instruction: {instruction or 'No extra customization.'}\n"
+        "Generate strong starter files now."
+    )
+
+    response = provider_api_request(
+        method="POST",
+        url="https://api.openai.com/v1/chat/completions",
+        headers={"Authorization": f"Bearer {api_key}"},
+        payload={
+            "model": model,
+            "temperature": 0.35,
+            "response_format": {"type": "json_object"},
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+        },
+        timeout=55,
+    )
+
+    if not response.get("ok"):
+        return {
+            "ok": False,
+            "source": "fallback",
+            "files": fallback_files,
+            "note": f"OpenAI framework generation failed: {response.get('error')}",
+        }
+
+    content = extract_openai_content(response.get("data"))
+    if not content:
+        return {
+            "ok": False,
+            "source": "fallback",
+            "files": fallback_files,
+            "note": "OpenAI framework payload was empty. Using scaffold template files.",
+        }
+
+    try:
+        parsed = json.loads(content)
+    except json.JSONDecodeError:
+        return {
+            "ok": False,
+            "source": "fallback",
+            "files": fallback_files,
+            "note": "OpenAI framework payload was invalid JSON. Using scaffold template files.",
+        }
+
+    if not isinstance(parsed, dict):
+        return {
+            "ok": False,
+            "source": "fallback",
+            "files": fallback_files,
+            "note": "OpenAI framework payload shape invalid. Using scaffold template files.",
+        }
+
+    raw_files = parsed.get("files")
+    if not isinstance(raw_files, dict):
+        raw_files = parsed
+    if not isinstance(raw_files, dict):
+        return {
+            "ok": False,
+            "source": "fallback",
+            "files": fallback_files,
+            "note": "OpenAI framework payload missing files object. Using scaffold template files.",
+        }
+
+    overrides: dict[str, str] = {}
+    for path in targets:
+        candidate = raw_files.get(path)
+        if not isinstance(candidate, str):
+            continue
+        cleaned = strip_markdown_fence(candidate).strip()
+        if not validate_ai_file_output(path, cleaned):
+            continue
+        overrides[path] = cleaned
+
+    if len(overrides) == 0:
+        return {
+            "ok": False,
+            "source": "fallback",
+            "files": fallback_files,
+            "note": "OpenAI returned incomplete framework files. Using scaffold template files.",
+        }
+
+    merged = dict(fallback_files)
+    merged.update(overrides)
+    missing = len(targets) - len(overrides)
+    note = "OpenAI generated customized framework files."
+    if missing > 0:
+        note = f"OpenAI customized {len(overrides)}/{len(targets)} files; remaining files use scaffold defaults."
+    return {"ok": True, "source": "openai", "files": merged, "note": note}
+
+
 def provision_service_request(request_id: str, options: dict[str, str]) -> dict[str, Any]:
     requests = list_service_requests()
     request_record = find_service_request(requests, request_id)
@@ -2167,8 +2334,17 @@ def create_project_scaffold(body: dict[str, Any]) -> dict[str, Any]:
     files = build_files_for_stack(context)
     ai_source = "scaffold"
     ai_note = ""
-    if stack == "HTML/CSS/JS" and (ai_prompt or ai_instruction):
-        ai_result = generate_ai_static_files(context=context, prompt=ai_prompt or project_name, instruction=ai_instruction)
+    if ai_prompt or ai_instruction:
+        if stack == "HTML/CSS/JS":
+            ai_result = generate_ai_static_files(context=context, prompt=ai_prompt or project_name, instruction=ai_instruction)
+        else:
+            ai_result = generate_ai_framework_files(
+                context=context,
+                prompt=ai_prompt or project_name,
+                instruction=ai_instruction,
+                stack=stack,
+                fallback_files=files,
+            )
         ai_source = str(ai_result.get("source", "fallback"))
         ai_note = str(ai_result.get("note", "")).strip()
         ai_files = ai_result.get("files")
