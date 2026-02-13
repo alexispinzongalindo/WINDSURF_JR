@@ -24,6 +24,8 @@ function applyInlineI18n() {
   const textAttr = isSpanish ? "data-i18n-es" : "data-i18n-en";
   const placeholderAttr = isSpanish ? "data-i18n-placeholder-es" : "data-i18n-placeholder-en";
   const titleAttr = isSpanish ? "data-i18n-title-es" : "data-i18n-title-en";
+  const ariaAttr = isSpanish ? "data-i18n-aria-es" : "data-i18n-aria-en";
+  const contentAttr = isSpanish ? "data-i18n-content-es" : "data-i18n-content-en";
 
   document.querySelectorAll("[data-i18n-en][data-i18n-es]").forEach((node) => {
     const value = node.getAttribute(textAttr);
@@ -47,6 +49,16 @@ function applyInlineI18n() {
     const value = node.getAttribute(titleAttr);
     if (typeof value === "string") node.setAttribute("title", value);
   });
+
+  document.querySelectorAll("[data-i18n-content-en][data-i18n-content-es]").forEach((node) => {
+    const value = node.getAttribute(contentAttr);
+    if (typeof value === "string") node.setAttribute("content", value);
+  });
+
+  document.querySelectorAll("[data-i18n-aria-en][data-i18n-aria-es]").forEach((node) => {
+    const value = node.getAttribute(ariaAttr);
+    if (typeof value === "string") node.setAttribute("aria-label", value);
+  });
 }
 
 function getTemplateStatusLabel(rawStatus) {
@@ -68,6 +80,56 @@ function getTemplateCountLabel(count) {
     return `${value} plantilla${value === 1 ? "" : "s"} mostrada${value === 1 ? "" : "s"}`;
   }
   return `${value} template${value === 1 ? "" : "s"} shown`;
+}
+
+function getFeatureLabel(rawFeature) {
+  const feature = String(rawFeature || "").trim();
+  const labels = {
+    "User authentication": ["User authentication", "Autenticacion de usuarios"],
+    "Team collaboration": ["Team collaboration", "Colaboracion en equipo"],
+    "Payments and billing": ["Payments and billing", "Pagos y facturacion"],
+    Notifications: ["Notifications", "Notificaciones"],
+    "Admin dashboard": ["Admin dashboard", "Panel administrativo"],
+    "Analytics reports": ["Analytics reports", "Reportes de analitica"],
+  };
+  const entry = labels[feature];
+  if (!entry) return feature;
+  return getCopy(entry[0], entry[1]);
+}
+
+function getFeatureListLabel(features) {
+  return (Array.isArray(features) ? features : []).map((item) => getFeatureLabel(item)).join(", ");
+}
+
+function localizeAiRuntimeNote(rawNote) {
+  const note = String(rawNote || "").trim();
+  if (!note) return "";
+  if (getCurrentLanguage() !== "es") return note;
+
+  const normalized = note.toLowerCase();
+  if (normalized.includes("openai_api_key")) {
+    return "OPENAI_API_KEY no esta configurada. Se uso modo IA local.";
+  }
+  if (normalized.includes("using fallback") || normalized.includes("using local fallback")) {
+    return "La IA remota no estuvo disponible. Se uso modo IA local.";
+  }
+  if (normalized.includes("openai request failed")) {
+    return "Fallo la solicitud a OpenAI. Se uso modo IA local.";
+  }
+  if (normalized.includes("openai returned empty content")) {
+    return "OpenAI devolvio contenido vacio. Se uso modo IA local.";
+  }
+  if (normalized.includes("openai response was not valid json")) {
+    return "La respuesta de OpenAI no fue JSON valido. Se uso modo IA local.";
+  }
+  if (normalized.includes("openai response shape invalid")) {
+    return "La respuesta de OpenAI no tuvo el formato esperado. Se uso modo IA local.";
+  }
+  if (normalized.includes("openai")) {
+    return "OpenAI no estuvo disponible. Se uso modo IA local.";
+  }
+
+  return "Se uso modo IA local para completar esta accion.";
 }
 
 (function initSite() {
@@ -1289,7 +1351,35 @@ function findTemplateByName(templateName) {
 }
 
 function buildAppPreviewHtml({ projectName, template, target, features, owner }) {
-  const featureItems = (Array.isArray(features) ? features : []).map((item) => `<li>${escapeHtml(String(item || ""))}</li>`).join("");
+  const featureItems = (Array.isArray(features) ? features : []).map((item) => `<li>${escapeHtml(getFeatureLabel(item))}</li>`).join("");
+  const navLabels = {
+    overview: getCopy("Overview", "Resumen"),
+    customers: getCopy("Customers", "Clientes"),
+    automation: getCopy("Automation", "Automatizacion"),
+    billing: getCopy("Billing", "Facturacion"),
+    settings: getCopy("Settings", "Configuracion"),
+  };
+  const ownerLabel = getCopy("Owner", "Responsable");
+  const targetLabel = getCopy("Target", "Objetivo");
+  const generatedLabel = getCopy("AI-generated first version includes", "La primera version generada con IA incluye");
+  const guidanceLabel = getCopy("Launch guidance", "Guia de lanzamiento");
+  const guidanceLine1 = getCopy(
+    "Database and hosting are included by default",
+    "Base de datos y hosting vienen incluidos por defecto"
+  );
+  const guidanceLine2 = getCopy(
+    "Use default app URL or add custom domain later",
+    "Usa la URL por defecto o agrega dominio personalizado despues"
+  );
+  const guidanceLine3 = getCopy(
+    "Publish after test flow passes",
+    "Publica despues de validar el flujo de pruebas"
+  );
+  const proofLabel = getCopy(
+    "Prototype is working. Next, AI shows optional integrations only when needed.",
+    "El prototipo funciona. Luego, la IA mostrara integraciones opcionales solo cuando hagan falta."
+  );
+  const livePrototypeLabel = getCopy("islaAPP Live Prototype", "Prototipo en vivo islaAPP");
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -1456,40 +1546,40 @@ function buildAppPreviewHtml({ projectName, template, target, features, owner })
     <div class="wrap">
       <section class="shell">
         <header class="topbar">
-          <span class="logo"><i class="dot"></i> islaAPP Live Prototype</span>
+          <span class="logo"><i class="dot"></i> ${escapeHtml(livePrototypeLabel)}</span>
           <span class="actions"><i></i><i></i><i></i></span>
         </header>
         <div class="body">
           <aside class="sidebar">
             <span class="chip">${escapeHtml(template)}</span>
             <ul class="menu">
-              <li>Overview</li>
-              <li>Customers</li>
-              <li>Automation</li>
-              <li>Billing</li>
-              <li>Settings</li>
+              <li>${escapeHtml(navLabels.overview)}</li>
+              <li>${escapeHtml(navLabels.customers)}</li>
+              <li>${escapeHtml(navLabels.automation)}</li>
+              <li>${escapeHtml(navLabels.billing)}</li>
+              <li>${escapeHtml(navLabels.settings)}</li>
             </ul>
           </aside>
           <main class="main">
             <article class="hero">
               <h1>${escapeHtml(projectName)}</h1>
-              <p class="meta"><strong>Owner:</strong> ${escapeHtml(owner)} • <strong>Target:</strong> ${escapeHtml(target)}</p>
+              <p class="meta"><strong>${escapeHtml(ownerLabel)}:</strong> ${escapeHtml(owner)} • <strong>${escapeHtml(targetLabel)}:</strong> ${escapeHtml(target)}</p>
             </article>
             <section class="widgets">
               <article class="card">
-                <strong>AI-generated first version includes</strong>
+                <strong>${escapeHtml(generatedLabel)}</strong>
                 <ul>${featureItems}</ul>
               </article>
               <article class="card">
-                <strong>Launch guidance</strong>
+                <strong>${escapeHtml(guidanceLabel)}</strong>
                 <ul>
-                  <li>Database and hosting are included by default</li>
-                  <li>Use default app URL or add custom domain later</li>
-                  <li>Publish after test flow passes</li>
+                  <li>${escapeHtml(guidanceLine1)}</li>
+                  <li>${escapeHtml(guidanceLine2)}</li>
+                  <li>${escapeHtml(guidanceLine3)}</li>
                 </ul>
               </article>
             </section>
-            <div class="proof">Prototype is working. Next, AI shows optional integrations only when needed.</div>
+            <div class="proof">${escapeHtml(proofLabel)}</div>
           </main>
         </div>
       </section>
@@ -1500,46 +1590,74 @@ function buildAppPreviewHtml({ projectName, template, target, features, owner })
 
 function buildAppPreviewEmbed({ projectName, template, target, features, owner }) {
   const featureItems = (Array.isArray(features) ? features : [])
-    .map((item) => `<li style="margin-top:6px;">${escapeHtml(String(item || ""))}</li>`)
+    .map((item) => `<li style="margin-top:6px;">${escapeHtml(getFeatureLabel(item))}</li>`)
     .join("");
+  const navLabels = {
+    overview: getCopy("Overview", "Resumen"),
+    customers: getCopy("Customers", "Clientes"),
+    automation: getCopy("Automation", "Automatizacion"),
+    billing: getCopy("Billing", "Facturacion"),
+    settings: getCopy("Settings", "Configuracion"),
+  };
+  const ownerLabel = getCopy("Owner", "Responsable");
+  const targetLabel = getCopy("Target", "Objetivo");
+  const generatedLabel = getCopy("AI-generated first version includes", "La primera version generada con IA incluye");
+  const guidanceLabel = getCopy("Launch guidance", "Guia de lanzamiento");
+  const guidanceLine1 = getCopy(
+    "Database and hosting are included by default",
+    "Base de datos y hosting vienen incluidos por defecto"
+  );
+  const guidanceLine2 = getCopy(
+    "Use default app URL or add custom domain later",
+    "Usa la URL por defecto o agrega dominio personalizado despues"
+  );
+  const guidanceLine3 = getCopy(
+    "Publish after test flow passes",
+    "Publica despues de validar el flujo de pruebas"
+  );
+  const proofLabel = getCopy(
+    "Prototype is working. Next, AI shows optional integrations only when needed.",
+    "El prototipo funciona. Luego, la IA mostrara integraciones opcionales solo cuando hagan falta."
+  );
+  const livePrototypeLabel = getCopy("islaAPP Live Prototype", "Prototipo en vivo islaAPP");
   return `
     <section style="font-family:Manrope,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1f2942;background:linear-gradient(148deg,#f6f8ff,#eef2ff 48%,#f8f3ff);min-height:100%;padding:12px;">
       <div style="border:1px solid rgba(50,86,199,.2);border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 14px 40px rgba(38,58,115,.12);max-width:1020px;margin:0 auto;">
         <header style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.7rem .9rem;background:linear-gradient(130deg,#1f4bdb,#7637de 55%,#ef2d72);color:#fff;">
-          <span style="display:inline-flex;align-items:center;gap:.45rem;font-size:.82rem;font-weight:800;letter-spacing:.02em;"><i style="width:.55rem;height:.55rem;border-radius:999px;background:#fff;display:inline-block;"></i>islaAPP Live Prototype</span>
+          <span style="display:inline-flex;align-items:center;gap:.45rem;font-size:.82rem;font-weight:800;letter-spacing:.02em;"><i style="width:.55rem;height:.55rem;border-radius:999px;background:#fff;display:inline-block;"></i>${escapeHtml(livePrototypeLabel)}</span>
           <span style="display:inline-flex;gap:.35rem;"><i style="width:.45rem;height:.45rem;border-radius:999px;background:rgba(255,255,255,.75);display:inline-block;"></i><i style="width:.45rem;height:.45rem;border-radius:999px;background:rgba(255,255,255,.75);display:inline-block;"></i><i style="width:.45rem;height:.45rem;border-radius:999px;background:rgba(255,255,255,.75);display:inline-block;"></i></span>
         </header>
         <div style="display:grid;grid-template-columns:220px 1fr;min-height:420px;">
           <aside style="background:#f8faff;border-right:1px solid rgba(50,86,199,.14);padding:.95rem .75rem;">
             <span style="display:inline-flex;border-radius:999px;padding:.24rem .55rem;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:linear-gradient(120deg,#1f4bdb,#e72a6f);">${escapeHtml(template)}</span>
             <ul style="list-style:none;padding:0;margin:.9rem 0 0;display:grid;gap:.45rem;">
-              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">Overview</li>
-              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">Customers</li>
-              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">Automation</li>
-              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">Billing</li>
-              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">Settings</li>
+              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">${escapeHtml(navLabels.overview)}</li>
+              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">${escapeHtml(navLabels.customers)}</li>
+              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">${escapeHtml(navLabels.automation)}</li>
+              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">${escapeHtml(navLabels.billing)}</li>
+              <li style="border:1px solid rgba(44,72,164,.14);border-radius:.6rem;padding:.46rem .52rem;font-size:.78rem;background:#fff;">${escapeHtml(navLabels.settings)}</li>
             </ul>
           </aside>
           <main style="padding:.95rem;display:grid;gap:.8rem;align-content:start;">
             <article style="border:1px solid rgba(57,86,179,.18);border-radius:.85rem;padding:.72rem .8rem;background:linear-gradient(125deg,#f8fbff,#fef8ff);">
               <h3 style="margin:0;font-size:1.16rem;line-height:1.28;color:#1e2a46;">${escapeHtml(projectName)}</h3>
-              <p style="margin:.35rem 0 0;color:#415274;font-size:.86rem;"><strong>Owner:</strong> ${escapeHtml(owner)} • <strong>Target:</strong> ${escapeHtml(target)}</p>
+              <p style="margin:.35rem 0 0;color:#415274;font-size:.86rem;"><strong>${escapeHtml(ownerLabel)}:</strong> ${escapeHtml(owner)} • <strong>${escapeHtml(targetLabel)}:</strong> ${escapeHtml(target)}</p>
             </article>
             <section style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;">
               <article style="border:1px solid rgba(50,86,199,.14);border-radius:.8rem;background:#fff;padding:.7rem;">
-                <strong style="color:#21345c;font-size:.86rem;">AI-generated first version includes</strong>
+                <strong style="color:#21345c;font-size:.86rem;">${escapeHtml(generatedLabel)}</strong>
                 <ul style="margin:.5rem 0 0;padding-left:1.05rem;">${featureItems}</ul>
               </article>
               <article style="border:1px solid rgba(50,86,199,.14);border-radius:.8rem;background:#fff;padding:.7rem;">
-                <strong style="color:#21345c;font-size:.86rem;">Launch guidance</strong>
+                <strong style="color:#21345c;font-size:.86rem;">${escapeHtml(guidanceLabel)}</strong>
                 <ul style="margin:.5rem 0 0;padding-left:1.05rem;">
-                  <li style="margin-top:6px;">Database and hosting are included by default</li>
-                  <li style="margin-top:6px;">Use default app URL or add custom domain later</li>
-                  <li style="margin-top:6px;">Publish after test flow passes</li>
+                  <li style="margin-top:6px;">${escapeHtml(guidanceLine1)}</li>
+                  <li style="margin-top:6px;">${escapeHtml(guidanceLine2)}</li>
+                  <li style="margin-top:6px;">${escapeHtml(guidanceLine3)}</li>
                 </ul>
               </article>
             </section>
-            <div style="border-radius:.75rem;border:1px solid rgba(16,121,90,.3);background:#ecfbf5;color:#17634c;padding:.58rem .68rem;font-size:.8rem;font-weight:700;">Prototype is working. Next, AI shows optional integrations only when needed.</div>
+            <div style="border-radius:.75rem;border:1px solid rgba(16,121,90,.3);background:#ecfbf5;color:#17634c;padding:.58rem .68rem;font-size:.8rem;font-weight:700;">${escapeHtml(proofLabel)}</div>
           </main>
         </div>
       </div>
@@ -1582,7 +1700,7 @@ function ensureModalPreviewSurface(modalNode, frameNode, fallbackId) {
     fallback.id = fallbackId;
     fallback.className = "template-demo-frame";
     fallback.setAttribute("role", "document");
-    fallback.setAttribute("aria-label", "Template demo preview");
+    fallback.setAttribute("aria-label", getCopy("Template demo preview", "Vista previa de demo de plantilla"));
     card.appendChild(fallback);
   }
 
@@ -2611,7 +2729,7 @@ function initAppBuilder() {
   const templateCount = document.querySelector("#builderTemplateCount");
   const featurePresetButtons = Array.from(document.querySelectorAll("[data-feature-preset]"));
   const liveSummaryList = document.querySelector("#builderLiveSummaryList");
-  const fastExampleButtons = Array.from(document.querySelectorAll("[data-fast-example]"));
+  const fastExampleButtons = Array.from(document.querySelectorAll("[data-fast-example-en],[data-fast-example-es]"));
   const enhancePromptButton = document.querySelector("#builderEnhancePrompt");
   const ideaBurstButton = document.querySelector("#builderIdeaBurst");
   const featureHintButton = document.querySelector("#builderFeatureHint");
@@ -2686,8 +2804,18 @@ function initAppBuilder() {
     templateCatalog.map((item) => [
       item.name,
       {
-        description: item.longDescription,
-        highlights: Array.isArray(item.features) && item.features.length > 0 ? item.features : ["Responsive layout", "Launch-ready baseline", "AI customization flow"],
+        description:
+          getCurrentLanguage() === "es"
+            ? "Plantilla visual lista para personalizar con IA y lanzar rapido."
+            : item.longDescription,
+        highlights:
+          Array.isArray(item.features) && item.features.length > 0
+            ? item.features.map((feature) => getFeatureLabel(feature))
+            : [
+                getCopy("Responsive layout", "Diseno responsivo"),
+                getCopy("Launch-ready baseline", "Base lista para lanzar"),
+                getCopy("AI customization flow", "Flujo de personalizacion con IA"),
+              ],
       },
     ])
   );
@@ -2698,10 +2826,19 @@ function initAppBuilder() {
         .map((item) => {
           const category = String(item.category || "");
           const name = String(item.name || "");
-          const description = String(item.shortDescription || item.longDescription || "Template starting point.");
+          const description =
+            getCurrentLanguage() === "es"
+              ? "Plantilla visual lista para personalizar."
+              : String(item.shortDescription || item.longDescription || "Template starting point.");
           const status = getTemplateStatusLabel(String(item.status || "Customizable"));
           const discoverTags = Array.from(
-            new Set([status, String(item.stack || ""), ...(Array.isArray(item.perfectFor) ? item.perfectFor.slice(0, 2) : [])].filter(Boolean))
+            new Set(
+              (
+                getCurrentLanguage() === "es"
+                  ? [status, String(item.stack || ""), "IA"]
+                  : [status, String(item.stack || ""), ...(Array.isArray(item.perfectFor) ? item.perfectFor.slice(0, 2) : [])]
+              ).filter(Boolean)
+            )
           ).slice(0, 4);
           const thumbClass = String(item.thumbClass || "template-thumb-saas");
           const searchText = [
@@ -2793,7 +2930,9 @@ function initAppBuilder() {
     }
     if (extrasToggleButton instanceof HTMLButtonElement) {
       extrasToggleButton.setAttribute("aria-expanded", extrasVisible ? "true" : "false");
-      extrasToggleButton.textContent = extrasVisible ? "Hide Advanced" : "Show Advanced";
+      extrasToggleButton.textContent = extrasVisible
+        ? getCopy("Hide Advanced", "Ocultar avanzado")
+        : getCopy("Show Advanced", "Mostrar avanzado");
     }
     setAiPanelVisibility();
     setBeginnerSurface();
@@ -2832,14 +2971,15 @@ function initAppBuilder() {
       .replace(/[^\w\s]/g, " ")
       .replace(/\s+/g, " ")
       .trim();
-    if (!cleaned) return "My AI App";
+    if (!cleaned) return getCopy("My AI App", "Mi App IA");
     const stopWords = new Set(["build", "create", "make", "app", "website", "site", "for", "with", "the", "a", "an", "to", "and"]);
     const words = cleaned
       .split(" ")
       .filter((word) => word.length > 2 && !stopWords.has(word.toLowerCase()))
       .slice(0, 3);
-    const base = words.length > 0 ? titleWords(words.join(" ")).join(" ") : "My AI App";
-    return base.endsWith("App") ? base : `${base} App`;
+    const base = words.length > 0 ? titleWords(words.join(" ")).join(" ") : getCopy("My AI App", "Mi App IA");
+    const appSuffix = getCopy("App", "App");
+    return base.endsWith(appSuffix) ? base : `${base} ${appSuffix}`;
   };
 
   const inferDraftFromPrompt = (prompt, ownerName) => {
@@ -2890,7 +3030,7 @@ function initAppBuilder() {
     return {
       prompt: rawPrompt,
       projectName: suggestProjectName(rawPrompt),
-      owner: String(ownerName || "").trim() || "Founder",
+      owner: String(ownerName || "").trim() || getCopy("Founder", "Fundador"),
       template,
       features,
       stack,
@@ -2916,7 +3056,7 @@ function initAppBuilder() {
     const complexity =
       wordCount >= 32 ? getCopy("High", "Alta") : wordCount >= 16 ? getCopy("Medium", "Media") : getCopy("Low", "Baja");
 
-    const stackHint = draft && draft.stack ? draft.stack : inferDraftFromPrompt(text, "Owner").stack;
+    const stackHint = draft && draft.stack ? draft.stack : inferDraftFromPrompt(text, getCopy("Owner", "Responsable")).stack;
     const confidenceValue = Math.max(35, Math.min(99, score + (draft ? 18 : 0)));
 
     const signalLines = [];
@@ -2996,11 +3136,15 @@ function initAppBuilder() {
 
       const payload = await response.json();
       if (!response.ok || !payload.ok || !payload.draft || typeof payload.draft !== "object") {
+        const fallbackNote = getCopy(
+          "AI endpoint unavailable. Using local fallback.",
+          "Endpoint IA no disponible. Se uso respaldo local."
+        );
         return {
           ok: false,
           draft: localFallback,
           source: "local",
-          note: String(payload && payload.error ? payload.error : "AI endpoint unavailable. Using local fallback."),
+          note: getCurrentLanguage() === "es" ? fallbackNote : String(payload && payload.error ? payload.error : fallbackNote),
         };
       }
 
@@ -3030,19 +3174,25 @@ function initAppBuilder() {
         ok: false,
         draft: localFallback,
         source: "local",
-        note: "AI endpoint unavailable. Using local fallback.",
+        note: getCopy("AI endpoint unavailable. Using local fallback.", "Endpoint IA no disponible. Se uso respaldo local."),
       };
     }
   };
 
   const buildEnhancedPrompt = (draft) => {
-    const data = draft && typeof draft === "object" ? draft : inferDraftFromPrompt("", "Owner");
-    const features = Array.isArray(data.features) && data.features.length > 0 ? data.features.slice(0, 4).join(", ") : "authentication, dashboard";
-    return `Build ${data.projectName} using ${data.stack}. Include ${features}. Target ${data.target}. Deliver responsive layout and clear onboarding flow.`;
+    const data = draft && typeof draft === "object" ? draft : inferDraftFromPrompt("", getCopy("Owner", "Responsable"));
+    const features =
+      Array.isArray(data.features) && data.features.length > 0
+        ? data.features.slice(0, 4).map((item) => getFeatureLabel(item)).join(", ")
+        : getCopy("authentication, dashboard", "autenticacion, panel");
+    return getCopy(
+      `Build ${data.projectName} using ${data.stack}. Include ${features}. Target ${data.target}. Deliver responsive layout and clear onboarding flow.`,
+      `Crea ${data.projectName} usando ${data.stack}. Incluye ${features}. Objetivo ${data.target}. Entrega un diseno responsivo y un flujo de inicio claro.`
+    );
   };
 
   const getBurstTemplates = (prompt) => {
-    const inferred = inferDraftFromPrompt(prompt, "Owner");
+    const inferred = inferDraftFromPrompt(prompt, getCopy("Owner", "Responsable"));
     const preferredCategory = (() => {
       const templateMatch = templateCatalog.find((item) => item.name === inferred.template);
       return templateMatch ? String(templateMatch.category || "") : "";
@@ -3071,9 +3221,9 @@ function initAppBuilder() {
       highlights: ["Responsive layout", "App shell + pages", "Launch-ready starting point"],
     };
     return quickPreviewHtml({
-      projectName: `${templateName} Demo`,
+      projectName: `${templateName} ${getCopy("Demo", "Demostracion")}`,
       template: templateName,
-      target: "Template demo",
+      target: getCopy("Template demo", "Demo de plantilla"),
       features: meta.highlights,
       owner: "islaAPP",
     });
@@ -3156,46 +3306,72 @@ function initAppBuilder() {
     const missing = requirements.filter((item) => item.required && !item.ready);
     const recommendations = [];
 
-    recommendations.push(`AI proved the first build. Database, hosting, and app URL are already included.`);
-    recommendations.push(`Next: open <a href="${escapeAttribute("projects.html")}">Projects</a> and review your generated app.`);
+    recommendations.push(
+      getCopy(
+        "AI proved the first build. Database, hosting, and app URL are already included.",
+        "La IA valido el primer build. Base de datos, hosting y URL de app ya vienen incluidos."
+      )
+    );
+    recommendations.push(
+      `${getCopy("Next: open", "Siguiente: abre")} <a href="${escapeAttribute("projects.html")}">${escapeHtml(
+        getCopy("Projects", "Proyectos")
+      )}</a> ${escapeHtml(getCopy("and review your generated app.", "y revisa tu app generada."))}`
+    );
 
     if (Array.isArray(inferred.nextSteps) && inferred.nextSteps.length > 0) {
-      inferred.nextSteps.slice(0, 3).forEach((step) => {
-        recommendations.push(escapeHtml(String(step)));
-      });
+      if (getCurrentLanguage() === "es") {
+        recommendations.push("La IA tambien preparo siguientes pasos segun tu proyecto.");
+      } else {
+        inferred.nextSteps.slice(0, 3).forEach((step) => {
+          recommendations.push(escapeHtml(String(step)));
+        });
+      }
     }
 
     if (missing.length > 0) {
       recommendations.push(
-        `Optional integrations detected: ${escapeHtml(missing.map((item) => item.title).join(", "))}. Configure only if needed in <a href="${escapeAttribute(
+        `${getCopy("Optional integrations detected", "Integraciones opcionales detectadas")}: ${escapeHtml(
+          missing.map((item) => item.title).join(", ")
+        )}. ${escapeHtml(getCopy("Configure only if needed in", "Configuralas solo si hace falta en"))} <a href="${escapeAttribute(
           "setup.html"
-        )}">Setup</a>.`
+        )}">${escapeHtml(getCopy("Setup", "Setup"))}</a>.`
       );
     }
 
     if (inferred.signals.enterprise) {
       recommendations.push(
-        `Enterprise signal detected (compliance/SSO/governance). Offer <a href="${escapeAttribute(
+        `${escapeHtml(
+          getCopy(
+            "Enterprise signal detected (compliance/SSO/governance). Offer",
+            "Senal enterprise detectada (compliance/SSO/gobernanza). Ofrece"
+          )
+        )} <a href="${escapeAttribute(
           "support.html"
-        )}">Enterprise contract</a>.`
+        )}">${escapeHtml(getCopy("Enterprise contract", "Contrato enterprise"))}</a>.`
       );
     } else if (inferred.signals.team || inferred.features.includes("Team collaboration")) {
       recommendations.push(
-        `Team workflow detected. Recommend <a href="${escapeAttribute(
+        `${escapeHtml(getCopy("Team workflow detected. Recommend", "Flujo de equipo detectado. Recomienda"))} <a href="${escapeAttribute(
           "pricing.html"
-        )}">Teams plan</a> for per-user billing and shared controls.`
+        )}">${escapeHtml(getCopy("Teams plan", "Plan Teams"))}</a> ${escapeHtml(
+          getCopy("for per-user billing and shared controls.", "para cobro por usuario y controles compartidos.")
+        )}`
       );
     } else {
       recommendations.push(
-        `For solo builders, start on Free and upgrade to <a href="${escapeAttribute(
+        `${escapeHtml(getCopy("For solo builders, start on Free and upgrade to", "Para creadores individuales, inicia en Free y sube a"))} <a href="${escapeAttribute(
           "pricing.html"
-        )}">Pro</a> when faster builds and more AI credits are needed.`
+        )}">${escapeHtml(getCopy("Pro", "Pro"))}</a> ${escapeHtml(
+          getCopy("when faster builds and more AI credits are needed.", "cuando necesites builds mas rapidos y mas creditos IA.")
+        )}`
       );
     }
 
     if (inferred.signals.highUsage || inferred.features.length >= 4) {
       recommendations.push(
-        `High-usage app detected. Offer credit add-ons from <a href="${escapeAttribute("pricing.html")}">Pricing</a> as usage grows.`
+        `${escapeHtml(getCopy("High-usage app detected. Offer credit add-ons from", "App de alto uso detectada. Ofrece creditos extra desde"))} <a href="${escapeAttribute(
+          "pricing.html"
+        )}">${escapeHtml(getCopy("Pricing", "Precios"))}</a> ${escapeHtml(getCopy("as usage grows.", "a medida que crece el uso."))}`
       );
     }
 
@@ -3381,7 +3557,7 @@ function initAppBuilder() {
     const owner = valueOf("#builderOwner");
     const notSelectedLabel = getCopy("Not selected", "No seleccionado");
     const readyToGenerate = Boolean(projectName && owner && stack !== notSelectedLabel && target !== notSelectedLabel && selectedFeatures.length > 0);
-    const featureText = selectedFeatures.length > 0 ? selectedFeatures.join(", ") : getCopy("0 selected", "0 seleccionadas");
+    const featureText = selectedFeatures.length > 0 ? getFeatureListLabel(selectedFeatures) : getCopy("0 selected", "0 seleccionadas");
 
     liveSummaryList.innerHTML = [
       `${escapeHtml(getCopy("Template", "Plantilla"))}: ${escapeHtml(templateName)}`,
@@ -3505,8 +3681,15 @@ function initAppBuilder() {
       return;
     }
     const meta = templateMetaByName[activeTemplateName] || {
-      description: "Template selected. Review details and customize this build with AI.",
-      highlights: ["App structure ready", "Customize features with AI", "Continue to stack setup"],
+      description: getCopy(
+        "Template selected. Review details and customize this build with AI.",
+        "Plantilla seleccionada. Revisa detalles y personaliza este build con IA."
+      ),
+      highlights: [
+        getCopy("App structure ready", "Estructura de app lista"),
+        getCopy("Customize features with AI", "Personaliza funciones con IA"),
+        getCopy("Continue to stack setup", "Continua con configuracion de stack"),
+      ],
     };
     const selectedTemplate = templateByName[activeTemplateName] || null;
     const thumbClass = templateThumbClassByName[activeTemplateName] || "template-thumb-saas";
@@ -3555,7 +3738,7 @@ function initAppBuilder() {
     const previewSurface = ensureModalPreviewSurface(templateDemoModal, templateDemoFrame, "templateDemoSurface");
     if (!(previewSurface instanceof HTMLElement)) return;
     if (templateDemoTitle instanceof HTMLElement) {
-      templateDemoTitle.textContent = `${selectedTemplate} Demo`;
+      templateDemoTitle.textContent = `${selectedTemplate} ${getCopy("Demo", "Demostracion")}`;
     }
     previewSurface.innerHTML = buildTemplateDemoHtml(selectedTemplate);
     templateDemoModal.classList.remove("hidden");
@@ -3578,7 +3761,7 @@ function initAppBuilder() {
       if (showCard) visibleCount += 1;
     });
     if (templateCount instanceof HTMLElement) {
-      templateCount.textContent = `${visibleCount} template${visibleCount === 1 ? "" : "s"} shown`;
+      templateCount.textContent = getTemplateCountLabel(visibleCount);
     }
   };
 
@@ -3785,9 +3968,9 @@ function initAppBuilder() {
     localStorage.setItem(storageKey, JSON.stringify(draft));
 
     if (showSavedMessage) {
-      showStatus(output, "success", "Draft saved", [
-        "Your app builder selections were saved in this browser.",
-        "You can return later and continue from this draft.",
+      showStatus(output, "success", getCopy("Draft saved", "Borrador guardado"), [
+        getCopy("Your app builder selections were saved in this browser.", "Tus selecciones del constructor se guardaron en este navegador."),
+        getCopy("You can return later and continue from this draft.", "Puedes volver luego y continuar desde este borrador."),
       ]);
     }
   };
@@ -3848,7 +4031,7 @@ function initAppBuilder() {
     });
 
     setInputValue("#builderProjectName", String(urlParams.get("project") || `${templateFromUrl.name} Build`));
-    setInputValue("#builderOwner", String(urlParams.get("owner") || "Founder"));
+    setInputValue("#builderOwner", String(urlParams.get("owner") || getCopy("Founder", "Fundador")));
     setSelectValue("#builderStack", String(urlParams.get("stack") || templateFromUrl.stack));
     setSelectValue("#builderTarget", String(urlParams.get("target") || templateFromUrl.target));
   }
@@ -3888,7 +4071,10 @@ function initAppBuilder() {
   if (fromStartHere) {
     appendChatMessage(
       "assistant",
-      "Start Here mode is active. First, type your idea and click Build My First Draft. You only need manual options if you want extra control."
+      getCopy(
+        "Start Here mode is active. First, type your idea and click Build My First Draft. You only need manual options if you want extra control.",
+        "Modo Comenzar activo. Primero escribe tu idea y haz clic en Crear mi primer borrador. Solo necesitas opciones manuales si quieres mas control."
+      )
     );
     if (fastPromptInput instanceof HTMLTextAreaElement && !String(fastPromptInput.value || "").trim()) {
       fastPromptInput.focus();
@@ -3921,10 +4107,10 @@ function initAppBuilder() {
   }
 
   if (templateFromUrl) {
-    showStatus(output, "success", "Template loaded", [
-      `Template: ${templateFromUrl.name}`,
-      "Selections were prefilled from template details.",
-      "Adjust anything you want, then generate your project.",
+    showStatus(output, "success", getCopy("Template loaded", "Plantilla cargada"), [
+      `${getCopy("Template", "Plantilla")}: ${templateFromUrl.name}`,
+      getCopy("Selections were prefilled from template details.", "Las selecciones se precargaron desde los detalles de la plantilla."),
+      getCopy("Adjust anything you want, then generate your project.", "Ajusta lo que quieras y luego genera tu proyecto."),
     ]);
   }
 
@@ -3940,16 +4126,16 @@ function initAppBuilder() {
         const stack = valueOf("#builderStack");
         const target = valueOf("#builderTarget");
         if (!projectName || !owner || !stack || !target || selectedFeatures.length === 0) {
-          showStatus(output, "error", "Clone blocked", [
-            "Template loaded, but required fields are incomplete.",
-            "Complete stack/target/features, then click Create My Starter Project.",
+          showStatus(output, "error", getCopy("Clone blocked", "Clonado bloqueado"), [
+            getCopy("Template loaded, but required fields are incomplete.", "La plantilla se cargo, pero faltan campos requeridos."),
+            getCopy("Complete stack/target/features, then click Create My Starter Project.", "Completa stack/objetivo/funciones y luego haz clic en Crear mi proyecto inicial."),
           ]);
           return;
         }
 
         if (submitBtn) {
           submitBtn.disabled = true;
-          submitBtn.textContent = "Cloning...";
+          submitBtn.textContent = getCopy("Cloning...", "Clonando...");
         }
 
         const scaffold = await createStarterProject({
@@ -3963,25 +4149,25 @@ function initAppBuilder() {
 
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.textContent = "Create My Starter Project";
+          submitBtn.textContent = getCopy("Create My Starter Project", "Crear mi proyecto inicial");
         }
 
         if (scaffold.ok) {
           rememberLatestProject(scaffold.projectDir, "template-autoclone");
           setHasBuiltDraft(true);
           setExtrasVisible(true);
-          showStatus(output, "success", "Template cloned", [
-            `Template: ${templateFromUrl.name}`,
-            `Project folder created: ${String(scaffold.projectDir || "")}`,
-            "Open Projects dashboard to review files and preview.",
+          showStatus(output, "success", getCopy("Template cloned", "Plantilla clonada"), [
+            `${getCopy("Template", "Plantilla")}: ${templateFromUrl.name}`,
+            `${getCopy("Project folder created", "Carpeta del proyecto creada")}: ${String(scaffold.projectDir || "")}`,
+            getCopy("Open Projects dashboard to review files and preview.", "Abre Proyectos para revisar archivos y vista previa."),
           ]);
           setActiveStep(4);
           renderQuickGuide();
         } else {
-          showStatus(output, "error", "Template clone failed", [
-            `Template: ${templateFromUrl.name}`,
-            `Reason: ${String(scaffold.error || "Unknown error")}`,
-            "Run python3 dev_server.py and try clone again.",
+          showStatus(output, "error", getCopy("Template clone failed", "Fallo al clonar plantilla"), [
+            `${getCopy("Template", "Plantilla")}: ${templateFromUrl.name}`,
+            `${getCopy("Reason", "Motivo")}: ${String(scaffold.error || getCopy("Unknown error", "Error desconocido"))}`,
+            getCopy("Run python3 dev_server.py and try clone again.", "Ejecuta python3 dev_server.py e intenta clonar de nuevo."),
           ]);
           renderQuickGuide();
         }
@@ -4017,7 +4203,12 @@ function initAppBuilder() {
     fastExampleButtons.forEach((button) => {
       if (!(button instanceof HTMLButtonElement)) return;
       button.addEventListener("click", () => {
-        const example = String(button.dataset.fastExample || "").trim();
+        const language = getCurrentLanguage();
+        const exampleRaw =
+          language === "es"
+            ? String(button.dataset.fastExampleEs || button.dataset.fastExampleEn || "")
+            : String(button.dataset.fastExampleEn || button.dataset.fastExampleEs || "");
+        const example = exampleRaw.trim();
         if (!example) return;
         fastPromptInput.value = example;
         writeFastPromptState();
@@ -4045,19 +4236,26 @@ function initAppBuilder() {
     if (!beforeDraft || typeof beforeDraft !== "object") return [];
     if (!afterDraft || typeof afterDraft !== "object") return [];
     const changes = [];
+    const naLabel = getCopy("N/A", "N/D");
     if (String(beforeDraft.template || "") !== String(afterDraft.template || "")) {
-      changes.push(`Template: ${String(beforeDraft.template || "") || "N/A"} -> ${String(afterDraft.template || "") || "N/A"}`);
+      changes.push(
+        `${getCopy("Template", "Plantilla")}: ${String(beforeDraft.template || "") || naLabel} -> ${String(afterDraft.template || "") || naLabel}`
+      );
     }
     if (String(beforeDraft.stack || "") !== String(afterDraft.stack || "")) {
-      changes.push(`Stack: ${String(beforeDraft.stack || "") || "N/A"} -> ${String(afterDraft.stack || "") || "N/A"}`);
+      changes.push(
+        `${getCopy("Stack", "Stack")}: ${String(beforeDraft.stack || "") || naLabel} -> ${String(afterDraft.stack || "") || naLabel}`
+      );
     }
     if (String(beforeDraft.target || "") !== String(afterDraft.target || "")) {
-      changes.push(`Target: ${String(beforeDraft.target || "") || "N/A"} -> ${String(afterDraft.target || "") || "N/A"}`);
+      changes.push(
+        `${getCopy("Target", "Objetivo")}: ${String(beforeDraft.target || "") || naLabel} -> ${String(afterDraft.target || "") || naLabel}`
+      );
     }
     const beforeFeatures = Array.isArray(beforeDraft.features) ? beforeDraft.features : [];
     const afterFeatures = Array.isArray(afterDraft.features) ? afterDraft.features : [];
     if (beforeFeatures.join("|") !== afterFeatures.join("|")) {
-      changes.push(`Features: ${beforeFeatures.length} -> ${afterFeatures.length}`);
+      changes.push(`${getCopy("Features", "Funciones")}: ${beforeFeatures.length} -> ${afterFeatures.length}`);
     }
     return changes.slice(0, 4);
   };
@@ -4109,7 +4307,9 @@ function initAppBuilder() {
         } catch (error) {
           appendChatMessage(
             "assistant",
-            `I hit an error while enhancing the prompt: ${error instanceof Error ? error.message : "Unknown error"}`
+            `${getCopy("I hit an error while enhancing the prompt", "Ocurrio un error al mejorar el prompt")}: ${
+              error instanceof Error ? error.message : getCopy("Unknown error", "Error desconocido")
+            }`
           );
         } finally {
           setThinking(false);
@@ -4126,7 +4326,9 @@ function initAppBuilder() {
         const listMarkup = burst
           .map(
             (item) =>
-              `<li><strong>${escapeHtml(String(item.name || ""))}</strong> - ${escapeHtml(String(item.shortDescription || ""))}</li>`
+              `<li><strong>${escapeHtml(String(item.name || ""))}</strong> - ${escapeHtml(
+                getCurrentLanguage() === "es" ? "Plantilla lista para personalizar." : String(item.shortDescription || "")
+              )}</li>`
           )
           .join("");
         appendChatMessageHtml(
@@ -4146,7 +4348,10 @@ function initAppBuilder() {
     featureHintButton.addEventListener("click", async () => {
       await withToolBusy(featureHintButton, async () => {
         const prompt = valueOf("#builderFastPrompt");
-        const inferred = inferDraftFromPrompt(prompt || "Build a business dashboard with authentication", valueOf("#builderFastOwner"));
+        const inferred = inferDraftFromPrompt(
+          prompt || getCopy("Build a business dashboard with authentication", "Crea un panel de negocio con autenticacion"),
+          valueOf("#builderFastOwner")
+        );
         latestAiDraft = inferred;
         const selectedSet = new Set(inferred.features || []);
         featureInputs.forEach((input) => {
@@ -4235,10 +4440,12 @@ function initAppBuilder() {
               }
               ${
                 aiResult.source === "openai"
-                  ? `<p><strong>${escapeHtml(getCopy("AI mode:", "Modo IA:"))}</strong> OpenAI customization.</p>`
+                  ? `<p><strong>${escapeHtml(getCopy("AI mode:", "Modo IA:"))}</strong> ${escapeHtml(
+                      getCopy("OpenAI customization.", "Personalizacion con OpenAI.")
+                    )}</p>`
                   : `<p><strong>${escapeHtml(getCopy("AI mode:", "Modo IA:"))}</strong> ${escapeHtml(
                       getCopy("Local fallback customization", "Personalizacion local de respaldo")
-                    )}${aiResult.note ? ` (${escapeHtml(aiResult.note)})` : ""}.</p>`
+                    )}${aiResult.note ? ` (${escapeHtml(localizeAiRuntimeNote(aiResult.note))})` : ""}.</p>`
               }
             `
           );
@@ -4246,7 +4453,9 @@ function initAppBuilder() {
         } catch (error) {
           appendChatMessage(
             "assistant",
-            `I hit an error while applying customization: ${error instanceof Error ? error.message : "Unknown error"}`
+            `${getCopy("I hit an error while applying customization", "Ocurrio un error al aplicar la personalizacion")}: ${
+              error instanceof Error ? error.message : getCopy("Unknown error", "Error desconocido")
+            }`
           );
         } finally {
           setThinking(false);
@@ -4273,13 +4482,16 @@ function initAppBuilder() {
       const ownerName = valueOf("#builderFastOwner");
       const instruction = getCustomizationInstruction();
       if (!prompt) {
-        appendChatMessage("assistant", "Please type your app idea first, then click Build My First Draft.");
+        appendChatMessage(
+          "assistant",
+          getCopy("Please type your app idea first, then click Build My First Draft.", "Primero escribe tu idea de app y luego haz clic en Crear mi primer borrador.")
+        );
         return;
       }
 
       appendChatMessage("user", prompt);
       if (instruction) {
-        appendChatMessage("user", `Customization: ${instruction}`);
+        appendChatMessage("user", `${getCopy("Customization", "Personalizacion")}: ${instruction}`);
       }
       writeFastPromptState();
       if (fastPromptInput instanceof HTMLTextAreaElement) {
@@ -4287,7 +4499,7 @@ function initAppBuilder() {
       }
       if (fastSubmitButton instanceof HTMLButtonElement) {
         fastSubmitButton.disabled = true;
-        fastSubmitButton.textContent = "Building...";
+        fastSubmitButton.textContent = getCopy("Building...", "Creando...");
       }
       setThinking(true);
 
@@ -4318,18 +4530,20 @@ function initAppBuilder() {
         appendChatMessageHtml(
           "assistant",
           `
-            <p>I built your first draft for <strong>${escapeHtml(inferred.projectName)}</strong>.</p>
+            <p>${escapeHtml(getCopy("I built your first draft for", "Cree tu primer borrador para"))} <strong>${escapeHtml(inferred.projectName)}</strong>.</p>
             <ul>
-              <li>Template: ${escapeHtml(inferred.template)}</li>
-              <li>Stack: ${escapeHtml(inferred.stack)}</li>
-              <li>Target: ${escapeHtml(inferred.target)}</li>
+              <li>${escapeHtml(getCopy("Template", "Plantilla"))}: ${escapeHtml(inferred.template)}</li>
+              <li>${escapeHtml(getCopy("Stack", "Stack"))}: ${escapeHtml(inferred.stack)}</li>
+              <li>${escapeHtml(getCopy("Target", "Objetivo"))}: ${escapeHtml(inferred.target)}</li>
             </ul>
-            <p>Preview is now shown on the right.</p>
+            <p>${escapeHtml(getCopy("Preview is now shown on the right.", "La vista previa ahora se muestra a la derecha."))}</p>
             ${
               aiResult.source === "openai"
-                ? "<p><strong>AI mode:</strong> OpenAI planning is active.</p>"
-                : `<p><strong>AI mode:</strong> Local fallback plan${
-                    aiResult.note ? ` (${escapeHtml(aiResult.note)})` : ""
+                ? `<p><strong>${escapeHtml(getCopy("AI mode:", "Modo IA:"))}</strong> ${escapeHtml(
+                    getCopy("OpenAI planning is active.", "La planificacion con OpenAI esta activa.")
+                  )}</p>`
+                : `<p><strong>${escapeHtml(getCopy("AI mode:", "Modo IA:"))}</strong> ${escapeHtml(getCopy("Local fallback plan", "Plan local de respaldo"))}${
+                    aiResult.note ? ` (${escapeHtml(localizeAiRuntimeNote(aiResult.note))})` : ""
                   }.</p>`
             }
           `
@@ -4357,22 +4571,34 @@ function initAppBuilder() {
           }
           const projectDir = escapeHtml(String(scaffold.projectDir || ""));
           const previewLink = previewUrl
-            ? `<a href="${escapeAttribute(previewUrl)}" target="_blank" rel="noopener noreferrer">open the preview in a new tab</a>`
-            : "review the preview on this page";
+            ? `<a href="${escapeAttribute(previewUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(
+                getCopy("open the preview in a new tab", "abrir la vista previa en una nueva pestana")
+              )}</a>`
+            : escapeHtml(getCopy("review the preview on this page", "revisar la vista previa en esta pagina"));
           appendChatMessageHtml(
             "assistant",
             `
-              <p>Proof complete. I also created your project scaffold at <code>${projectDir}</code>.</p>
-              <p>You can ${previewLink}.</p>
+              <p>${escapeHtml(getCopy("Proof complete. I also created your project scaffold at", "Prueba completa. Tambien cree el scaffold del proyecto en"))} <code>${projectDir}</code>.</p>
+              <p>${escapeHtml(getCopy("You can", "Puedes"))} ${previewLink}.</p>
               ${
                 scaffold.aiSource === "openai"
-                  ? "<p><strong>Code generation:</strong> OpenAI customization build active.</p>"
+                  ? `<p><strong>${escapeHtml(getCopy("Code generation:", "Generacion de codigo:"))}</strong> ${escapeHtml(
+                      getCopy("OpenAI customization build active.", "Compilacion con personalizacion OpenAI activa.")
+                    )}</p>`
                   : scaffold.aiNote
-                  ? `<p><strong>Code generation:</strong> ${escapeHtml(scaffold.aiNote)}</p>`
+                  ? `<p><strong>${escapeHtml(getCopy("Code generation:", "Generacion de codigo:"))}</strong> ${escapeHtml(
+                      localizeAiRuntimeNote(scaffold.aiNote)
+                    )}</p>`
                   : ""
               }
-              <p>Next: open <a href="${escapeAttribute("projects.html")}">Projects</a> to review files and preview.</p>
-              <p>Database and hosting are already included. Use <a href="${escapeAttribute("setup.html")}">Setup</a> only for optional external integrations.</p>
+              <p>${escapeHtml(getCopy("Next: open", "Siguiente: abre"))} <a href="${escapeAttribute("projects.html")}">${escapeHtml(
+                getCopy("Projects", "Proyectos")
+              )}</a> ${escapeHtml(getCopy("to review files and preview.", "para revisar archivos y vista previa."))}</p>
+              <p>${escapeHtml(getCopy("Database and hosting are already included.", "Base de datos y hosting ya estan incluidos."))} ${escapeHtml(
+                getCopy("Use", "Usa")
+              )} <a href="${escapeAttribute("setup.html")}">Setup</a> ${escapeHtml(
+                getCopy("only for optional external integrations.", "solo para integraciones externas opcionales.")
+              )}</p>
             `
           );
           renderQuickGuide();
@@ -4380,21 +4606,28 @@ function initAppBuilder() {
           appendChatMessageHtml(
             "assistant",
             `
-              <p>Your AI draft and preview are ready, but project scaffolding failed.</p>
-              <p>Reason: ${escapeHtml(scaffold.error || "Unknown error")}.</p>
-              <p>Run <code>python3 dev_server.py</code> in this project folder, then try again.</p>
+              <p>${escapeHtml(getCopy("Your AI draft and preview are ready, but project scaffolding failed.", "Tu borrador IA y vista previa estan listos, pero fallo el scaffold del proyecto."))}</p>
+              <p>${escapeHtml(getCopy("Reason", "Motivo"))}: ${escapeHtml(scaffold.error || getCopy("Unknown error", "Error desconocido"))}.</p>
+              <p>${escapeHtml(getCopy("Run", "Ejecuta"))} <code>python3 dev_server.py</code> ${escapeHtml(
+                getCopy("in this project folder, then try again.", "en esta carpeta del proyecto y vuelve a intentar.")
+              )}</p>
             `
           );
           renderQuickGuide();
         }
       } catch (error) {
-        appendChatMessage("assistant", `I hit an error while building the draft: ${error instanceof Error ? error.message : "Unknown error"}`);
+        appendChatMessage(
+          "assistant",
+          `${getCopy("I hit an error while building the draft", "Ocurrio un error al crear el borrador")}: ${
+            error instanceof Error ? error.message : getCopy("Unknown error", "Error desconocido")
+          }`
+        );
         renderQuickGuide();
       } finally {
         setThinking(false);
         if (fastSubmitButton instanceof HTMLButtonElement) {
           fastSubmitButton.disabled = false;
-          fastSubmitButton.textContent = "Build My First Draft";
+          fastSubmitButton.textContent = getCopy("Build My First Draft", "Crear mi primer borrador");
         }
       }
     });
@@ -4411,8 +4644,8 @@ function initAppBuilder() {
     const target = valueOf("#builderTarget");
 
     if (selectedFeatures.length === 0 || !projectName || !owner || !stack || !target) {
-      showStatus(output, "error", "Missing details", [
-        "Select at least one feature and complete all stack details.",
+      showStatus(output, "error", getCopy("Missing details", "Faltan datos"), [
+        getCopy("Select at least one feature and complete all stack details.", "Selecciona al menos una funcion y completa todos los datos de stack."),
       ]);
       return;
     }
@@ -4420,16 +4653,16 @@ function initAppBuilder() {
     saveDraft(false);
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.textContent = "Creating...";
+      submitBtn.textContent = getCopy("Creating...", "Creando...");
     }
 
     const briefLines = [
-      `Project: ${projectName}`,
-      `Owner: ${owner}`,
-      `Template: ${templateValue}`,
-      `Core features: ${selectedFeatures.join(", ")}`,
-      `Stack: ${stack}`,
-      `Launch target: ${target}`,
+      `${getCopy("Project", "Proyecto")}: ${projectName}`,
+      `${getCopy("Owner", "Responsable")}: ${owner}`,
+      `${getCopy("Template", "Plantilla")}: ${templateValue}`,
+      `${getCopy("Core features", "Funciones principales")}: ${getFeatureListLabel(selectedFeatures)}`,
+      `${getCopy("Stack", "Stack")}: ${stack}`,
+      `${getCopy("Launch target", "Objetivo de lanzamiento")}: ${target}`,
     ];
 
     const scaffold = await createStarterProject({
@@ -4445,7 +4678,7 @@ function initAppBuilder() {
 
     if (submitBtn) {
       submitBtn.disabled = false;
-      submitBtn.textContent = "Create My Starter Project";
+      submitBtn.textContent = getCopy("Create My Starter Project", "Crear mi proyecto inicial");
     }
 
     if (scaffold.ok) {
@@ -4453,21 +4686,25 @@ function initAppBuilder() {
       setHasBuiltDraft(true);
       setExtrasVisible(true);
       const successLines = briefLines.concat([
-        `Project folder created: ${scaffold.projectDir}`,
-        `Files: ${(scaffold.files || []).join(", ")}`,
-        scaffold.aiSource === "openai" ? "Code generation: OpenAI customization active." : scaffold.aiNote ? `Code generation: ${scaffold.aiNote}` : "",
-        "Open Projects dashboard: projects.html",
-        "Next action: Preview the project, then choose pricing only when needed.",
+        `${getCopy("Project folder created", "Carpeta del proyecto creada")}: ${scaffold.projectDir}`,
+        `${getCopy("Files", "Archivos")}: ${(scaffold.files || []).join(", ")}`,
+        scaffold.aiSource === "openai"
+          ? getCopy("Code generation: OpenAI customization active.", "Generacion de codigo: personalizacion OpenAI activa.")
+          : scaffold.aiNote
+          ? `${getCopy("Code generation", "Generacion de codigo")}: ${localizeAiRuntimeNote(scaffold.aiNote)}`
+          : "",
+        getCopy("Open Projects dashboard: projects.html", "Abrir panel Proyectos: projects.html"),
+        getCopy("Next action: Preview the project, then choose pricing only when needed.", "Siguiente accion: revisa la vista previa y luego elige precios solo si hace falta."),
       ]).filter(Boolean);
-      showStatus(output, "success", "Starter project created", successLines);
+      showStatus(output, "success", getCopy("Starter project created", "Proyecto inicial creado"), successLines);
       renderQuickGuide();
     } else {
       const errorLines = briefLines.concat([
-        "Could not create folder automatically.",
-        `Reason: ${scaffold.error}`,
-        "Run: python3 dev_server.py, then try again.",
+        getCopy("Could not create folder automatically.", "No se pudo crear la carpeta automaticamente."),
+        `${getCopy("Reason", "Motivo")}: ${scaffold.error}`,
+        getCopy("Run: python3 dev_server.py, then try again.", "Ejecuta: python3 dev_server.py y vuelve a intentar."),
       ]);
-      showStatus(output, "error", "Could not create starter project", errorLines);
+      showStatus(output, "error", getCopy("Could not create starter project", "No se pudo crear el proyecto inicial"), errorLines);
       renderQuickGuide();
     }
 
@@ -4504,9 +4741,9 @@ function deriveBuilderRequirements({ stack, features, target, providerHealthById
   if (normalizedStack) {
     addRequirement({
       id: "hosting",
-      title: "Managed Hosting (Built-in)",
-      reason: "Hosting is included by default in islaAPP.",
-      actionLabel: "Included",
+      title: getCopy("Managed Hosting (Built-in)", "Hosting administrado (incluido)"),
+      reason: getCopy("Hosting is included by default in islaAPP.", "El hosting viene incluido por defecto en islaAPP."),
+      actionLabel: getCopy("Included", "Incluido"),
       actionHref: "projects.html",
       providerId: "",
       defaultReady: true,
@@ -4514,9 +4751,9 @@ function deriveBuilderRequirements({ stack, features, target, providerHealthById
     });
     addRequirement({
       id: "github",
-      title: "GitHub Account + Repository",
-      reason: "Optional. Needed only if you want external Git-based deployment.",
-      actionLabel: "Create GitHub Account",
+      title: getCopy("GitHub Account + Repository", "Cuenta GitHub + Repositorio"),
+      reason: getCopy("Optional. Needed only if you want external Git-based deployment.", "Opcional. Solo se necesita si quieres despliegue externo con Git."),
+      actionLabel: getCopy("Create GitHub Account", "Crear cuenta GitHub"),
       actionHref: "https://github.com/signup",
       providerId: "",
       required: false,
@@ -4526,9 +4763,9 @@ function deriveBuilderRequirements({ stack, features, target, providerHealthById
   if (normalizedStack.includes("supabase")) {
     addRequirement({
       id: "database",
-      title: "Database (Built-in)",
-      reason: "Database is included by default for this stack.",
-      actionLabel: "Included",
+      title: getCopy("Database (Built-in)", "Base de datos (incluida)"),
+      reason: getCopy("Database is included by default for this stack.", "La base de datos viene incluida por defecto para este stack."),
+      actionLabel: getCopy("Included", "Incluido"),
       actionHref: "projects.html",
       providerId: "",
       defaultReady: true,
@@ -4537,9 +4774,9 @@ function deriveBuilderRequirements({ stack, features, target, providerHealthById
   } else if (normalizedStack.includes("postgresql") || normalizedStack.includes("node api")) {
     addRequirement({
       id: "database",
-      title: "Database (Built-in)",
-      reason: "Backend storage is included by default.",
-      actionLabel: "Included",
+      title: getCopy("Database (Built-in)", "Base de datos (incluida)"),
+      reason: getCopy("Backend storage is included by default.", "El almacenamiento backend viene incluido por defecto."),
+      actionLabel: getCopy("Included", "Incluido"),
       actionHref: "projects.html",
       providerId: "",
       defaultReady: true,
@@ -4550,9 +4787,9 @@ function deriveBuilderRequirements({ stack, features, target, providerHealthById
   if (normalizedFeatures.has("user authentication")) {
     addRequirement({
       id: "auth",
-      title: "Authentication (Built-in)",
-      reason: "Login and session handling are included by default.",
-      actionLabel: "Included",
+      title: getCopy("Authentication (Built-in)", "Autenticacion (incluida)"),
+      reason: getCopy("Login and session handling are included by default.", "El login y manejo de sesiones vienen incluidos por defecto."),
+      actionLabel: getCopy("Included", "Incluido"),
       actionHref: "projects.html",
       providerId: "",
       defaultReady: true,
@@ -4563,9 +4800,9 @@ function deriveBuilderRequirements({ stack, features, target, providerHealthById
   if (normalizedFeatures.has("team collaboration") || normalizedFeatures.has("analytics reports")) {
     addRequirement({
       id: "database",
-      title: "Database (Built-in)",
-      reason: "Collaboration and analytics features require persistent data storage.",
-      actionLabel: "Included",
+      title: getCopy("Database (Built-in)", "Base de datos (incluida)"),
+      reason: getCopy("Collaboration and analytics features require persistent data storage.", "Las funciones de colaboracion y analitica requieren almacenamiento persistente."),
+      actionLabel: getCopy("Included", "Incluido"),
       actionHref: "projects.html",
       providerId: "",
       defaultReady: true,
@@ -4576,9 +4813,9 @@ function deriveBuilderRequirements({ stack, features, target, providerHealthById
   if (normalizedFeatures.has("payments and billing")) {
     addRequirement({
       id: "payments",
-      title: "Payment Gateway (Stripe)",
-      reason: "Billing features require a payment processor account and API keys.",
-      actionLabel: "Open Stripe",
+      title: getCopy("Payment Gateway (Stripe)", "Pasarela de pago (Stripe)"),
+      reason: getCopy("Billing features require a payment processor account and API keys.", "Las funciones de cobro requieren cuenta de procesador de pagos y claves API."),
+      actionLabel: getCopy("Open Stripe", "Abrir Stripe"),
       actionHref: "https://dashboard.stripe.com/register",
       providerId: "",
       required: true,
@@ -4588,9 +4825,9 @@ function deriveBuilderRequirements({ stack, features, target, providerHealthById
   if (normalizedFeatures.has("notifications")) {
     addRequirement({
       id: "notifications",
-      title: "Email / Notification Service",
-      reason: "Notification features require outbound delivery for email or SMS.",
-      actionLabel: "Plan Notification Provider",
+      title: getCopy("Email / Notification Service", "Servicio de email / notificaciones"),
+      reason: getCopy("Notification features require outbound delivery for email or SMS.", "Las notificaciones requieren salida por email o SMS."),
+      actionLabel: getCopy("Plan Notification Provider", "Planificar proveedor de notificaciones"),
       actionHref: "support.html",
       providerId: "",
       required: true,
@@ -4600,9 +4837,9 @@ function deriveBuilderRequirements({ stack, features, target, providerHealthById
   if (normalizedTarget.includes("mvp") || normalizedTarget.includes("production") || normalizedTarget.includes("scale")) {
     addRequirement({
       id: "domain",
-      title: "Custom Domain (Optional)",
-      reason: "A default app URL is included. Add a branded domain when ready.",
-      actionLabel: "Open Setup (Optional)",
+      title: getCopy("Custom Domain (Optional)", "Dominio personalizado (opcional)"),
+      reason: getCopy("A default app URL is included. Add a branded domain when ready.", "Se incluye una URL por defecto. Agrega dominio propio cuando quieras."),
+      actionLabel: getCopy("Open Setup (Optional)", "Abrir Setup (opcional)"),
       actionHref: "setup.html",
       providerId: "",
       required: false,
@@ -4610,9 +4847,9 @@ function deriveBuilderRequirements({ stack, features, target, providerHealthById
   } else if (normalizedTarget.includes("beta")) {
     addRequirement({
       id: "domain",
-      title: "Custom Domain (Optional)",
-      reason: "Use the included app URL for beta. Add a custom domain later.",
-      actionLabel: "Open Setup (Optional)",
+      title: getCopy("Custom Domain (Optional)", "Dominio personalizado (opcional)"),
+      reason: getCopy("Use the included app URL for beta. Add a custom domain later.", "Usa la URL incluida para beta. Agrega dominio personalizado despues."),
+      actionLabel: getCopy("Open Setup (Optional)", "Abrir Setup (opcional)"),
       actionHref: "setup.html",
       providerId: "",
       required: false,
@@ -4636,32 +4873,42 @@ function renderBuilderAiGuide({ rootSummary, rootRequirements, rootActions, temp
   const missingRequired = requiredItems.filter((item) => !item.ready);
 
   if (!template && !stack && !target && items.length === 0) {
-    rootSummary.innerHTML = "<h3>Waiting For Your Selections</h3><ul><li>Select stack and features to get live launch requirements.</li></ul>";
-    rootRequirements.innerHTML = "<li>Pick features and stack details to see built-in services and optional integrations.</li>";
-    rootActions.innerHTML = "<li>Use Advanced Builder only when you need manual controls.</li>";
+    rootSummary.innerHTML = `<h3>${escapeHtml(getCopy("Waiting For Your Selections", "Esperando tus selecciones"))}</h3><ul><li>${escapeHtml(
+      getCopy("Select stack and features to get live launch requirements.", "Selecciona stack y funciones para ver requisitos de lanzamiento.")
+    )}</li></ul>`;
+    rootRequirements.innerHTML = `<li>${escapeHtml(
+      getCopy("Pick features and stack details to see built-in services and optional integrations.", "Elige funciones y detalles de stack para ver servicios incluidos e integraciones opcionales.")
+    )}</li>`;
+    rootActions.innerHTML = `<li>${escapeHtml(getCopy("Use Advanced Builder only when you need manual controls.", "Usa constructor avanzado solo si necesitas controles manuales."))}</li>`;
     return;
   }
 
   rootSummary.innerHTML = `
-    <h3>AI Readiness Summary</h3>
+    <h3>${escapeHtml(getCopy("AI Readiness Summary", "Resumen de preparacion IA"))}</h3>
     <ul>
-      <li>Template: ${escapeHtml(template || "Not selected yet")}</li>
-      <li>Stack: ${escapeHtml(stack || "Not selected yet")}</li>
-      <li>Launch target: ${escapeHtml(target || "Not selected yet")}</li>
-      <li>Core services ready: ${readyRequired}/${requiredItems.length}</li>
+      <li>${escapeHtml(getCopy("Template", "Plantilla"))}: ${escapeHtml(template || getCopy("Not selected yet", "No seleccionada"))}</li>
+      <li>${escapeHtml(getCopy("Stack", "Stack"))}: ${escapeHtml(stack || getCopy("Not selected yet", "No seleccionado"))}</li>
+      <li>${escapeHtml(getCopy("Launch target", "Objetivo de lanzamiento"))}: ${escapeHtml(target || getCopy("Not selected yet", "No seleccionado"))}</li>
+      <li>${escapeHtml(getCopy("Core services ready", "Servicios base listos"))}: ${readyRequired}/${requiredItems.length}</li>
     </ul>
   `;
 
   if (items.length === 0) {
-    rootRequirements.innerHTML = "<li>Select stack and launch target to generate readiness guidance.</li>";
+    rootRequirements.innerHTML = `<li>${escapeHtml(
+      getCopy("Select stack and launch target to generate readiness guidance.", "Selecciona stack y objetivo para generar guia de preparacion.")
+    )}</li>`;
   } else {
     rootRequirements.innerHTML = items
       .map((item) => {
         const stateClass = item.ready ? "status-active" : item.required ? "status-provision-failed" : "status-provisioning";
-        const stateLabel = item.ready ? "Ready" : item.required ? "Missing" : "Optional";
+        const stateLabel = item.ready ? getCopy("Ready", "Listo") : item.required ? getCopy("Missing", "Falta") : getCopy("Optional", "Opcional");
         const link = String(item.actionHref || "").startsWith("http")
-          ? `<a class="btn btn-ghost btn-inline" href="${escapeAttribute(item.actionHref)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.actionLabel || "Open")}</a>`
-          : `<a class="btn btn-ghost btn-inline" href="${escapeAttribute(item.actionHref || "#")}">${escapeHtml(item.actionLabel || "Open")}</a>`;
+          ? `<a class="btn btn-ghost btn-inline" href="${escapeAttribute(item.actionHref)}" target="_blank" rel="noopener noreferrer">${escapeHtml(
+              item.actionLabel || getCopy("Open", "Abrir")
+            )}</a>`
+          : `<a class="btn btn-ghost btn-inline" href="${escapeAttribute(item.actionHref || "#")}">${escapeHtml(
+              item.actionLabel || getCopy("Open", "Abrir")
+            )}</a>`;
         return `
           <li class="ai-requirement-item">
             <strong>${escapeHtml(item.title)}</strong>
@@ -4675,17 +4922,19 @@ function renderBuilderAiGuide({ rootSummary, rootRequirements, rootActions, temp
   }
 
   const actionLines = [];
-  actionLines.push("Finalize your app selections (features, stack, and launch target).");
+  actionLines.push(getCopy("Finalize your app selections (features, stack, and launch target).", "Finaliza tus selecciones (funciones, stack y objetivo)."));
   if (missingRequired.length > 0) {
     const external = missingRequired.map((item) => item.title);
     if (external.length > 0) {
-      actionLines.push(`Optional integrations to configure: ${external.join(", ")}.`);
+      actionLines.push(
+        `${getCopy("Optional integrations to configure", "Integraciones opcionales por configurar")}: ${external.join(", ")}.`
+      );
     }
   } else if (requiredItems.length > 0) {
-    actionLines.push("Core infrastructure is ready by default. Continue with build, preview, and launch.");
+    actionLines.push(getCopy("Core infrastructure is ready by default. Continue with build, preview, and launch.", "La infraestructura base esta lista por defecto. Continua con crear, vista previa y lanzamiento."));
   }
-  actionLines.push("Generate starter project, then open Projects to review.");
-  actionLines.push("Use Setup and Services only for optional external integrations.");
+  actionLines.push(getCopy("Generate starter project, then open Projects to review.", "Genera el proyecto inicial y luego abre Proyectos para revisar."));
+  actionLines.push(getCopy("Use Setup and Services only for optional external integrations.", "Usa Setup y Servicios solo para integraciones externas opcionales."));
 
   rootActions.innerHTML = actionLines.map((line) => `<li>${escapeHtml(line)}</li>`).join("");
 }

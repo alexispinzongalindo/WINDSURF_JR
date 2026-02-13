@@ -3,10 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>App Builder | islaAPP</title>
+    <title data-i18n-en="App Builder | islaAPP" data-i18n-es="Constructor de apps | islaAPP">App Builder | islaAPP</title>
     <meta
       name="description"
       content="Build your first app draft in plain language, preview it, then save a starter project folder."
+      data-i18n-content-en="Build your first app draft in plain language, preview it, then save a starter project folder."
+      data-i18n-content-es="Crea tu primer borrador de app en lenguaje simple, revisa la vista previa y guarda tu proyecto inicial."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -52,20 +54,20 @@
     <div class="noise" aria-hidden="true"></div>
     <header class="topbar">
       <a class="brand" href="index.html">
-        <svg class="brand-icon" viewBox="0 0 96 96" role="img" aria-label="islaAPP logo icon">
+        <svg class="brand-icon" viewBox="0 0 96 96" role="img" aria-label="islaAPP logo icon" data-i18n-aria-en="islaAPP logo icon" data-i18n-aria-es="icono del logo islaAPP">
           <use href="#orbit-icon"></use>
         </svg>
         <span class="brand-name"><span>isla</span><strong>APP</strong></span>
       </a>
       <nav>
-        <a href="start-here.html">Start Here</a>
-        <a href="index.html">Home</a>
-        <a class="is-current" href="app-builder.html">App Builder</a>
-        <a href="templates.html">Templates</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="support.html">Support</a>
+        <a href="start-here.html" data-i18n-en="Start Here" data-i18n-es="Comenzar">Start Here</a>
+        <a href="index.html" data-i18n-en="Home" data-i18n-es="Inicio">Home</a>
+        <a class="is-current" href="app-builder.html" data-i18n-en="App Builder" data-i18n-es="Constructor de apps">App Builder</a>
+        <a href="templates.html" data-i18n-en="Templates" data-i18n-es="Plantillas">Templates</a>
+        <a href="pricing.html" data-i18n-en="Pricing" data-i18n-es="Precios">Pricing</a>
+        <a href="support.html" data-i18n-en="Support" data-i18n-es="Soporte">Support</a>
       </nav>
-      <a class="btn btn-small" href="start-here.html">Start Here</a>
+      <a class="btn btn-small" href="start-here.html" data-i18n-en="Start Here" data-i18n-es="Comenzar">Start Here</a>
     </header>
 
     <main>
@@ -151,13 +153,13 @@
             <h3 data-i18n-en="Describe Your App" data-i18n-es="Describe tu app">Describe Your App</h3>
             <div class="ai-chat-log hidden" id="builderChatLog" aria-live="polite">
               <article class="ai-msg ai-msg-assistant">
-                <p>Type your idea, then click Build. AI handles the setup.</p>
+                <p data-i18n-en="Type your idea, then click Build. AI handles the setup." data-i18n-es="Escribe tu idea y luego haz clic en Crear. La IA maneja la configuracion.">Type your idea, then click Build. AI handles the setup.</p>
               </article>
             </div>
             <div class="ai-chat-thinking hidden" id="builderChatThinking" data-i18n-en="Building your first draft..." data-i18n-es="Creando tu primer borrador...">Building your first draft...</div>
             <form id="builderFastForm" class="ai-chat-composer" novalidate>
               <label class="form-field form-field-full">
-                App idea
+                <span data-i18n-en="App idea" data-i18n-es="Idea de app">App idea</span>
                 <textarea
                   id="builderFastPrompt"
                   rows="2"
@@ -168,46 +170,48 @@
                 ></textarea>
               </label>
               <div class="quick-example-row prompt-card-grid" id="builderFastExamples">
-                <button class="toggle-btn prompt-card" type="button" data-fast-example="Build a booking app for barbers with login, calendar, reminders, and payments.">
+                <button class="toggle-btn prompt-card" type="button" data-fast-example-en="Build a booking app for barbers with login, calendar, reminders, and payments." data-fast-example-es="Crea una app de reservas para barberos con login, calendario, recordatorios y pagos.">
                   <span class="prompt-card-badge" aria-hidden="true">01</span>
-                  <strong>Barber Booking</strong>
+                  <strong data-i18n-en="Barber Booking" data-i18n-es="Reservas Barberia">Barber Booking</strong>
                 </button>
-                <button class="toggle-btn prompt-card" type="button" data-fast-example="Build a client portal for an agency to share files, timelines, and approvals.">
+                <button class="toggle-btn prompt-card" type="button" data-fast-example-en="Build a client portal for an agency to share files, timelines, and approvals." data-fast-example-es="Crea un portal de clientes para una agencia con archivos, cronogramas y aprobaciones.">
                   <span class="prompt-card-badge" aria-hidden="true">02</span>
-                  <strong>Client Portal</strong>
+                  <strong data-i18n-en="Client Portal" data-i18n-es="Portal Clientes">Client Portal</strong>
                 </button>
-                <button class="toggle-btn prompt-card" type="button" data-fast-example="Build an ecommerce storefront with products, checkout, and order tracking.">
+                <button class="toggle-btn prompt-card" type="button" data-fast-example-en="Build an ecommerce storefront with products, checkout, and order tracking." data-fast-example-es="Crea una tienda ecommerce con productos, checkout y rastreo de pedidos.">
                   <span class="prompt-card-badge" aria-hidden="true">03</span>
-                  <strong>E-commerce Store</strong>
+                  <strong data-i18n-en="E-commerce Store" data-i18n-es="Tienda Ecommerce">E-commerce Store</strong>
                 </button>
-                <button class="toggle-btn prompt-card" type="button" data-fast-example="Build a community platform with member profiles, posts, and moderation tools.">
+                <button class="toggle-btn prompt-card" type="button" data-fast-example-en="Build a community platform with member profiles, posts, and moderation tools." data-fast-example-es="Crea una plataforma de comunidad con perfiles, publicaciones y moderacion.">
                   <span class="prompt-card-badge" aria-hidden="true">04</span>
-                  <strong>Community App</strong>
+                  <strong data-i18n-en="Community App" data-i18n-es="App Comunidad">Community App</strong>
                 </button>
               </div>
               <div class="actions">
                 <button class="btn btn-primary" type="submit" id="builderFastSubmit" data-i18n-en="Build My First Draft" data-i18n-es="Crear mi primer borrador">Build My First Draft</button>
                 <button class="btn btn-ghost" type="button" id="builderFastClear" data-i18n-en="Clear" data-i18n-es="Limpiar">Clear</button>
               </div>
-              <button class="btn btn-ghost builder-options-toggle" type="button" id="builderToggleExtras" aria-expanded="false">Show Optional Settings</button>
+              <button class="btn btn-ghost builder-options-toggle" type="button" id="builderToggleExtras" aria-expanded="false" data-i18n-en="Show Advanced" data-i18n-es="Mostrar avanzado">Show Advanced</button>
               <div class="builder-extra-options hidden" id="builderExtraOptions">
                 <label class="form-field">
-                  Your name (optional)
+                  <span data-i18n-en="Your name (optional)" data-i18n-es="Tu nombre (opcional)">Your name (optional)</span>
                   <input id="builderFastOwner" type="text" placeholder="Owner name" data-i18n-placeholder-en="Owner name" data-i18n-placeholder-es="Nombre del responsable" />
                 </label>
                 <label class="form-field form-field-full">
-                  AI customization (optional)
+                  <span data-i18n-en="AI customization (optional)" data-i18n-es="Personalizacion IA (opcional)">AI customization (optional)</span>
                   <textarea
                     id="builderAiCustomizeInput"
                     rows="2"
                     placeholder="Example: make the layout card-based, bilingual (EN/ES), and use Puerto Rico inspired colors."
+                    data-i18n-placeholder-en="Example: make the layout card-based, bilingual (EN/ES), and use Puerto Rico inspired colors."
+                    data-i18n-placeholder-es="Ejemplo: usa un diseno por tarjetas, bilingue (ES/EN) y colores inspirados en Puerto Rico."
                   ></textarea>
                 </label>
                 <div class="builder-ai-tools">
-                  <button class="btn btn-ghost btn-small" type="button" id="builderEnhancePrompt">Enhance Prompt</button>
-                  <button class="btn btn-ghost btn-small" type="button" id="builderIdeaBurst">Generate Ideas</button>
-                  <button class="btn btn-ghost btn-small" type="button" id="builderFeatureHint">Suggest Features</button>
-                  <button class="btn btn-ghost btn-small" type="button" id="builderApplyCustomization">Apply Customization</button>
+                  <button class="btn btn-ghost btn-small" type="button" id="builderEnhancePrompt" data-i18n-en="Enhance Prompt" data-i18n-es="Mejorar prompt">Enhance Prompt</button>
+                  <button class="btn btn-ghost btn-small" type="button" id="builderIdeaBurst" data-i18n-en="Generate Ideas" data-i18n-es="Generar ideas">Generate Ideas</button>
+                  <button class="btn btn-ghost btn-small" type="button" id="builderFeatureHint" data-i18n-en="Suggest Features" data-i18n-es="Sugerir funciones">Suggest Features</button>
+                  <button class="btn btn-ghost btn-small" type="button" id="builderApplyCustomization" data-i18n-en="Apply Customization" data-i18n-es="Aplicar personalizacion">Apply Customization</button>
                 </div>
               </div>
             </form>
@@ -230,33 +234,33 @@
             </div>
             <iframe id="builderFastPreviewFrame" class="fast-preview-frame" title="AI app preview"></iframe>
             <article class="status-box builder-ai-live hidden" id="builderAiLivePanel" aria-live="polite">
-              <h3>AI Live Intelligence</h3>
+              <h3 data-i18n-en="AI Live Intelligence" data-i18n-es="Inteligencia IA en vivo">AI Live Intelligence</h3>
               <div class="ai-live-grid">
                 <article class="ai-live-card">
-                  <p>Prompt score</p>
+                  <p data-i18n-en="Prompt score" data-i18n-es="Puntaje prompt">Prompt score</p>
                   <strong id="builderAiPromptScore">0</strong>
                 </article>
                 <article class="ai-live-card">
-                  <p>Complexity</p>
-                  <strong id="builderAiComplexity">Low</strong>
+                  <p data-i18n-en="Complexity" data-i18n-es="Complejidad">Complexity</p>
+                  <strong id="builderAiComplexity" data-i18n-en="Low" data-i18n-es="Baja">Low</strong>
                 </article>
                 <article class="ai-live-card">
-                  <p>Suggested stack</p>
+                  <p data-i18n-en="Suggested stack" data-i18n-es="Stack sugerido">Suggested stack</p>
                   <strong id="builderAiStackHint">React + Supabase</strong>
                 </article>
                 <article class="ai-live-card">
-                  <p>Launch confidence</p>
+                  <p data-i18n-en="Launch confidence" data-i18n-es="Confianza de lanzamiento">Launch confidence</p>
                   <strong id="builderAiConfidence">0%</strong>
                 </article>
               </div>
               <ul class="checklist" id="builderAiSignals">
-                <li>Type your prompt to activate AI signals.</li>
+                <li data-i18n-en="Type your prompt to activate AI signals." data-i18n-es="Escribe tu prompt para activar senales IA.">Type your prompt to activate AI signals.</li>
               </ul>
             </article>
             <article class="status-box hidden" id="builderGrowthPanel">
               <h3 data-i18n-en="After Build: Next Steps" data-i18n-es="Despues de crear: siguientes pasos">After Build: Next Steps</h3>
               <ul class="checklist" id="builderGrowthList">
-                <li>Build your first draft to unlock next steps.</li>
+                <li data-i18n-en="Build your first draft to unlock next steps." data-i18n-es="Crea tu primer borrador para desbloquear siguientes pasos.">Build your first draft to unlock next steps.</li>
               </ul>
             </article>
           </article>
@@ -268,14 +272,21 @@
         <p class="muted hidden" id="builderSimpleHint" data-i18n-en="Most users only need the box above. Manual options below are optional." data-i18n-es="La mayoria de usuarios solo necesita el cuadro superior. Las opciones manuales son opcionales.">Most users only need the box above. Manual options below are optional.</p>
         <article class="status-box builder-quick-guide hidden" id="builderQuickGuide" aria-live="polite">
           <h3 data-i18n-en="Do This Next" data-i18n-es="Haz esto ahora">Do This Next</h3>
-          <p class="muted" id="builderQuickGuideText">Step 1: Type your app idea above.</p>
+          <p
+            class="muted"
+            id="builderQuickGuideText"
+            data-i18n-en="Step 1: Type your app idea above."
+            data-i18n-es="Paso 1: escribe tu idea de app arriba."
+          >
+            Step 1: Type your app idea above.
+          </p>
           <ol class="steps" id="builderQuickGuideList">
-            <li>[Pending] Step 1: Describe your idea.</li>
-            <li>[Pending] Step 2: Build your first draft.</li>
-            <li>[Pending] Step 3: Save your starter project.</li>
+            <li data-i18n-en="[Pending] Step 1: Describe your idea." data-i18n-es="[Pendiente] Paso 1: describe tu idea.">[Pending] Step 1: Describe your idea.</li>
+            <li data-i18n-en="[Pending] Step 2: Build your first draft." data-i18n-es="[Pendiente] Paso 2: crea tu primer borrador.">[Pending] Step 2: Build your first draft.</li>
+            <li data-i18n-en="[Pending] Step 3: Save your starter project." data-i18n-es="[Pendiente] Paso 3: guarda tu proyecto inicial.">[Pending] Step 3: Save your starter project.</li>
           </ol>
           <div class="actions">
-            <button class="btn btn-primary" type="button" id="builderQuickGuidePrimary">Start Step 1</button>
+            <button class="btn btn-primary" type="button" id="builderQuickGuidePrimary" data-i18n-en="Start Step 1" data-i18n-es="Iniciar paso 1">Start Step 1</button>
             <a class="btn btn-ghost" href="start-here.html" data-i18n-en="Open Start Guide" data-i18n-es="Abrir guia de inicio">Open Start Guide</a>
           </div>
         </article>
@@ -290,14 +301,21 @@
           Use this only if you want to manually choose template, features, and stack.
         </p>
         <div class="wizard-steps">
-          <button type="button" class="step-pill is-active" data-step-target="1">1. Templates</button>
-          <button type="button" class="step-pill" data-step-target="2">2. Features</button>
-          <button type="button" class="step-pill" data-step-target="3">3. Details</button>
-          <button type="button" class="step-pill" data-step-target="4">4. Save</button>
+          <button type="button" class="step-pill is-active" data-step-target="1" data-i18n-en="1. Templates" data-i18n-es="1. Plantillas">1. Templates</button>
+          <button type="button" class="step-pill" data-step-target="2" data-i18n-en="2. Features" data-i18n-es="2. Funciones">2. Features</button>
+          <button type="button" class="step-pill" data-step-target="3" data-i18n-en="3. Details" data-i18n-es="3. Detalles">3. Details</button>
+          <button type="button" class="step-pill" data-step-target="4" data-i18n-en="4. Save" data-i18n-es="4. Guardar">4. Save</button>
         </div>
         <article class="status-box builder-step-status" id="builderStepStatus" aria-live="polite">
           <h3 data-i18n-en="Manual Builder Progress" data-i18n-es="Progreso del constructor manual">Manual Builder Progress</h3>
-          <p class="muted" id="builderStepStatusText">Step 1 of 4: Choose a template or skip to continue.</p>
+          <p
+            class="muted"
+            id="builderStepStatusText"
+            data-i18n-en="Step 1 of 4: Choose a template or skip to continue."
+            data-i18n-es="Paso 1 de 4: elige una plantilla o continua sin plantilla."
+          >
+            Step 1 of 4: Choose a template or skip to continue.
+          </p>
           <div class="progress-wrap">
             <div class="progress-bar">
               <div id="builderStepProgressFill"></div>
@@ -311,11 +329,11 @@
         <article class="status-box builder-live-summary" id="builderLiveSummary" aria-live="polite">
           <h3 data-i18n-en="Your Current Selections" data-i18n-es="Tus selecciones actuales">Your Current Selections</h3>
           <ul class="checklist" id="builderLiveSummaryList">
-            <li>Template: Not selected yet</li>
-            <li>Features: 0 selected</li>
-            <li>Stack: Not selected</li>
-            <li>Launch target: Not selected</li>
-            <li>Ready to generate: No</li>
+            <li data-i18n-en="Template: Not selected yet" data-i18n-es="Plantilla: no seleccionada">Template: Not selected yet</li>
+            <li data-i18n-en="Features: 0 selected" data-i18n-es="Funciones: 0 seleccionadas">Features: 0 selected</li>
+            <li data-i18n-en="Stack: Not selected" data-i18n-es="Stack: no seleccionado">Stack: Not selected</li>
+            <li data-i18n-en="Launch target: Not selected" data-i18n-es="Objetivo de lanzamiento: no seleccionado">Launch target: Not selected</li>
+            <li data-i18n-en="Ready to generate: No" data-i18n-es="Listo para generar: no">Ready to generate: No</li>
           </ul>
         </article>
 
@@ -332,7 +350,7 @@
             </div>
             <div class="builder-template-tools">
               <label class="form-field">
-                Search templates
+                <span data-i18n-en="Search templates" data-i18n-es="Buscar plantillas">Search templates</span>
                 <input
                   id="builderTemplateSearch"
                   type="search"
@@ -341,7 +359,7 @@
                   data-i18n-placeholder-es="Busca por nombre, stack, etiquetas o caso de uso..."
                 />
               </label>
-              <p class="muted" id="builderTemplateCount">0 templates shown</p>
+              <p class="muted" id="builderTemplateCount" data-i18n-en="0 templates shown" data-i18n-es="0 plantillas mostradas">0 templates shown</p>
             </div>
             <div class="template-grid template-grid-visual" id="builderTemplateGrid" aria-live="polite"></div>
             <article class="status-box template-detail hidden" id="builderTemplateDetail">
@@ -349,12 +367,25 @@
                 <div class="template-detail-preview template-thumb-saas" id="builderTemplatePreview"></div>
               </div>
               <div class="template-detail-copy">
-                <h4 id="builderTemplateTitle">Template Detail</h4>
-                <p class="muted" id="builderTemplateDescription">Select a template card to see details, demo preview, and next actions.</p>
+                <h4
+                  id="builderTemplateTitle"
+                  data-i18n-en="Template Detail"
+                  data-i18n-es="Detalle de plantilla"
+                >
+                  Template Detail
+                </h4>
+                <p
+                  class="muted"
+                  id="builderTemplateDescription"
+                  data-i18n-en="Select a template card to see details, demo preview, and next actions."
+                  data-i18n-es="Selecciona una tarjeta de plantilla para ver detalles, vista previa y siguientes acciones."
+                >
+                  Select a template card to see details, demo preview, and next actions.
+                </p>
                 <ul class="checklist" id="builderTemplateHighlights">
-                  <li>Live demo preview available.</li>
-                  <li>Use template to continue setup.</li>
-                  <li>Customize with AI after selecting.</li>
+                  <li data-i18n-en="Live demo preview available." data-i18n-es="Vista previa demo disponible.">Live demo preview available.</li>
+                  <li data-i18n-en="Use template to continue setup." data-i18n-es="Usa la plantilla para continuar la configuracion.">Use template to continue setup.</li>
+                  <li data-i18n-en="Customize with AI after selecting." data-i18n-es="Personaliza con IA despues de seleccionar.">Customize with AI after selecting.</li>
                 </ul>
                 <div class="actions">
                   <button class="btn btn-ghost" type="button" id="builderTemplateViewBtn" data-i18n-en="View App" data-i18n-es="Ver app">View App</button>
@@ -374,12 +405,12 @@
               <button class="btn btn-ghost btn-small" type="button" data-feature-preset="clear" data-i18n-en="Clear" data-i18n-es="Limpiar">Clear</button>
             </div>
             <div class="feature-picks">
-              <label><input type="checkbox" name="appFeature" value="User authentication" /> User authentication</label>
-              <label><input type="checkbox" name="appFeature" value="Team collaboration" /> Team collaboration</label>
-              <label><input type="checkbox" name="appFeature" value="Payments and billing" /> Payments and billing</label>
-              <label><input type="checkbox" name="appFeature" value="Notifications" /> Notifications</label>
-              <label><input type="checkbox" name="appFeature" value="Admin dashboard" /> Admin dashboard</label>
-              <label><input type="checkbox" name="appFeature" value="Analytics reports" /> Analytics reports</label>
+              <label><input type="checkbox" name="appFeature" value="User authentication" /> <span data-i18n-en="User authentication" data-i18n-es="Autenticacion de usuarios">User authentication</span></label>
+              <label><input type="checkbox" name="appFeature" value="Team collaboration" /> <span data-i18n-en="Team collaboration" data-i18n-es="Colaboracion en equipo">Team collaboration</span></label>
+              <label><input type="checkbox" name="appFeature" value="Payments and billing" /> <span data-i18n-en="Payments and billing" data-i18n-es="Pagos y facturacion">Payments and billing</span></label>
+              <label><input type="checkbox" name="appFeature" value="Notifications" /> <span data-i18n-en="Notifications" data-i18n-es="Notificaciones">Notifications</span></label>
+              <label><input type="checkbox" name="appFeature" value="Admin dashboard" /> <span data-i18n-en="Admin dashboard" data-i18n-es="Panel administrativo">Admin dashboard</span></label>
+              <label><input type="checkbox" name="appFeature" value="Analytics reports" /> <span data-i18n-en="Analytics reports" data-i18n-es="Reportes de analitica">Analytics reports</span></label>
             </div>
           </section>
 
@@ -387,31 +418,31 @@
             <h3 data-i18n-en="Project Details" data-i18n-es="Detalles del proyecto">Project Details</h3>
             <div class="form-grid">
               <label class="form-field">
-                Project Name
+                <span data-i18n-en="Project Name" data-i18n-es="Nombre del proyecto">Project Name</span>
                 <input id="builderProjectName" type="text" required data-i18n-placeholder-en="My first app project" data-i18n-placeholder-es="Mi primer proyecto de app" />
               </label>
               <label class="form-field">
-                Owner Name
+                <span data-i18n-en="Owner Name" data-i18n-es="Nombre del responsable">Owner Name</span>
                 <input id="builderOwner" type="text" required data-i18n-placeholder-en="Owner name" data-i18n-placeholder-es="Nombre del responsable" />
               </label>
               <label class="form-field">
-                Preferred Stack
+                <span data-i18n-en="Preferred Stack" data-i18n-es="Stack preferido">Preferred Stack</span>
                 <select id="builderStack" required>
-                  <option value="">Select stack</option>
-                  <option>HTML/CSS/JS</option>
-                  <option>React + Supabase</option>
-                  <option>Next.js + PostgreSQL</option>
-                  <option>Node API + React Frontend</option>
+                  <option value="" data-i18n-en="Select stack" data-i18n-es="Selecciona stack">Select stack</option>
+                  <option value="HTML/CSS/JS" data-i18n-en="HTML/CSS/JS" data-i18n-es="HTML/CSS/JS">HTML/CSS/JS</option>
+                  <option value="React + Supabase" data-i18n-en="React + Supabase" data-i18n-es="React + Supabase">React + Supabase</option>
+                  <option value="Next.js + PostgreSQL" data-i18n-en="Next.js + PostgreSQL" data-i18n-es="Next.js + PostgreSQL">Next.js + PostgreSQL</option>
+                  <option value="Node API + React Frontend" data-i18n-en="Node API + React Frontend" data-i18n-es="Node API + React Frontend">Node API + React Frontend</option>
                 </select>
               </label>
               <label class="form-field">
-                Launch Target
+                <span data-i18n-en="Launch Target" data-i18n-es="Objetivo de lanzamiento">Launch Target</span>
                 <select id="builderTarget" required>
-                  <option value="">Select target</option>
-                  <option>Beta in 2 weeks</option>
-                  <option>MVP in 1 month</option>
-                  <option>Production in 2 months</option>
-                  <option>Scale in 3+ months</option>
+                  <option value="" data-i18n-en="Select target" data-i18n-es="Selecciona objetivo">Select target</option>
+                  <option value="Beta in 2 weeks" data-i18n-en="Beta in 2 weeks" data-i18n-es="Beta en 2 semanas">Beta in 2 weeks</option>
+                  <option value="MVP in 1 month" data-i18n-en="MVP in 1 month" data-i18n-es="MVP en 1 mes">MVP in 1 month</option>
+                  <option value="Production in 2 months" data-i18n-en="Production in 2 months" data-i18n-es="Produccion en 2 meses">Production in 2 months</option>
+                  <option value="Scale in 3+ months" data-i18n-en="Scale in 3+ months" data-i18n-es="Escalar en 3+ meses">Scale in 3+ months</option>
                 </select>
               </label>
             </div>
@@ -439,21 +470,21 @@
         </p>
         <div class="advisor-grid">
           <article class="status-box" id="builderAiSummary">
-            <h3>Waiting For Selections</h3>
+            <h3 data-i18n-en="Waiting For Selections" data-i18n-es="Esperando selecciones">Waiting For Selections</h3>
             <ul>
-              <li>Pick stack and features to view launch requirements.</li>
+              <li data-i18n-en="Pick stack and features to view launch requirements." data-i18n-es="Elige stack y funciones para ver requisitos de lanzamiento.">Pick stack and features to view launch requirements.</li>
             </ul>
           </article>
           <article class="status-box">
               <h3 data-i18n-en="Needed Services" data-i18n-es="Servicios necesarios">Needed Services</h3>
             <ul class="checklist" id="builderRequirementsList">
-              <li>Pick features and stack details to see launch requirements.</li>
+              <li data-i18n-en="Pick features and stack details to see launch requirements." data-i18n-es="Elige funciones y detalles de stack para ver requisitos de lanzamiento.">Pick features and stack details to see launch requirements.</li>
             </ul>
           </article>
           <article class="status-box">
               <h3 data-i18n-en="Next Actions" data-i18n-es="Siguientes acciones">Next Actions</h3>
               <ol class="steps" id="builderNextActions">
-                <li>Open Advanced Builder only if you need manual control.</li>
+                <li data-i18n-en="Open Advanced Builder only if you need manual control." data-i18n-es="Abre el constructor avanzado solo si necesitas control manual.">Open Advanced Builder only if you need manual control.</li>
               </ol>
             </article>
           </div>
@@ -479,17 +510,17 @@
     </main>
 
     <footer class="site-footer">
-      <p><span class="brand-inline">islaAPP</span> App Builder helps you go from idea to first draft without technical setup.</p>
-      <small>&copy; <span data-year></span> islaAPP. All rights reserved.</small>
+      <p><span class="brand-inline">islaAPP</span> <span data-i18n-en="App Builder helps you go from idea to first draft without technical setup." data-i18n-es="te lleva de la idea al primer borrador sin configuracion tecnica.">App Builder helps you go from idea to first draft without technical setup.</span></p>
+      <small>&copy; <span data-year></span> islaAPP. <span data-i18n-en="All rights reserved." data-i18n-es="Todos los derechos reservados.">All rights reserved.</span></small>
     </footer>
 
-    <div class="template-demo-modal hidden" id="templateDemoModal" role="dialog" aria-modal="true" aria-label="Template demo">
+    <div class="template-demo-modal hidden" id="templateDemoModal" role="dialog" aria-modal="true" aria-label="Template demo" data-i18n-title-en="Template demo" data-i18n-title-es="Demo de plantilla" data-i18n-aria-en="Template demo" data-i18n-aria-es="Demo de plantilla">
       <article class="template-demo-card">
         <div class="template-demo-top">
-          <h3 id="templateDemoTitle">Template Demo</h3>
-          <button class="btn btn-ghost btn-small" type="button" id="templateDemoClose">Close</button>
+          <h3 id="templateDemoTitle" data-i18n-en="Template Demo" data-i18n-es="Demo de plantilla">Template Demo</h3>
+          <button class="btn btn-ghost btn-small" type="button" id="templateDemoClose" data-i18n-en="Close" data-i18n-es="Cerrar">Close</button>
         </div>
-        <div id="templateDemoFrame" class="template-demo-frame" role="document" aria-label="Template demo preview"></div>
+        <div id="templateDemoFrame" class="template-demo-frame" role="document" aria-label="Template demo preview" data-i18n-aria-en="Template demo preview" data-i18n-aria-es="Vista previa de demo de plantilla"></div>
       </article>
     </div>
 
