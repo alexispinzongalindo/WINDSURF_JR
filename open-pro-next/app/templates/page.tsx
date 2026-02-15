@@ -18,8 +18,8 @@ export default function TemplatesPage() {
   return (
     <section className="mx-auto max-w-6xl px-4 sm:px-6 py-12 md:py-16">
       <div className="pb-8 text-center">
-        <h1 className="text-3xl font-semibold text-gray-100">Template Gallery</h1>
-        <p className="text-indigo-200/65">
+        <h1 className="text-3xl font-semibold text-gray-100" data-i18n-en="Template Gallery" data-i18n-es="Galeria de Plantillas">Template Gallery</h1>
+        <p className="text-indigo-200/65" data-i18n-en="Pick a starter, preview it, then launch directly in islaAPP Builder." data-i18n-es="Elige una base, previsualizala y luego lanzala directamente en el constructor de islaAPP.">
           Pick a starter, preview it, then launch directly in islaAPP Builder.
         </p>
       </div>
@@ -54,12 +54,16 @@ export default function TemplatesPage() {
               <Link
                 href={t.href}
                 className="btn-sm bg-indigo-600 text-white hover:bg-indigo-500"
+                data-i18n-en="Live demo"
+                data-i18n-es="Demo en vivo"
               >
                 Live demo
               </Link>
               <a
                 href={t.useHref}
                 className="btn-sm bg-gray-800 text-gray-100 hover:bg-gray-700"
+                data-i18n-en="Use template in AI agent"
+                data-i18n-es="Usar plantilla con agente IA"
               >
                 Use template in AI agent
               </a>

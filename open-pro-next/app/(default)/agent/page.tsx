@@ -25,13 +25,19 @@ const EFFORT_OPTIONS = [
 export default function AgentPage() {
   const searchParams = useSearchParams();
   const selectedTemplate = String(searchParams.get("template") || "").trim();
+  const [lang, setLang] = useState<"en" | "es">("en");
 
   const initialAssistantMessage = useMemo(() => {
+    const isSpanish = lang === "es";
     if (selectedTemplate.toLowerCase() === "bookflow") {
-      return "Great choice. You selected the BookFlow template. I am your islaAPP AI agent. Tell me what you want to change first.";
+      return isSpanish
+        ? "Excelente eleccion. Seleccionaste la plantilla BookFlow. Soy tu agente IA de islaAPP. Dime que quieres cambiar primero."
+        : "Great choice. You selected the BookFlow template. I am your islaAPP AI agent. Tell me what you want to change first.";
     }
-    return "Hi, I am your islaAPP AI agent. How can I help you today?";
-  }, [selectedTemplate]);
+    return isSpanish
+      ? "Hola, soy tu agente IA de islaAPP. Como te puedo ayudar hoy?"
+      : "Hi, I am your islaAPP AI agent. How can I help you today?";
+  }, [selectedTemplate, lang]);
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: "assistant", content: initialAssistantMessage },
@@ -41,6 +47,19 @@ export default function AgentPage() {
   const [effort, setEffort] = useState("medium");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const saved = String(window.localStorage.getItem("isla_lang") || "en").toLowerCase();
+    setLang(saved === "es" ? "es" : "en");
+
+    const onLang = (event: Event) => {
+      const detail = (event as CustomEvent<{ lang?: string }>).detail;
+      const next = String(detail?.lang || "en").toLowerCase();
+      setLang(next === "es" ? "es" : "en");
+    };
+    window.addEventListener("isla-lang-change", onLang as EventListener);
+    return () => window.removeEventListener("isla-lang-change", onLang as EventListener);
+  }, []);
 
   useEffect(() => {
     setMessages([{ role: "assistant", content: initialAssistantMessage }]);
@@ -121,14 +140,14 @@ export default function AgentPage() {
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="Ask for follow-up changes"
+            placeholder={lang === "es" ? "Pide cambios o nuevas funciones" : "Ask for follow-up changes"}
             className="mb-4 h-24 w-full resize-none rounded-2xl border border-transparent bg-transparent px-2 py-1 text-xl text-gray-100 placeholder:text-gray-500 focus:outline-none"
           />
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-800 pt-3">
             <div className="flex flex-wrap items-center gap-3">
               <label className="flex items-center gap-2 text-sm text-gray-300">
-                <span>Model</span>
+                <span>{lang === "es" ? "Modelo" : "Model"}</span>
                 <select
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
@@ -143,7 +162,7 @@ export default function AgentPage() {
               </label>
 
               <label className="flex items-center gap-2 text-sm text-gray-300">
-                <span>Reasoning</span>
+                <span>{lang === "es" ? "Razonamiento" : "Reasoning"}</span>
                 <select
                   value={effort}
                   onChange={(e) => setEffort(e.target.value)}
@@ -162,7 +181,7 @@ export default function AgentPage() {
               type="submit"
               disabled={!canSend}
               className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 text-gray-900 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label="Send message"
+              aria-label={lang === "es" ? "Enviar mensaje" : "Send message"}
             >
               ↑
             </button>

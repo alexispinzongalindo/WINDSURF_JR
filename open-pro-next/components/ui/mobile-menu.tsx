@@ -92,6 +92,8 @@ export default function MobileMenu() {
                 href="/"
                 className="flex rounded-lg px-2 py-1.5 text-white hover:text-indigo-500"
                 onClick={() => setMobileNavOpen(false)}
+                data-i18n-en="Home"
+                data-i18n-es="Inicio"
               >
                 Home
               </Link>
@@ -101,6 +103,8 @@ export default function MobileMenu() {
                 href="https://app.islaapp.tech/?plan=trial&lang=en"
                 className="flex rounded-lg px-2 py-1.5 text-white hover:text-indigo-500"
                 onClick={() => setMobileNavOpen(false)}
+                data-i18n-en="Start"
+                data-i18n-es="Comenzar"
               >
                 Start
               </Link>
@@ -110,6 +114,8 @@ export default function MobileMenu() {
                 href="/templates"
                 className="flex rounded-lg px-2 py-1.5 text-white hover:text-indigo-500"
                 onClick={() => setMobileNavOpen(false)}
+                data-i18n-en="Build"
+                data-i18n-es="Construir"
               >
                 Build
               </Link>
@@ -119,6 +125,8 @@ export default function MobileMenu() {
                 href="/templates"
                 className="flex rounded-lg px-2 py-1.5 text-white hover:text-indigo-500"
                 onClick={() => setMobileNavOpen(false)}
+                data-i18n-en="Templates"
+                data-i18n-es="Plantillas"
               >
                 Templates
               </Link>
@@ -128,6 +136,8 @@ export default function MobileMenu() {
                 href="/pricing"
                 className="flex rounded-lg px-2 py-1.5 text-white hover:text-indigo-500"
                 onClick={() => setMobileNavOpen(false)}
+                data-i18n-en="Pricing"
+                data-i18n-es="Precios"
               >
                 Pricing
               </Link>
@@ -137,6 +147,8 @@ export default function MobileMenu() {
                 href="/help/frequently-asked-questions"
                 className="flex rounded-lg px-2 py-1.5 text-white hover:text-indigo-500"
                 onClick={() => setMobileNavOpen(false)}
+                data-i18n-en="Support"
+                data-i18n-es="Soporte"
               >
                 Support
               </Link>

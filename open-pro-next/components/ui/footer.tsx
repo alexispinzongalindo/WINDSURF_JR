@@ -10,16 +10,16 @@ export default function Footer() {
         </p>
         <nav className="flex flex-wrap items-center gap-4">
           <Link className="transition hover:text-indigo-400" href="/templates">
-            Templates
+            <span data-i18n-en="Templates" data-i18n-es="Plantillas">Templates</span>
           </Link>
           <Link className="transition hover:text-indigo-400" href="/pricing">
-            Pricing
+            <span data-i18n-en="Pricing" data-i18n-es="Precios">Pricing</span>
           </Link>
           <Link className="transition hover:text-indigo-400" href="/help/frequently-asked-questions">
-            Support
+            <span data-i18n-en="Support" data-i18n-es="Soporte">Support</span>
           </Link>
           <Link className="transition hover:text-indigo-400" href="/templates">
-            Pick Template
+            <span data-i18n-en="Pick Template" data-i18n-es="Elegir Plantilla">Pick Template</span>
           </Link>
         </nav>
       </div>
