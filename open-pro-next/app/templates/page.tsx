@@ -6,11 +6,12 @@ const templates = [
   {
     slug: "bookflow",
     title: "BookFlow (Service Booking)",
-    tags: ["Bookings", "POS-ready"],
+    tags: ["Bookings", "Payments", "Client-ready"],
     href: "/templates/bookflow",
-    useHref: "https://app.islaapp.tech/?plan=trial&lang=en",
+    useHref:
+      "https://app.islaapp.tech/?plan=trial&lang=en&template=bookflow&source=template_gallery",
     thumb: bookflowThumb,
-    desc: "Landing for scheduling + POS flows. Great for restaurant, salon, clinic, fitness.",
+    desc: "Ready starter for appointments, reminders, and checkout. Built for salons, clinics, and service teams.",
   },
 ];
 
@@ -20,7 +21,7 @@ export default function TemplatesPage() {
       <div className="pb-8 text-center">
         <h1 className="text-3xl font-semibold text-gray-100">Template Gallery</h1>
         <p className="text-indigo-200/65">
-          Pick a template, then click “Use this template” to open IslaAPP with the trial.
+          Pick a starter, preview it, then launch directly in islaAPP Builder.
         </p>
       </div>
       <div className="grid gap-6 md:grid-cols-2">
