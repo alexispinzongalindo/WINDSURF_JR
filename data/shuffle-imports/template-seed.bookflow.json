@@ -1,0 +1,23 @@
+{
+  "id": "bookflow-homepage-shuffle2",
+  "name": "BookFlow Homepage",
+  "category": "service",
+  "status": "Imported",
+  "shortDescription": "Appointment scheduling landing page.",
+  "longDescription": "Imported from Shuffle export (shuffle-2). Good baseline for booking or service businesses.",
+  "stack": "HTML/CSS/JS",
+  "target": "Beta in 2 weeks",
+  "perfectFor": ["Clinics", "Salons", "Fitness studios", "Booking services"],
+  "techTags": ["HTML", "Tailwind", "Alpine.js", "Landing page"],
+  "source": {
+    "exportFolder": "/Users/alexispinzon/Downloads/shuffle-2",
+    "copiedIntoRepo": "/Users/alexispinzon/CascadeProjects/WINSURFJR/data/shuffle-imports/shuffle-2",
+    "primaryHtml": "/Users/alexispinzon/CascadeProjects/WINSURFJR/data/shuffle-imports/shuffle-2/public/index.html",
+    "primaryPug": "/Users/alexispinzon/CascadeProjects/WINSURFJR/data/shuffle-imports/shuffle-2/src/pug/index.pug",
+    "exportTimestamp": "2026-02-15 02:23:58"
+  },
+  "notes": [
+    "No prior zip artifact currently present on disk for the interrupted run.",
+    "shuffle and shuffle-2 are nearly identical; shuffle-2 treated as latest."
+  ]
+}

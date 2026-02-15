@@ -973,6 +973,22 @@ function createTemplatePhotoImage(presetKey, altText) {
   };
 }
 
+function createImportedTemplateImage(filePath, altText, presetKey) {
+  const src = String(filePath || "").trim();
+  const safeAlt = String(altText || "").trim() || "Template preview";
+  const fallback = createTemplateStudioImage(presetKey, safeAlt);
+  if (!src) return fallback;
+
+  return {
+    alt: safeAlt,
+    avifSrcSet: "",
+    webpSrcSet: "",
+    jpgSrcSet: "",
+    fallbackSrc: src,
+    backupSrc: String(fallback.fallbackSrc || ""),
+  };
+}
+
 function renderTemplateImagePicture(template, options) {
   const config = options && typeof options === "object" ? options : {};
   const className = String(config.className || "template-media-picture");
@@ -1084,6 +1100,111 @@ function getTemplateCatalog() {
       clones: 355,
       perfectFor: ["Clinics", "Salons", "Professional services"],
       techTags: ["React", "Supabase", "Calendar", "Reminders"],
+      features: ["User authentication", "Notifications", "Admin dashboard"],
+    },
+    {
+      id: "bookflow-homepage-shuffle2",
+      name: "BookFlow Homepage",
+      category: "service",
+      status: "Customizable",
+      thumbClass: "template-thumb-booking",
+      image: createImportedTemplateImage(
+        "data/shuffle-imports/shuffle-2/public/flex-ui-assets/images/headers/header.jpg",
+        "BookFlow homepage imported from Shuffle",
+        "booking"
+      ),
+      shortDescription: "Scheduling-focused landing page baseline.",
+      longDescription: "Imported from Shuffle export (shuffle-2) and ready to adapt for service booking businesses.",
+      stack: "HTML/CSS/JS",
+      target: "Beta in 2 weeks",
+      clones: 42,
+      liveUrl: "template-live-bookflow-homepage.html",
+      perfectFor: ["Clinics", "Salons", "Fitness studios"],
+      techTags: ["HTML", "Tailwind", "Alpine.js", "Landing page"],
+      features: ["User authentication", "Notifications", "Admin dashboard"],
+    },
+    {
+      id: "bookflow-salon-booking",
+      name: "Salon Booking Landing",
+      category: "service",
+      status: "Fast launch",
+      thumbClass: "template-thumb-booking",
+      image: createImportedTemplateImage(
+        "data/shuffle-imports/shuffle-2/public/flex-ui-assets/images/features/stock2.png",
+        "Salon booking imported template preview",
+        "booking"
+      ),
+      shortDescription: "Beauty and salon appointment funnel.",
+      longDescription: "Derived from Shuffle BookFlow export and tailored for salons with online bookings and reminders.",
+      stack: "HTML/CSS/JS",
+      target: "Beta in 2 weeks",
+      clones: 18,
+      liveUrl: "template-live-bookflow-salon.html",
+      perfectFor: ["Beauty salons", "Barbershops", "Spa services"],
+      techTags: ["HTML", "Tailwind", "Booking funnel", "Lead capture"],
+      features: ["User authentication", "Notifications", "Admin dashboard"],
+    },
+    {
+      id: "bookflow-clinic-appointments",
+      name: "Clinic Appointments Landing",
+      category: "service",
+      status: "Customizable",
+      thumbClass: "template-thumb-booking",
+      image: createImportedTemplateImage(
+        "data/shuffle-imports/shuffle-2/public/flex-ui-assets/images/how-it-works/photo-video.png",
+        "Clinic appointments imported template preview",
+        "booking"
+      ),
+      shortDescription: "Healthcare scheduling homepage.",
+      longDescription: "Derived from Shuffle BookFlow export and focused on patient booking, trust sections, and contact flow.",
+      stack: "HTML/CSS/JS",
+      target: "Beta in 2 weeks",
+      clones: 15,
+      liveUrl: "template-live-bookflow-clinic.html",
+      perfectFor: ["Private clinics", "Dental offices", "Wellness centers"],
+      techTags: ["HTML", "Tailwind", "Appointments", "Service landing"],
+      features: ["User authentication", "Notifications", "Admin dashboard"],
+    },
+    {
+      id: "bookflow-fitness-classes",
+      name: "Fitness Class Booking",
+      category: "service",
+      status: "Popular",
+      thumbClass: "template-thumb-booking",
+      image: createImportedTemplateImage(
+        "data/shuffle-imports/shuffle-2/public/flex-ui-assets/images/headers/mockup-light1.png",
+        "Fitness booking imported template preview",
+        "booking"
+      ),
+      shortDescription: "Gym and class reservation starter.",
+      longDescription: "Derived from Shuffle BookFlow export and adapted for gyms, trainers, and studio class scheduling.",
+      stack: "HTML/CSS/JS",
+      target: "Beta in 2 weeks",
+      clones: 21,
+      liveUrl: "template-live-bookflow-fitness.html",
+      perfectFor: ["Gyms", "Personal trainers", "Studios"],
+      techTags: ["HTML", "Tailwind", "Class schedules", "CTA landing"],
+      features: ["User authentication", "Notifications", "Admin dashboard"],
+    },
+    {
+      id: "bookflow-consulting-calls",
+      name: "Consulting Call Scheduler",
+      category: "business",
+      status: "Featured",
+      thumbClass: "template-thumb-portal",
+      image: createImportedTemplateImage(
+        "data/shuffle-imports/shuffle-2/public/flex-ui-assets/images/teams/photo-employee1.png",
+        "Consulting scheduler imported template preview",
+        "portal"
+      ),
+      shortDescription: "Consultation and discovery call page.",
+      longDescription: "Derived from Shuffle BookFlow export and adapted for consultants booking discovery calls.",
+      stack: "HTML/CSS/JS",
+      target: "MVP in 1 month",
+      clones: 13,
+      liveUrl: "template-live-bookflow-consulting.html",
+      perfectFor: ["Consultants", "Agencies", "Coaches"],
+      techTags: ["HTML", "Tailwind", "Booking", "Conversion page"],
       features: ["User authentication", "Notifications", "Admin dashboard"],
     },
     {

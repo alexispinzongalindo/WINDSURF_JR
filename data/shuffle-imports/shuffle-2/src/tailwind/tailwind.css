@@ -1,0 +1,24 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+
+.wave {
+    display: none;
+}
+
+.wave-top .wave.wave-top {
+    display: block;
+    margin-bottom: -1px;
+}
+
+.wave-bottom .wave.wave-bottom {
+    display: block;
+    margin-top: -1px;
+}
+
+.leading-15 {
+    line-height: 3.75rem;
+}
