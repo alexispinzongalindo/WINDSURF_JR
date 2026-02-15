@@ -8,8 +8,7 @@ const templates = [
     title: "BookFlow (Service Booking)",
     tags: ["Bookings", "Payments", "Client-ready"],
     href: "/templates/bookflow",
-    useHref:
-      "https://app.islaapp.tech/?plan=trial&lang=en&template=bookflow&source=template_gallery",
+    useHref: "/agent?template=bookflow&source=template_gallery",
     thumb: bookflowThumb,
     desc: "Ready starter for appointments, reminders, and checkout. Built for salons, clinics, and service teams.",
   },
@@ -62,7 +61,7 @@ export default function TemplatesPage() {
                 href={t.useHref}
                 className="btn-sm bg-gray-800 text-gray-100 hover:bg-gray-700"
               >
-                Use this template
+                Use template in AI agent
               </a>
             </div>
           </div>

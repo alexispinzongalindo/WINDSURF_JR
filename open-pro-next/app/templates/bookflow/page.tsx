@@ -8,10 +8,8 @@ export const metadata = {
 };
 
 export default function BookflowTemplatePage() {
-  const openBuilderHref =
-    "https://app.islaapp.tech/?lang=en&template=bookflow&source=template_detail";
-  const startTrialHref =
-    "https://app.islaapp.tech/?plan=trial&lang=en&template=bookflow&source=template_detail";
+  const openBuilderHref = "/agent?template=bookflow&source=template_detail";
+  const startTrialHref = "/agent?template=bookflow&source=template_detail";
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16">
@@ -42,13 +40,13 @@ export default function BookflowTemplatePage() {
           href={startTrialHref}
           className="btn-sm bg-indigo-600 text-center text-white hover:bg-indigo-500"
         >
-          Start Free With This Template
+          Start With This Template
         </a>
         <a
           href={openBuilderHref}
           className="btn-sm border border-gray-700 bg-gray-800 text-center text-white hover:bg-gray-700"
         >
-          Open Builder
+          Open AI Agent
         </a>
       </div>
 

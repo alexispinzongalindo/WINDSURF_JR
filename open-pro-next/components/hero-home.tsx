@@ -41,9 +41,9 @@ export default function HeroHome() {
                 <div data-aos="fade-up" data-aos-delay={600}>
                   <a
                     className="btn w-full border border-gray-700 bg-gray-800 text-white hover:bg-gray-700 sm:ml-4 sm:w-auto"
-                    href="https://app.islaapp.tech/?lang=en"
+                    href="/templates"
                   >
-                    Open AI builder
+                    Pick template
                   </a>
                 </div>
               </div>

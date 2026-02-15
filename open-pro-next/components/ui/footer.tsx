@@ -18,8 +18,8 @@ export default function Footer() {
           <Link className="transition hover:text-indigo-400" href="/help/frequently-asked-questions">
             Support
           </Link>
-          <Link className="transition hover:text-indigo-400" href="https://app.islaapp.tech/?lang=en">
-            Open Builder
+          <Link className="transition hover:text-indigo-400" href="/templates">
+            Pick Template
           </Link>
         </nav>
       </div>
